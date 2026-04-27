@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>小小求职拿下 - Demo</title>
+  <style>
+    :root {
+      --bg: #f4f8f7;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --brand: #14b8a6;
+      --border: #d1d5db;
+      --error: #dc2626;
+      --ok: #16a34a;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 32px auto;
+      padding: 0 16px 40px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+    .sub {
+      color: var(--muted);
+      margin: 0 0 18px;
+    }
+    .dropzone {
+      border: 2px dashed #9ca3af;
+      border-radius: 12px;
+      padding: 28px 16px;
+      text-align: center;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+    .dropzone.dragging {
+      border-color: var(--brand);
+      background: #ecfdf5;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: 0;
+      background: var(--brand);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .hint, .status {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .progress-wrap {
+      margin-top: 10px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #2dd4bf 0%, #14b8a6 100%);
+      transition: width 0.2s ease;
+    }
+    .status.error { color: var(--error); }
+    .status.ok { color: var(--ok); }
+    .mbti {
+      margin-top: 18px;
+      display: inline-block;
+      border: 1px solid #99f6e4;
+      background: #f0fdfa;
+      color: #0f766e;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    pre {
+      margin-top: 12px;
+      background: #111827;
+      color: #d1fae5;
+      border-radius: 10px;
+      padding: 14px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>小小求职拿下 - 上传简历 Demo</h1>
+      <p class="sub">上传 PDF / DOCX 简历，自动进行 AI 结构化解析并推断 MBTI。</p>
+
+      <div id="dropzone" class="dropzone">
+        <div>将简历拖拽到这里，或点击下方按钮选择文件</div>
+        <div class="hint">支持格式：.pdf / .docx</div>
+      </div>
+
+      <div class="row">
+        <input id="fileInput" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+        <button id="uploadBtn" disabled>开始上传并解析</button>
+        <span id="fileName" class="hint">未选择文件</span>
+      </div>
+
+      <p id="status" class="status">等待上传...</p>
+      <div id="progressWrap" class="progress-wrap" hidden>
+        <div class="progress-meta">
+          <span id="progressStage">准备中...</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </div>
+      <div id="mbti" class="mbti" hidden></div>
+      <pre id="result" hidden></pre>
+    </div>
+  </div>
+
+  <script src="./config.js"></script>
+  <script>
+    const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
+    const API_BASE_URL = (window.APP_CONFIG?.API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
+
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const statusEl = document.getElementById("status");
+    const fileNameEl = document.getElementById("fileName");
+    const resultEl = document.getElementById("result");
+    const mbtiEl = document.getElementById("mbti");
+    const progressWrapEl = document.getElementById("progressWrap");
+    const progressStageEl = document.getElementById("progressStage");
+    const progressPercentEl = document.getElementById("progressPercent");
+    const progressBarEl = document.getElementById("progressBar");
+    let selectedFile = null;
+    let parseProgressTimer = null;
+
+    function clearParseTimer() {
+      if (parseProgressTimer) {
+        window.clearInterval(parseProgressTimer);
+        parseProgressTimer = null;
+      }
+    }
+
+    function setProgress(percent, stageText) {
+      const safePercent = Math.max(0, Math.min(100, Math.round(percent)));
+      progressWrapEl.hidden = false;
+      progressBarEl.style.width = `${safePercent}%`;
+      progressPercentEl.textContent = `${safePercent}%`;
+      if (stageText) {
+        progressStageEl.textContent = stageText;
+      }
+    }
+
+    function setFile(file) {
+      selectedFile = file || null;
+      uploadBtn.disabled = !selectedFile;
+      fileNameEl.textContent = selectedFile ? `已选择：${selectedFile.name}` : "未选择文件";
+      statusEl.textContent = selectedFile ? "文件已就绪，点击按钮开始解析。" : "等待上传...";
+      statusEl.className = "status";
+      resultEl.hidden = true;
+      mbtiEl.hidden = true;
+      clearParseTimer();
+      progressWrapEl.hidden = true;
+      setProgress(0, "准备中...");
+    }
+
+    statusEl.textContent = `等待上传... 当前后端：${API_BASE_URL}`;
+
+    function validFile(file) {
+      const ext = (file.name.split(".").pop() || "").toLowerCase();
+      return ext === "pdf" || ext === "docx";
+    }
+
+    function handleIncomingFile(file) {
+      if (!file) return;
+      if (!validFile(file)) {
+        setFile(null);
+        statusEl.textContent = "仅支持 .pdf / .docx 文件。";
+        statusEl.className = "status error";
+        return;
+      }
+      setFile(file);
+    }
+
+    fileInput.addEventListener("change", (e) => {
+      handleIncomingFile(e.target.files[0]);
+    });
+
+    dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropzone.classList.add("dragging");
+    });
+    dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragging"));
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("dragging");
+      handleIncomingFile(e.dataTransfer.files[0]);
+    });
+
+    uploadBtn.addEventListener("click", async () => {
+      if (!selectedFile) return;
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      statusEl.textContent = "正在上传并解析，请稍候...";
+      statusEl.className = "status";
+      uploadBtn.disabled = true;
+      resultEl.hidden = true;
+      mbtiEl.hidden = true;
+      setProgress(0, "准备上传...");
+
+      try {
+        const data = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          let parsePhasePercent = 75;
+          let parseStarted = false;
+
+          function startParseProgress() {
+            if (parseStarted) return;
+            parseStarted = true;
+            setProgress(72, "上传完成，开始AI解析...");
+            clearParseTimer();
+            parseProgressTimer = window.setInterval(() => {
+              parsePhasePercent = Math.min(95, parsePhasePercent + 1);
+              setProgress(parsePhasePercent, "AI解析中，请稍候...");
+            }, 350);
+          }
+
+          xhr.upload.onprogress = (event) => {
+            if (!event.lengthComputable) return;
+            const uploadPercent = Math.min(70, (event.loaded / event.total) * 70);
+            setProgress(uploadPercent, "文件上传中...");
+          };
+
+          // 上传结束后立即切换到“解析中”，避免卡在70%
+          xhr.upload.onload = () => {
+            startParseProgress();
+          };
+
+          xhr.onreadystatechange = () => {
+            // 某些环境里 upload.onload 可能不触发，这里兜底
+            if (xhr.readyState >= 2) {
+              startParseProgress();
+            }
+          };
+
+          xhr.onload = () => {
+            clearParseTimer();
+            try {
+              const payload = JSON.parse(xhr.responseText || "{}");
+              if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error(payload.detail || "请求失败"));
+                return;
+              }
+              setProgress(100, "解析完成");
+              resolve(payload);
+            } catch (e) {
+              reject(new Error("服务返回格式异常"));
+            }
+          };
+
+          xhr.onerror = () => {
+            clearParseTimer();
+            reject(new Error("网络错误，上传失败"));
+          };
+
+          xhr.timeout = 180000;
+          xhr.ontimeout = () => {
+            clearParseTimer();
+            reject(new Error("请求超时，请稍后重试"));
+          };
+
+          xhr.open("POST", `${API_BASE_URL}/upload`);
+          xhr.send(formData);
+        });
+
+        statusEl.textContent = data.message || "解析完成。";
+        statusEl.className = "status ok";
+
+        const mbti = data?.parsed_data?.inferred_mbti;
+        if (mbti) {
+          mbtiEl.textContent = `MBTI: ${mbti}`;
+          mbtiEl.hidden = false;
+        }
+
+        resultEl.textContent = JSON.stringify(data.parsed_data, null, 2);
+        resultEl.hidden = false;
+      } catch (err) {
+        clearParseTimer();
+        statusEl.textContent = `解析失败：${err.message}`;
+        statusEl.className = "status error";
+        setProgress(0, "上传失败");
+      } finally {
+        uploadBtn.disabled = !selectedFile;
+      }
+    });
+  </script>
+</body>
+</html>
