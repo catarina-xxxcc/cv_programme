@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import fitz  # PyMuPDF
-from zhipuai import ZhipuAI
+from openai import OpenAI
 from docx import Document
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -37,7 +37,7 @@ app.add_middleware(
 google_api_key = os.getenv("ZHIPU_API_KEY", "").strip()
 if not google_api_key:
     raise RuntimeError("Missing ZHIPU_API_KEY. Add it to your environment or .env file.")
-client = ZhipuAI(api_key=google_api_key)
+client = OpenAI(api_key=google_api_key, base_url="https://open.bigmodel.cn/api/paas/v4/")
 ZHIPU_MODEL = os.getenv("ZHIPU_MODEL", "glm-4-flash")
 
 
