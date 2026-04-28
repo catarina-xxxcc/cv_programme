@@ -35,6 +35,8 @@
       align-items: start;
     }
 
+    .left-col { display: flex; flex-direction: column; gap: 0; }
+
     /* ── 左侧上传 ── */
     .upload-panel {
       background: #fff;
@@ -205,6 +207,45 @@
     }
     .job-card .job-reason { font-size: 12px; color: #94a3b8; line-height: 1.5; }
 
+    /* ── 简历诊断卡片 ── */
+    .diagnosis-panel {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-top: 24px;
+      display: none;
+    }
+    .diagnosis-panel.visible { display: block; }
+
+    .diag-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 16px;
+    }
+    .diag-title { font-size: 15px; font-weight: 600; }
+    .score-wrap { text-align: right; }
+    .score-badge { font-size: 26px; font-weight: 800; color: #0d9488; }
+    .score-label { font-size: 11px; color: #94a3b8; }
+
+    .diag-comment {
+      font-size: 13px; color: #64748b;
+      background: #f8fafc; border-radius: 8px;
+      padding: 10px 14px; margin-bottom: 16px;
+    }
+    .diag-section { margin-bottom: 14px; }
+    .diag-section-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: #94a3b8; margin-bottom: 8px;
+    }
+    .diag-item {
+      background: #fafafa; border-radius: 8px;
+      padding: 10px 12px; margin-bottom: 6px; font-size: 13px;
+    }
+    .diag-original { color: #dc2626; text-decoration: line-through; margin-bottom: 4px; }
+    .diag-suggestion { color: #16a34a; }
+    .diag-empty { font-size: 13px; color: #94a3b8; font-style: italic; }
+
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; }
       .jobs-grid { grid-template-columns: repeat(2, 1fr); }
@@ -226,6 +267,7 @@
 <div class="layout">
 
   <!-- 左侧：上传 -->
+  <div class="left-col">
   <div class="upload-panel">
     <h2>上传简历</h2>
     <p class="sub">支持 PDF / DOCX，最大 5MB</p>
@@ -252,7 +294,34 @@
       </div>
     </div>
     <div id="statusMsg" class="status-msg"></div>
+  </div><!-- end upload-panel -->
+
+  <!-- 简历诊断 -->
+  <div id="diagnosisPanel" class="diagnosis-panel">
+    <div class="diag-header">
+      <div class="diag-title">📋 简历诊断</div>
+      <div class="score-wrap">
+        <div class="score-badge" id="diagScore">—</div>
+        <div class="score-label">综合评分</div>
+      </div>
+    </div>
+    <div id="diagComment" class="diag-comment"></div>
+
+    <div class="diag-section">
+      <div class="diag-section-title">🔤 错别字</div>
+      <div id="diagTypos"></div>
+    </div>
+    <div class="diag-section">
+      <div class="diag-section-title">✏️ 病句 / 语法</div>
+      <div id="diagGrammar"></div>
+    </div>
+    <div class="diag-section">
+      <div class="diag-section-title">♻️ 语意冗杂</div>
+      <div id="diagRedundancy"></div>
+    </div>
   </div>
+
+  </div><!-- end left-col -->
 
   <!-- 右侧：结果 -->
   <div class="result-panel">
@@ -468,6 +537,32 @@
 
     resultEmpty.style.display = "none";
     resultContent.style.display = "block";
+
+    // 简历诊断
+    const diag = d.resume_diagnosis || {};
+    const diagPanel = document.getElementById("diagnosisPanel");
+    document.getElementById("diagScore").textContent = diag.overall_score || "—";
+    document.getElementById("diagComment").textContent = diag.overall_comment || "";
+
+    function renderDiagItems(containerId, items) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = "";
+      if (!items || items.length === 0) {
+        el.innerHTML = '<div class="diag-empty">未发现问题 ✓</div>';
+        return;
+      }
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "diag-item";
+        div.innerHTML = `<div class="diag-original">${item.original || ""}</div><div class="diag-suggestion">→ ${item.suggestion || ""}</div>`;
+        el.appendChild(div);
+      });
+    }
+
+    renderDiagItems("diagTypos", diag.typos);
+    renderDiagItems("diagGrammar", diag.grammar_issues);
+    renderDiagItems("diagRedundancy", diag.redundancy);
+    diagPanel.classList.add("visible");
   }
 
   uploadBtn.addEventListener("click", async () => {
