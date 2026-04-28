@@ -142,6 +142,22 @@
     .mbti-name { font-size: 15px; font-weight: 600; color: #1a202c; margin-bottom: 6px; }
     .mbti-desc { font-size: 13px; color: #64748b; line-height: 1.6; }
 
+    .mbti-traits { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .mbti-trait {
+      font-size: 11px; font-weight: 500;
+      padding: 3px 10px; border-radius: 999px;
+      border: 1px solid currentColor;
+    }
+
+    /* 人格解读 */
+    .insight-box {
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+    }
+    .insight-title { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .insight-text { font-size: 13px; line-height: 1.8; }
+
     /* 候选人简介 */
     .summary-box {
       background: #f8fafc; border-radius: 10px;
@@ -256,8 +272,15 @@
             <span id="mbtiValue">—</span>
           </div>
           <div id="mbtiName" class="mbti-name"></div>
+          <div id="mbtiTraits" class="mbti-traits"></div>
           <div id="mbtiDesc" class="mbti-desc"></div>
         </div>
+      </div>
+
+      <!-- 人格深度解读 -->
+      <div id="mbtiInsightBox" class="insight-box" style="display:none">
+        <div class="insight-title">✦ 人格解读</div>
+        <div id="mbtiInsight" class="insight-text"></div>
       </div>
 
       <!-- 候选人简介 -->
@@ -282,6 +305,26 @@
     INFJ: "提倡者", INFP: "调停者", ENFJ: "主人公", ENFP: "竞选者",
     ISTJ: "物流师", ISFJ: "守卫者", ESTJ: "总经理", ESFJ: "执政官",
     ISTP: "鉴赏家", ISFP: "探险家", ESTP: "企业家", ESFP: "表演者"
+  };
+
+  // MBTI 人格详细解读
+  const MBTI_DETAIL = {
+    ENTJ: { color: "#7c3aed", bg: "#f5f3ff", traits: ["天生领导者", "战略思维", "果断执行", "目标驱动"], insight: "ENTJ 是天生的领导者，擅长制定长远战略并推动团队高效执行。他们逻辑清晰、意志坚定，在复杂局面中能迅速做出决策。对效率和成果有极高追求，适合承担管理与决策职责。" },
+    ENTP: { color: "#0891b2", bg: "#ecfeff", traits: ["创新思维", "善于辩论", "思维敏捷", "挑战权威"], insight: "ENTP 是充满创意的思想家，热衷于探索新想法和挑战既有观念。他们口才出众、反应迅速，擅长在复杂问题中找到突破口，是团队中的创新引擎。" },
+    INTJ: { color: "#0d9488", bg: "#f0fdfa", traits: ["独立思考", "系统规划", "追求完美", "洞察力强"], insight: "INTJ 是极具远见的战略家，善于构建复杂系统并独立推进目标。他们对知识有强烈渴望，做事严谨、标准极高，是少数能将宏观愿景落地为具体计划的人格类型。" },
+    INTP: { color: "#2563eb", bg: "#eff6ff", traits: ["逻辑严密", "深度思考", "创意无限", "追求真理"], insight: "INTP 是沉浸于思想世界的逻辑学家，热衷于分析复杂理论和构建精密模型。他们思维灵活、善于发现规律，在技术研究和创新领域往往能产出突破性成果。" },
+    ENFJ: { color: "#dc2626", bg: "#fef2f2", traits: ["感召力强", "关怀他人", "善于沟通", "推动成长"], insight: "ENFJ 是充满感召力的领导者，天生善于理解他人需求并激励团队成长。他们热情、有责任感，擅长建立深度信任关系，是优秀的导师和团队凝聚者。" },
+    ENFP: { color: "#ea580c", bg: "#fff7ed", traits: ["热情洋溢", "创意丰富", "善于共情", "激励他人"], insight: "ENFP 是充满活力的理想主义者，对人和可能性充满热情。他们创意无限、善于激励他人，能在多元环境中快速建立连接，是团队中的活力与灵感来源。" },
+    INFJ: { color: "#7c3aed", bg: "#f5f3ff", traits: ["深刻洞察", "理想主义", "坚定信念", "关怀他人"], insight: "INFJ 是罕见的理想主义者，兼具深刻的洞察力和强烈的使命感。他们善于理解他人内心，致力于推动有意义的改变，在需要同理心与远见的领域表现卓越。" },
+    INFP: { color: "#0891b2", bg: "#ecfeff", traits: ["富有同情心", "创意写作", "价值观驱动", "内省深刻"], insight: "INFP 是温柔的理想主义者，被强烈的个人价值观所驱动。他们富有创造力和同理心，善于用文字和艺术表达深层情感，在人文与创意领域往往有独特建树。" },
+    ISTJ: { color: "#374151", bg: "#f9fafb", traits: ["可靠负责", "注重细节", "遵守规则", "踏实执行"], insight: "ISTJ 是最可靠的执行者，以严谨、负责和一丝不苟著称。他们尊重规则和传统，做事有条不紊，是组织运转的重要支柱，在需要精确和稳定的岗位上表现出色。" },
+    ISFJ: { color: "#0d9488", bg: "#f0fdfa", traits: ["体贴入微", "忠诚可靠", "服务他人", "注重和谐"], insight: "ISFJ 是温暖而尽职的守护者，以细心、忠诚和无私奉献著称。他们善于记住他人的需求，默默付出，是团队中不可或缺的稳定力量。" },
+    ESTJ: { color: "#b45309", bg: "#fffbeb", traits: ["组织能力强", "务实高效", "责任心强", "重视秩序"], insight: "ESTJ 是高效的管理者，擅长建立秩序、制定规则并推动执行。他们务实、果断，对责任有强烈认同感，在需要组织协调和流程管理的岗位上如鱼得水。" },
+    ESFJ: { color: "#dc2626", bg: "#fef2f2", traits: ["热心助人", "善于社交", "重视和谐", "责任感强"], insight: "ESFJ 是热情的社交者，以关心他人和维护团队和谐为己任。他们善于察觉他人情绪，乐于提供帮助，在需要人际协调和服务意识的岗位上表现突出。" },
+    ISTP: { color: "#374151", bg: "#f9fafb", traits: ["动手能力强", "冷静分析", "灵活应变", "独立自主"], insight: "ISTP 是冷静的问题解决者，擅长在压力下快速分析并采取行动。他们喜欢探索事物运作原理，动手能力强，在技术和实操类工作中往往能展现出色的专业能力。" },
+    ISFP: { color: "#0891b2", bg: "#ecfeff", traits: ["艺术感强", "温和包容", "活在当下", "忠于自我"], insight: "ISFP 是安静的艺术家，以敏锐的审美和真诚的个性著称。他们不喜欢冲突，善于用行动表达关怀，在创意、设计和需要个人风格的领域往往有独特表现。" },
+    ESTP: { color: "#ea580c", bg: "#fff7ed", traits: ["行动力强", "善于交际", "把握机遇", "现实主义"], insight: "ESTP 是充满活力的实干家，善于在瞬息万变的环境中把握机遇。他们反应敏捷、善于交际，喜欢直接面对挑战，在销售、创业和需要快速决策的场景中表现亮眼。" },
+    ESFP: { color: "#7c3aed", bg: "#f5f3ff", traits: ["活泼开朗", "善于表演", "享受当下", "感染力强"], insight: "ESFP 是天生的表演者，以热情、幽默和强大的感染力著称。他们享受与人互动，善于活跃气氛，在需要展示、沟通和娱乐的场合总能成为焦点。" },
   };
 
   // 16personalities 人物图片（使用官方 CDN）
@@ -368,6 +411,28 @@
     document.getElementById("mbtiValue").textContent = mbti || "—";
     document.getElementById("mbtiName").textContent = MBTI_NAMES[mbti] ? `${MBTI_NAMES[mbti]}` : "";
     document.getElementById("mbtiDesc").textContent = d.mbti_description || "";
+
+    // 特质标签 + 解读
+    const detail = MBTI_DETAIL[mbti];
+    const traitsEl = document.getElementById("mbtiTraits");
+    const insightBox = document.getElementById("mbtiInsightBox");
+    const insightEl = document.getElementById("mbtiInsight");
+    traitsEl.innerHTML = "";
+    if (detail) {
+      detail.traits.forEach(t => {
+        const span = document.createElement("span");
+        span.className = "mbti-trait";
+        span.style.color = detail.color;
+        span.style.borderColor = detail.color + "55";
+        span.style.background = detail.bg;
+        span.textContent = t;
+        traitsEl.appendChild(span);
+      });
+      insightEl.textContent = detail.insight;
+      insightBox.style.background = detail.bg;
+      insightBox.style.color = detail.color;
+      insightBox.style.display = "block";
+    }
 
     // 头像
     const avatarEl = document.getElementById("mbtiAvatar");
