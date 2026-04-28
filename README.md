@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 小小求职拿下 - Demo1
 
 这是一个端到端演示版，支持：
@@ -78,3 +79,6 @@ window.APP_CONFIG = {
 - 用 GitHub Organization 管理仓库
 - Vercel/Render 项目给组员添加 Developer 权限
 - 用 Pull Request 流程协作，避免直接改主分支
+=======
+# cv_programme
+>>>>>>> 747874aa38e5962162f41cfee66fd893ef2bfe80
