@@ -82,11 +82,13 @@ def _parse_resume_with_ai(raw_text: str) -> dict[str, Any]:
 你是一个资深 HR 分析师和职业人格专家。请将简历解析为严格 JSON（不要使用 markdown 代码块）。
 输出字段要求：
 1) inferred_mbti: 字符串，16型人格之一
-2) skills: 字符串数组
-3) work_experience: 对象数组，每项包含 company, role, period, highlights(数组)
-4) projects: 对象数组，每项包含 name, role, summary, tech_stack(数组)
-5) education: 对象数组，每项包含 school, degree, period
-6) candidate_summary: 字符串，简短总结（100字以内）
+2) mbti_description: 字符串，对该 MBTI 人格的简短描述（60字以内，突出核心特质）
+3) candidate_summary: 字符串，基于简历内容的候选人简介（80字以内）
+4) job_recommendations: 数组，推荐6个适合该候选人的岗位，覆盖不同行业，每项包含：
+   - title: 岗位名称
+   - industry: 所属行业（如：科技、金融、咨询、教育、创业、政府等）
+   - reason: 推荐理由（30字以内，结合简历技能和MBTI特质）
+   - match_level: 匹配度，"高" 或 "中"
 
 如果信息缺失，请使用空字符串或空数组，不要省略字段。
 
