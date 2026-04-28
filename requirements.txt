@@ -3,5 +3,5 @@ uvicorn
 python-multipart
 python-docx
 PyMuPDF
-google-generativeai
+zhipuai
 python-dotenv

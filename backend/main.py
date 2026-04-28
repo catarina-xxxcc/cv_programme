@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import fitz  # PyMuPDF
-import google.generativeai as genai
+from zhipuai import ZhipuAI
 from docx import Document
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -34,11 +34,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-google_api_key = os.getenv("GOOGLE_API_KEY", "").strip()
+google_api_key = os.getenv("ZHIPU_API_KEY", "").strip()
 if not google_api_key:
-    raise RuntimeError("Missing GOOGLE_API_KEY. Add it to your environment or .env file.")
-genai.configure(api_key=google_api_key)
-model = genai.GenerativeModel(os.getenv("GEMINI_MODEL", "gemini-1.5-flash"))
+    raise RuntimeError("Missing ZHIPU_API_KEY. Add it to your environment or .env file.")
+client = ZhipuAI(api_key=google_api_key)
+ZHIPU_MODEL = os.getenv("ZHIPU_MODEL", "glm-4-flash")
 
 
 def _file_extension(filename: str) -> str:
@@ -93,8 +93,11 @@ def _parse_resume_with_ai(raw_text: str) -> dict[str, Any]:
 简历文本如下：
 {raw_text}
 """
-    response = model.generate_content(prompt)
-    return _to_json_with_fallback(response.text)
+    response = client.chat.completions.create(
+        model=ZHIPU_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return _to_json_with_fallback(response.choices[0].message.content)
 
 
 @app.get("/")
