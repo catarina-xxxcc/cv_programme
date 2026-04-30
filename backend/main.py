@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -127,8 +128,88 @@ J vs P：
     return _to_json_with_fallback(response.choices[0].message.content)
 
 
-@app.get("/")
-async def health_check() -> dict[str, str]:
+SYSTEM_PROMPT = """你是一个专业的求职顾问和简历写作专家。你的任务是通过友好的对话，帮助没有简历的用户生成一份专业的简历。
+
+对话流程：
+1. 先了解用户的基本情况：姓名、学历、专业、毕业院校
+2. 了解工作经历或实习经历（如果是应届生则询问项目经历、社团经历）
+3. 了解技能特长（编程语言、软件工具、语言能力等）
+4. 了解求职意向（目标岗位、行业）
+5. 信息收集完毕后，主动说"我已经收集了足够的信息，现在为你生成简历模板"，然后输出简历
+
+输出简历时，使用以下 Markdown 格式，并在开头加上 [RESUME_TEMPLATE] 标记：
+
+[RESUME_TEMPLATE]
+# 姓名
+
+📧 邮箱 | 📱 电话 | 🎓 学校
+
+---
+
+## 教育背景
+**学校名称** · 专业 · 入学年份 - 毕业年份
+
+---
+
+## 技能
+- 技能1、技能2、技能3
+
+---
+
+## 实习 / 工作经历
+**公司名称** · 职位 · 时间段
+- 主要职责或成果描述
+
+---
+
+## 项目经历
+**项目名称** · 时间段
+- 项目描述和个人贡献
+
+---
+
+## 自我评价
+简短的自我介绍（2-3句话）
+
+注意：
+- 每次只问1-2个问题，不要一次问太多
+- 语气友好自然，像朋友聊天一样
+- 如果用户信息不完整，用合理的内容补充
+- 简历内容要专业、简洁、有力"""
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+
+
+@app.post("/chat")
+async def chat(request: ChatRequest) -> dict[str, Any]:
+    try:
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        for msg in request.messages:
+            messages.append({"role": msg.role, "content": msg.content})
+
+        response = client.chat.completions.create(
+            model=ZHIPU_MODEL,
+            messages=messages,
+        )
+        reply = response.choices[0].message.content
+
+        # 检测是否包含简历模板
+        has_resume = "[RESUME_TEMPLATE]" in reply
+        clean_reply = reply.replace("[RESUME_TEMPLATE]", "").strip()
+
+        return {
+            "reply": clean_reply,
+            "has_resume": has_resume,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Chat failed: {exc}") from exc
     return {"message": "Resume AI API is ready."}
 
 
