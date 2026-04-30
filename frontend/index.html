@@ -635,11 +635,10 @@
     </div>
 
     <div class="chat-prompts">
-      <div class="prompt-chip" onclick="sendPrompt('我是应届生，还没有简历，帮我生成一份')">🎓 我是应届生</div>
-      <div class="prompt-chip" onclick="sendPrompt('我有工作经验想换行，帮我重新写一份简历')">💼 我想换行业</div>
-      <div class="prompt-chip" onclick="sendPrompt('我是实习生，帮我写一份实习简历')">🌱 我要找实习</div>
-      <div class="prompt-chip" onclick="sendPrompt('帮我生成一份产品经理方向的简历')">📱 产品经理方向</div>
-      <div class="prompt-chip" onclick="sendPrompt('帮我生成一份数据分析方向的简历')">📊 数据分析方向</div>
+      <div class="prompt-chip" id="chip1">🎓 我是应届生</div>
+      <div class="prompt-chip" id="chip2">💼 我想换行业</div>
+      <div class="prompt-chip" id="chip3">🌱 我要找实习</div>
+      <div class="prompt-chip" id="chip4">🔰 帮我从零开始写简历</div>
     </div>
 
     <div class="chat-messages" id="chatMessages">
@@ -651,7 +650,7 @@
 
     <div class="chat-input-area">
       <textarea id="chatInput" class="chat-input" placeholder="描述你的情况，比如：我是大三学生，学金融的..." rows="1"></textarea>
-      <button id="sendBtn" class="btn-send" onclick="sendChat()">↑</button>
+      <button id="sendBtn" class="btn-send">↑</button>
     </div>
   </div>
 </div>
@@ -866,6 +865,18 @@
   const chatInput = document.getElementById("chatInput");
   const sendBtn = document.getElementById("sendBtn");
 
+  // 快捷提示词绑定
+  const chipMap = {
+    chip1: "我是应届生，还没有简历，帮我生成一份",
+    chip2: "我有工作经验想换行，帮我重新写一份简历",
+    chip3: "我是实习生，帮我写一份实习简历",
+    chip4: "我还没有任何经验，帮我从零开始写一份简历",
+  };
+  Object.keys(chipMap).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", () => sendPrompt(chipMap[id]));
+  });
+
   // 自动调整输入框高度
   chatInput.addEventListener("input", () => {
     chatInput.style.height = "auto";
@@ -876,6 +887,8 @@
   chatInput.addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
   });
+
+  sendBtn.addEventListener("click", sendChat);
 
   function sendPrompt(text) {
     chatInput.value = text;
