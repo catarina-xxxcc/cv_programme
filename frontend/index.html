@@ -248,13 +248,16 @@
       border-radius: 10px;
       padding: 14px;
       transition: all 0.18s;
-      cursor: default;
+      cursor: pointer;
       background: var(--white);
     }
     .job-card:hover {
       border-color: var(--brand);
-      box-shadow: 0 4px 16px rgba(24,184,154,0.1);
+      box-shadow: 0 4px 16px rgba(24,184,154,0.15);
       transform: translateY(-2px);
+    }
+    .job-card:active {
+      transform: translateY(0);
     }
     .job-card .job-header {
       display: flex; justify-content: space-between;
@@ -279,6 +282,29 @@
       margin-bottom: 7px;
     }
     .job-card .job-reason { font-size: 11px; color: var(--ink-4); line-height: 1.5; }
+
+    /* 薪资信息样式 */
+    .job-salary {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 0;
+    }
+    .salary-amount {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--brand);
+      letter-spacing: 0.2px;
+    }
+    .salary-city {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--ink-4);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
 
     /* ── 简历诊断卡片 ── */
     .diagnosis-panel {
@@ -817,14 +843,47 @@
       const card = document.createElement("div");
       card.className = "job-card";
       const matchClass = job.match_level === "高" ? "match-high" : "match-mid";
+      
+      // 构建薪资显示HTML
+      let salaryHTML = '';
+      if (job.salary_range && job.salary_range.min_salary && job.salary_range.max_salary) {
+        const salaryText = `${job.salary_range.min_salary}-${job.salary_range.max_salary}K`;
+        const cityText = job.salary_range.city || '全国';
+        salaryHTML = `
+          <div class="job-salary">
+            <span class="salary-amount">${salaryText}</span>
+            <span class="salary-city">${cityText}</span>
+          </div>
+        `;
+      }
+      
       card.innerHTML = `
         <div class="job-header">
           <div class="job-title">${job.title || ""}</div>
           <span class="match-badge ${matchClass}">${job.match_level || ""}</span>
         </div>
         <div class="industry-tag">${job.industry || ""}</div>
+        ${salaryHTML}
         <div class="job-reason">${job.reason || ""}</div>
       `;
+      
+      // 添加点击跳转事件
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        try {
+          const jobTitle = encodeURIComponent(job.title || '');
+          const city = job.salary_range?.city || d.city || '';
+          const cityParam = city && city !== '全国' ? `&city=${encodeURIComponent(city)}` : '';
+          const bossUrl = `https://www.zhipin.com/job_detail/?query=${jobTitle}${cityParam}`;
+          window.open(bossUrl, '_blank');
+        } catch (error) {
+          console.error('Failed to open job portal:', error);
+          // 降级：使用不带城市参数的URL
+          const fallbackUrl = `https://www.zhipin.com/job_detail/?query=${encodeURIComponent(job.title || '')}`;
+          window.open(fallbackUrl, '_blank');
+        }
+      });
+      
       jobsEl.appendChild(card);
     });
 
