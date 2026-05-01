@@ -560,12 +560,12 @@
 
     <div id="dropzone" class="dropzone">
       <div class="icon">📄</div>
-      <div class="dz-text">拖拽文件到这里</div>
-      <div class="dz-hint">或点击下方选择文件</div>
+      <div class="dz-text">点击选择文件或拖拽到这里</div>
+      <div class="dz-hint">支持 PDF / DOCX 格式</div>
+      <input id="fileInput" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;" />
     </div>
 
     <div class="file-input-row">
-      <input id="fileInput" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
       <div id="fileName" class="file-name">未选择文件</div>
       <button id="uploadBtn" class="btn-upload" disabled>开始解析</button>
     </div>
@@ -789,6 +789,11 @@
     const f = e.dataTransfer.files[0];
     if (!f || !validFile(f)) { statusMsg.textContent = "仅支持 .pdf / .docx 文件"; statusMsg.className = "status-msg error"; return; }
     setFile(f);
+  });
+
+  // 点击拖拽区域触发文件选择
+  dropzone.addEventListener("click", () => {
+    fileInput.click();
   });
 
   function renderResult(data) {
