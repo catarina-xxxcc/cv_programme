@@ -67,7 +67,7 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: #FFFFFF;
+      background: #FFF9FB;
       color: var(--gray-800);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
@@ -75,7 +75,7 @@
       position: relative;
     }
 
-    /* 背景装饰 - 淡淡的樱花粉点缀 */
+    /* 背景装饰 - 樱花粉点缀 */
     body::before {
       content: '';
       position: fixed;
@@ -83,7 +83,7 @@
       right: -10%;
       width: 600px;
       height: 600px;
-      background: radial-gradient(circle, rgba(255, 183, 197, 0.03) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 183, 197, 0.08) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none;
       z-index: 0;
@@ -97,7 +97,7 @@
       left: -10%;
       width: 500px;
       height: 500px;
-      background: radial-gradient(circle, rgba(255, 228, 233, 0.03) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 228, 233, 0.08) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none;
       z-index: 0;
@@ -432,14 +432,17 @@
     .status-msg.ok {
       color: var(--success);
     }
-      align-items: center; justify-content: center;
-      height: 100%; min-height: 320px;
-      color: #c8d5e0; gap: 10px;
-    }
-    .result-empty .empty-icon { font-size: 40px; opacity: 0.5; }
-    .result-empty p { font-size: 13px; color: var(--ink-4); }
 
-    .result-content { display: none; }
+    /* 结果面板 */
+    .result-panel {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow);
+      border: 2px solid var(--gray-200);
+    }
+
+    .result-content { display: block; }
 
     /* MBTI 人格区 */
     .mbti-section {
@@ -657,7 +660,7 @@
 
     /* ── 聊天区域 ── */
     .chat-section {
-      max-width: 1160px;
+      max-width: 1200px;
       margin: 0 auto 40px;
       padding: 0 24px;
     }
@@ -903,11 +906,6 @@
 
   <!-- 右侧：结果 -->
   <div class="result-panel">
-    <div id="resultEmpty" class="result-empty">
-      <div class="empty-icon">🔍</div>
-      <p>上传简历后，解析结果将在这里展示</p>
-    </div>
-
     <div id="resultContent" class="result-content">
 
       <!-- MBTI 人格 -->
@@ -918,9 +916,9 @@
             <span class="label">MBTI</span>
             <span id="mbtiValue">—</span>
           </div>
-          <div id="mbtiName" class="mbti-name"></div>
+          <div id="mbtiName" class="mbti-name">上传简历后显示</div>
           <div id="mbtiTraits" class="mbti-traits"></div>
-          <div id="mbtiDesc" class="mbti-desc"></div>
+          <div id="mbtiDesc" class="mbti-desc">AI 将根据你的简历内容推断你的 MBTI 人格类型</div>
         </div>
       </div>
 
@@ -931,11 +929,48 @@
       </div>
 
       <!-- 候选人简介 -->
-      <div class="summary-box" id="summaryText"></div>
+      <div class="summary-box" id="summaryText">上传简历后，这里将显示你的候选人简介...</div>
 
       <!-- 岗位推荐 -->
       <div class="section-title">推荐岗位</div>
-      <div id="jobsGrid" class="jobs-grid"></div>
+      <div id="jobsGrid" class="jobs-grid">
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 1</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 2</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 3</div>
+            <span class="match-badge match-mid">中</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -1094,8 +1129,8 @@
 
     // MBTI 徽章 + 名称
     document.getElementById("mbtiValue").textContent = mbti || "—";
-    document.getElementById("mbtiName").textContent = MBTI_NAMES[mbti] ? `${MBTI_NAMES[mbti]}` : "";
-    document.getElementById("mbtiDesc").textContent = d.mbti_description || "";
+    document.getElementById("mbtiName").textContent = MBTI_NAMES[mbti] ? `${MBTI_NAMES[mbti]}` : "上传简历后显示";
+    document.getElementById("mbtiDesc").textContent = d.mbti_description || "AI 将根据你的简历内容推断你的 MBTI 人格类型";
 
     // 特质标签 + 解读
     const detail = MBTI_DETAIL[mbti];
@@ -1131,12 +1166,14 @@
     }
 
     // 简介
-    document.getElementById("summaryText").textContent = d.candidate_summary || "";
+    document.getElementById("summaryText").textContent = d.candidate_summary || "上传简历后，这里将显示你的候选人简介...";
 
     // 岗位推荐
     const jobsEl = document.getElementById("jobsGrid");
     jobsEl.innerHTML = "";
-    (d.job_recommendations || []).forEach(job => {
+    const jobs = d.job_recommendations || [];
+    if (jobs.length > 0) {
+      jobs.forEach(job => {
       const card = document.createElement("div");
       card.className = "job-card";
       const matchClass = job.match_level === "高" ? "match-high" : "match-mid";
@@ -1182,10 +1219,48 @@
       });
       
       jobsEl.appendChild(card);
-    });
-
-    resultEmpty.style.display = "none";
-    resultContent.style.display = "block";
+      });
+    } else {
+      // 显示空状态的岗位卡片
+      jobsEl.innerHTML = `
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 1</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 2</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 3</div>
+            <span class="match-badge match-mid">中</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+      `;
+    }
 
     // 简历诊断
     const diag = d.resume_diagnosis || {};
