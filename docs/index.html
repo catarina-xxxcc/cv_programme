@@ -67,17 +67,15 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: var(--sakura-gradient);
-      background-attachment: fixed;
+      background: #FFFFFF;
       color: var(--gray-800);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       position: relative;
-      overflow-x: hidden;
     }
 
-    /* 背景装饰 - 樱花花瓣 */
+    /* 背景装饰 - 淡淡的樱花粉点缀 */
     body::before {
       content: '';
       position: fixed;
@@ -85,10 +83,11 @@
       right: -10%;
       width: 600px;
       height: 600px;
-      background: radial-gradient(circle, rgba(255, 183, 197, 0.15) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 183, 197, 0.03) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none;
       z-index: 0;
+      animation: float 20s ease-in-out infinite;
     }
 
     body::after {
@@ -98,10 +97,17 @@
       left: -10%;
       width: 500px;
       height: 500px;
-      background: radial-gradient(circle, rgba(255, 228, 233, 0.2) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 228, 233, 0.03) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none;
       z-index: 0;
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
     }
 
     /* 顶部导航栏 */
@@ -155,11 +161,11 @@
     /* 主布局 */
     .layout {
       display: grid;
-      grid-template-columns: 420px 1fr;
-      gap: var(--space-lg);
-      max-width: 1280px;
-      margin: var(--space-2xl) auto;
-      padding: 0 var(--space-lg);
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px;
       align-items: start;
       position: relative;
       z-index: 1;
@@ -168,9 +174,7 @@
     .left-col {
       display: flex;
       flex-direction: column;
-      gap: var(--space-md);
-      position: sticky;
-      top: 96px;
+      gap: 16px;
     }
 
     /* 卡片基础样式 */
@@ -199,18 +203,19 @@
 
     .upload-panel h2 {
       font-family: 'Noto Serif SC', serif;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: var(--gray-800);
-      margin-bottom: var(--space-xs);
+      color: var(--gray-900);
+      margin-bottom: 4px;
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      gap: 8px;
+      letter-spacing: 0.5px;
     }
 
     .upload-panel h2::before {
       content: '🌸';
-      font-size: 24px;
+      font-size: 26px;
     }
 
     .upload-panel .sub {
@@ -473,8 +478,13 @@
       text-transform: uppercase;
     }
     .mbti-name {
-      font-size: 20px; font-weight: 700;
-      color: var(--ink); letter-spacing: -0.3px; margin-bottom: 8px;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      line-height: 1.2;
     }
     .mbti-desc { font-size: 13px; color: var(--ink-3); line-height: 1.6; }
 
@@ -542,8 +552,11 @@
       align-items: flex-start; margin-bottom: 6px;
     }
     .job-card .job-title {
-      font-size: 13px; font-weight: 600;
-      color: var(--ink); line-height: 1.3;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      line-height: 1.4;
+      letter-spacing: 0.2px;
     }
     .job-card .match-badge {
       font-size: 10px; font-weight: 700; padding: 2px 7px;
@@ -565,23 +578,24 @@
     .job-salary {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin: 6px 0;
+      gap: 8px;
+      margin: 8px 0;
     }
     .salary-amount {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--brand);
-      letter-spacing: 0.2px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--sakura-primary);
+      letter-spacing: 0.3px;
+      font-family: 'Inter', sans-serif;
     }
     .salary-city {
-      font-size: 10px;
-      font-weight: 500;
-      color: var(--ink-4);
-      background: var(--surface);
-      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-600);
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
       border-radius: 4px;
-      padding: 2px 6px;
+      padding: 3px 8px;
     }
 
     /* ── 简历诊断卡片 ── */
