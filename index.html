@@ -1009,10 +1009,9 @@
   </div>
 </div>
 
-<script src="./config.js"></script>
 <script>
-  const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
-  const API_BASE_URL = (window.APP_CONFIG?.API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
+  // API配置 - 直接写在这里，不依赖外部config.js
+  const API_BASE_URL = "https://cv-programme.onrender.com";
 
   // MBTI 中文名称映射
   const MBTI_NAMES = {
