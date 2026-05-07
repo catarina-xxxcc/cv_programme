@@ -163,7 +163,7 @@
       display: grid;
       grid-template-columns: 400px 1fr;
       gap: 24px;
-      max-width: 1200px;
+      max-width: 1600px;
       margin: 32px auto;
       padding: 0 24px;
       align-items: start;
@@ -446,7 +446,8 @@
 
     /* MBTI 人格区 */
     .mbti-section {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       gap: 20px;
       align-items: flex-start;
       padding-bottom: 24px;
@@ -503,7 +504,8 @@
     .insight-box {
       border-radius: 10px;
       padding: 14px 16px;
-      margin-bottom: 20px;
+      min-width: 300px;
+      max-width: 400px;
     }
     .insight-title {
       font-size: 11px; font-weight: 700;
@@ -512,14 +514,9 @@
     }
     .insight-text { font-size: 13px; line-height: 1.75; }
 
-    /* 候选人简介 */
+    /* 候选人简介 - 隐藏 */
     .summary-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px; font-size: 13px;
-      color: var(--ink-2); line-height: 1.75;
-      margin-bottom: 24px;
+      display: none;
     }
 
     /* 岗位推荐 */
@@ -744,7 +741,7 @@
 
     /* ── 聊天区域 ── */
     .chat-section {
-      max-width: 1200px;
+      max-width: 1600px;
       margin: 0 auto 40px;
       padding: 0 24px;
     }
@@ -1004,16 +1001,15 @@
           <div id="mbtiTraits" class="mbti-traits"></div>
           <div id="mbtiDesc" class="mbti-desc">AI 将根据你的简历内容推断你的 MBTI 人格类型</div>
         </div>
+        <!-- 人格深度解读 - 移到右边 -->
+        <div id="mbtiInsightBox" class="insight-box" style="display:none">
+          <div class="insight-title">✦ 人格解读</div>
+          <div id="mbtiInsight" class="insight-text"></div>
+        </div>
       </div>
 
-      <!-- 人格深度解读 -->
-      <div id="mbtiInsightBox" class="insight-box" style="display:none">
-        <div class="insight-title">✦ 人格解读</div>
-        <div id="mbtiInsight" class="insight-text"></div>
-      </div>
-
-      <!-- 候选人简介 -->
-      <div class="summary-box" id="summaryText">上传简历后，这里将显示你的候选人简介...</div>
+      <!-- 候选人简介 - 隐藏 -->
+      <div class="summary-box" id="summaryText" style="display:none">上传简历后，这里将显示你的候选人简介...</div>
 
       <!-- 岗位推荐 -->
       <div class="section-title">推荐岗位</div>
