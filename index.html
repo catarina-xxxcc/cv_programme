@@ -1255,7 +1255,6 @@
   const progressStage = document.getElementById("progressStage");
   const progressPercent = document.getElementById("progressPercent");
   const progressBar = document.getElementById("progressBar");
-  const resultEmpty = document.getElementById("resultEmpty");
   const resultContent = document.getElementById("resultContent");
 
   let selectedFile = null;
@@ -1661,8 +1660,6 @@
     statusMsg.textContent = "正在解析，请稍候...";
     statusMsg.className = "status-msg";
     uploadBtn.disabled = true;
-    resultEmpty.style.display = "flex";
-    resultContent.style.display = "none";
     setProgress(0, "准备上传...");
 
     try {
