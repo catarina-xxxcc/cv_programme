@@ -1454,7 +1454,7 @@
           } catch { reject(new Error("服务返回格式异常")); }
         };
         xhr.onerror = () => { clearTimer(); reject(new Error("网络错误，上传失败")); };
-        xhr.timeout = 180000;
+        xhr.timeout = 300000;
         xhr.ontimeout = () => { clearTimer(); reject(new Error("请求超时，请稍后重试")); };
         xhr.open("POST", `${API_BASE_URL}/upload`);
         xhr.send(formData);
