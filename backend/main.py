@@ -18,7 +18,7 @@ load_dotenv()
 
 MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", "5"))
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
-DEFAULT_ALLOWED_ORIGINS = "http://localhost:3000,http://127.0.0.1:3000,https://catarina-xxxcc.github.io,https://cv-programme-git-main-catarina-xxxccs-projects.vercel.app"
+DEFAULT_ALLOWED_ORIGINS = "http://localhost:3000,http://127.0.0.1:3000,https://catarina-xxxcc.github.io,https://cv-programme-git-main-catarina-xxxccs-projects.vercel.app,file://"
 ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", DEFAULT_ALLOWED_ORIGINS).split(",") if origin.strip()]
 ALLOWED_MIME_TYPES = {
     "application/pdf",
@@ -30,7 +30,7 @@ FRONTEND_DEMO_PATH = Path(__file__).resolve().parent.parent / "frontend" / "inde
 app = FastAPI(title="小小求职拿下！- AI 简历解析与 MBTI 引擎")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],  # 临时允许所有源，方便测试
     allow_methods=["*"],
     allow_headers=["*"],
 )
