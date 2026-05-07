@@ -4,7 +4,8 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    rootDir: backend
     envVars:
       - key: ZHIPU_API_KEY
         sync: false
@@ -13,4 +14,4 @@ services:
       - key: MAX_FILE_SIZE_MB
         value: 5
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: https://catarina-xxxcc.github.io,https://cv-programme-git-main-catarina-xxxccs-projects.vercel.app
