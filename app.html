@@ -537,7 +537,6 @@
       border-radius: 10px;
       padding: 16px;
       transition: all 0.18s;
-      cursor: pointer;
       background: var(--white);
       display: flex;
       flex-direction: column;
@@ -1431,7 +1430,7 @@
           // 组装完整卡片HTML
           card.innerHTML = `
             <div class="job-header">
-              <div class="job-title">${job.title || ""}</div>
+              <div class="job-title" data-job-title="${job.title || ""}" data-city="${job.salary_range?.city || d.city || ''}" style="cursor: pointer; text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color 0.2s;">${job.title || ""}</div>
               <div class="match-badge-wrapper">
                 <span class="match-percentage">${matchScore}%</span>
                 <span class="match-badge ${matchInfo.class}">${matchInfo.level}</span>
@@ -1444,22 +1443,31 @@
             ${careerPathHTML}
           `;
           
-          // 添加点击跳转事件
-          card.style.cursor = 'pointer';
-          card.addEventListener('click', () => {
-            try {
-              const jobTitle = encodeURIComponent(job.title || '');
-              const city = job.salary_range?.city || d.city || '';
-              const cityParam = city && city !== '全国' ? `&city=${encodeURIComponent(city)}` : '';
-              const bossUrl = `https://www.zhipin.com/job_detail/?query=${jobTitle}${cityParam}`;
-              window.open(bossUrl, '_blank');
-            } catch (error) {
-              console.error('Failed to open job portal:', error);
-              // 降级：使用不带城市参数的URL
-              const fallbackUrl = `https://www.zhipin.com/job_detail/?query=${encodeURIComponent(job.title || '')}`;
-              window.open(fallbackUrl, '_blank');
-            }
-          });
+          // 只给岗位名称添加点击跳转事件
+          const jobTitleEl = card.querySelector('.job-title');
+          if (jobTitleEl) {
+            jobTitleEl.addEventListener('mouseenter', () => {
+              jobTitleEl.style.textDecorationColor = 'var(--sakura-primary)';
+            });
+            jobTitleEl.addEventListener('mouseleave', () => {
+              jobTitleEl.style.textDecorationColor = 'transparent';
+            });
+            jobTitleEl.addEventListener('click', (e) => {
+              e.stopPropagation(); // 防止事件冒泡
+              try {
+                const jobTitle = encodeURIComponent(job.title || '');
+                const city = job.salary_range?.city || d.city || '';
+                const cityParam = city && city !== '全国' ? `&city=${encodeURIComponent(city)}` : '';
+                const bossUrl = `https://www.zhipin.com/job_detail/?query=${jobTitle}${cityParam}`;
+                window.open(bossUrl, '_blank');
+              } catch (error) {
+                console.error('Failed to open job portal:', error);
+                // 降级：使用不带城市参数的URL
+                const fallbackUrl = `https://www.zhipin.com/job_detail/?query=${encodeURIComponent(job.title || '')}`;
+                window.open(fallbackUrl, '_blank');
+              }
+            });
+          }
           
           jobsEl.appendChild(card);
         } catch (error) {
