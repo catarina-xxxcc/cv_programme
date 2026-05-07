@@ -96,8 +96,39 @@ def _parse_resume_with_ai(raw_text: str) -> dict[str, Any]:
 5) job_recommendations: 数组，推荐6个适合该候选人的岗位，覆盖不同行业，每项包含：
    - title: 岗位名称
    - industry: 所属行业（如：科技、金融、咨询、教育、创业、政府等）
-   - reason: 推荐理由（30字以内，结合简历技能和MBTI特质）
-   - match_level: 匹配度，"高" 或 "中"
+   
+   - match_score: 整数 0-100，匹配度分数【新增字段】
+     【计算规则】：
+     * 技能匹配度（40%权重）：候选人技能与岗位要求的重合度
+     * 工作经验匹配度（25%权重）：工作年限、项目经验与岗位要求的匹配度
+     * 教育背景匹配度（20%权重）：学历、专业与岗位要求的匹配度
+     * MBTI人格匹配度（15%权重）：人格特质与岗位特点的契合度
+     * 综合计算后取整，范围0-100
+     * 示例：技能高度匹配的技术岗位85-95分，跨行业转型岗位60-75分
+   
+   - reason: 推荐理由（30-50字，结合简历技能和MBTI特质）
+   
+   - missing_skills: 数组，候选人缺失的关键技能（0-5个）【新增字段】
+     【识别规则】：
+     * 只包含岗位要求中重要但候选人简历未体现的技能
+     * 按重要性排序（核心技能优先）
+     * 如果候选人技能完全满足岗位要求，返回空数组 []
+     * 避免列出过于基础或通用的技能
+     * 示例：["Docker", "Kubernetes", "微服务架构"]
+   
+   - career_path: 字符串，该岗位的职业成长路径（60-100字）【新增字段】
+     【生成规则】：
+     * 包含2-4个职业发展阶段，描述从当前岗位到高级岗位的晋升路线
+     * 使用具体岗位名称（如："初级产品经理 → 产品经理 → 高级产品经理 → 产品总监"）
+     * 基于行业标准和岗位特点，确保真实可行
+     * 简洁明了，突出晋升路线和技能成长
+     * 示例：
+       - 技术岗："初级算法工程师 → 算法工程师 → 高级算法工程师 → 算法专家/技术总监"
+       - 产品岗："产品助理 → 产品经理 → 高级产品经理 → 产品总监"
+       - 运营岗："运营专员 → 运营经理 → 高级运营经理 → 运营总监"
+   
+   - match_level: 匹配度，"高" 或 "中"（保留字段，用于向后兼容）
+   
    - salary_range: 对象，该岗位的薪资范围，包含：
      * min_salary: 整数，最低月薪（单位：千元，如 15 表示 15K）
      * max_salary: 整数，最高月薪（单位：千元，如 25 表示 25K）
@@ -189,6 +220,84 @@ J vs P：
         messages=[{"role": "user", "content": prompt}],
     )
     return _to_json_with_fallback(response.choices[0].message.content)
+
+
+def _validate_and_set_defaults(parsed_data: dict[str, Any]) -> dict[str, Any]:
+    """
+    验证AI返回的数据，为缺失字段设置默认值
+    
+    Args:
+        parsed_data: AI返回的原始数据
+        
+    Returns:
+        验证并补全后的数据
+        
+    Default Values:
+        - match_score: 70 (如果缺失或无效)
+        - missing_skills: [] (如果缺失)
+        - career_path: "" (如果缺失)
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # 验证job_recommendations字段存在
+        if "job_recommendations" not in parsed_data:
+            logger.warning("Missing job_recommendations field in parsed data")
+            return parsed_data
+        
+        jobs = parsed_data["job_recommendations"]
+        if not isinstance(jobs, list):
+            logger.warning("job_recommendations is not a list")
+            return parsed_data
+        
+        # 验证每个岗位推荐对象
+        for i, job in enumerate(jobs):
+            if not isinstance(job, dict):
+                logger.warning(f"Job recommendation {i} is not a dict")
+                continue
+            
+            job_title = job.get('title', f'Job {i}')
+            
+            # 验证match_score
+            if "match_score" not in job or not isinstance(job["match_score"], int):
+                logger.warning(f"Invalid match_score for job '{job_title}', using default 70")
+                job["match_score"] = 70
+            elif job["match_score"] < 0 or job["match_score"] > 100:
+                logger.warning(f"match_score out of range for job '{job_title}', clamping to 0-100")
+                job["match_score"] = max(0, min(100, job["match_score"]))
+            
+            # 验证missing_skills
+            if "missing_skills" not in job or not isinstance(job["missing_skills"], list):
+                logger.warning(f"Invalid missing_skills for job '{job_title}', using empty array")
+                job["missing_skills"] = []
+            else:
+                # 过滤无效技能，限制数量
+                valid_skills = [
+                    skill for skill in job["missing_skills"]
+                    if isinstance(skill, str) and skill.strip()
+                ]
+                if len(valid_skills) > 5:
+                    logger.warning(f"Too many missing_skills for job '{job_title}', limiting to 5")
+                    valid_skills = valid_skills[:5]
+                job["missing_skills"] = valid_skills
+            
+            # 验证career_path
+            if "career_path" not in job or not isinstance(job["career_path"], str):
+                logger.warning(f"Invalid career_path for job '{job_title}', using empty string")
+                job["career_path"] = ""
+            else:
+                # 截断过长文本
+                if len(job["career_path"]) > 100:
+                    logger.warning(f"career_path too long for job '{job_title}', truncating to 100 chars")
+                    job["career_path"] = job["career_path"][:100]
+        
+        return parsed_data
+    
+    except Exception as e:
+        logger.error(f"Data validation failed: {e}")
+        # 返回原始数据，不抛出异常，确保系统继续运行
+        return parsed_data
 
 
 SYSTEM_PROMPT = """你是一个专业的求职顾问和简历写作专家。你的任务是通过友好的对话，帮助没有简历的用户生成一份专业的简历。
@@ -307,10 +416,14 @@ async def upload_resume(file: UploadFile = File(...)) -> dict[str, Any]:
             raise HTTPException(status_code=400, detail="No readable text found in the uploaded file.")
 
         parsed = _parse_resume_with_ai(raw_text)
+        
+        # 验证并设置默认值
+        validated_data = _validate_and_set_defaults(parsed)
+        
         return {
             "filename": filename,
             "parse_status": "success",
-            "parsed_data": parsed,
+            "parsed_data": validated_data,
             "message": "Resume parsed and structured successfully.",
         }
     except HTTPException:

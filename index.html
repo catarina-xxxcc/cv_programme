@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <title>小小求职拿下 ✦ AI 简历解析 v2</title>
+  <title>小小求职拿下 ✦ AI 简历解析</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;600;700&display=swap');
 
@@ -571,6 +568,23 @@
     }
     .match-high { background: #dcfce7; color: #15803d; }
     .match-mid { background: #fef9c3; color: #a16207; }
+    .match-low { background: var(--gray-200); color: var(--gray-600); }
+
+    /* 匹配度徽章 - 新增大号设计 */
+    .match-badge-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .match-percentage {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--sakura-primary);
+      font-family: 'Inter', sans-serif;
+      line-height: 1;
+    }
 
     .job-card .industry-tag {
       display: inline-block; font-size: 10px; font-weight: 500;
@@ -580,6 +594,77 @@
       margin-bottom: 7px;
     }
     .job-card .job-reason { font-size: 11px; color: var(--ink-4); line-height: 1.5; }
+
+    /* 信息分组样式 - 新增 */
+    .job-section {
+      display: flex;
+      gap: 10px;
+      padding: 12px;
+      background: var(--sakura-lighter);
+      border-radius: var(--radius-sm);
+      margin-top: 10px;
+    }
+
+    .section-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-600);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-content {
+      flex: 1;
+    }
+
+    /* 技能标签样式 - 新增 */
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .skill-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      background: var(--white);
+      border: 1.5px solid var(--sakura-primary);
+      color: var(--sakura-dark);
+      border-radius: 999px;
+    }
+
+    .skill-complete {
+      font-size: 12px;
+      color: #15803d;
+      font-weight: 600;
+    }
+
+    /* 成长路径样式 - 新增 */
+    .career-path {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .path-stage {
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .path-arrow {
+      color: var(--sakura-primary);
+      font-weight: 700;
+    }
 
     /* 薪资信息样式 */
     .job-salary {
@@ -659,6 +744,20 @@
     @media (max-width: 560px) {
       .jobs-grid { grid-template-columns: 1fr; }
       .mbti-section { flex-direction: column; }
+      
+      /* 响应式：匹配度和成长路径 */
+      .match-percentage {
+        font-size: 20px;
+      }
+      
+      .career-path {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .path-arrow {
+        transform: rotate(90deg);
+      }
     }
 
     /* ── 聊天区域 ── */
@@ -1012,9 +1111,10 @@
   </div>
 </div>
 
+<script src="./config.js"></script>
 <script>
-  // API配置 - 直接写在这里，不依赖外部config.js
-  const API_BASE_URL = "https://cv-programme.onrender.com";
+  const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
+  const API_BASE_URL = (window.APP_CONFIG?.API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
 
   // MBTI 中文名称映射
   const MBTI_NAMES = {
@@ -1043,6 +1143,88 @@
     ESTP: { color: "#ea580c", bg: "#fff7ed", traits: ["行动力强", "善于交际", "把握机遇", "现实主义"], insight: "ESTP 是充满活力的实干家，善于在瞬息万变的环境中把握机遇。他们反应敏捷、善于交际，喜欢直接面对挑战，在销售、创业和需要快速决策的场景中表现亮眼。" },
     ESFP: { color: "#7c3aed", bg: "#f5f3ff", traits: ["活泼开朗", "善于表演", "享受当下", "感染力强"], insight: "ESFP 是天生的表演者，以热情、幽默和强大的感染力著称。他们享受与人互动，善于活跃气氛，在需要展示、沟通和娱乐的场合总能成为焦点。" },
   };
+
+  // ========== 辅助函数：岗位推荐增强 ==========
+  
+  /**
+   * 获取匹配度等级
+   * @param {number} score - 匹配度分数 (0-100)
+   * @returns {{level: string, class: string}} 匹配等级和CSS类名
+   */
+  function getMatchLevel(score) {
+    if (score >= 80) return { level: '高匹配', class: 'match-high' };
+    if (score >= 60) return { level: '中匹配', class: 'match-mid' };
+    return { level: '低匹配', class: 'match-low' };
+  }
+
+  /**
+   * 渲染缺失技能
+   * @param {string[]} skills - 缺失技能数组
+   * @returns {string} HTML字符串
+   */
+  function renderMissingSkills(skills) {
+    if (!skills || skills.length === 0) {
+      return '<div class="skill-complete">技能完全匹配 ✓</div>';
+    }
+    return skills.map(skill => 
+      `<span class="skill-tag">${skill}</span>`
+    ).join('');
+  }
+
+  /**
+   * 渲染成长路径
+   * @param {string} pathText - 成长路径文本
+   * @returns {string} HTML字符串
+   */
+  function renderCareerPath(pathText) {
+    if (!pathText || pathText.trim() === '') return '';
+    
+    // 将文本按箭头分割为阶段
+    const stages = pathText.split(/[→>]/);
+    return stages.map((stage, index) => `
+      <span class="path-stage">${stage.trim()}</span>
+      ${index < stages.length - 1 ? '<span class="path-arrow">→</span>' : ''}
+    `).join('');
+  }
+
+  /**
+   * 验证岗位数据
+   * @param {Object} job - 岗位数据对象
+   * @returns {boolean} 是否有效
+   */
+  function validateJobData(job) {
+    // 验证必需字段
+    if (!job.title || !job.industry) {
+      console.warn('Missing required fields in job data:', job);
+      return false;
+    }
+    
+    // 验证并修正match_score
+    if (typeof job.match_score !== 'number' || job.match_score < 0 || job.match_score > 100) {
+      console.warn(`Invalid match_score: ${job.match_score}, using default 70`);
+      job.match_score = 70;
+    }
+    
+    // 验证并修正missing_skills
+    if (!Array.isArray(job.missing_skills)) {
+      console.warn('missing_skills is not an array, using empty array');
+      job.missing_skills = [];
+    } else {
+      job.missing_skills = job.missing_skills
+        .filter(skill => typeof skill === 'string' && skill.trim())
+        .slice(0, 5);
+    }
+    
+    // 验证并修正career_path
+    if (typeof job.career_path !== 'string') {
+      console.warn('career_path is not a string, using empty string');
+      job.career_path = '';
+    }
+    
+    return true;
+  }
+
+  // ========== 结束：辅助函数 ==========
 
   // 16personalities 人物图片（使用官方 CDN）
   const MBTI_IMAGES = {
@@ -1073,6 +1255,7 @@
   const progressStage = document.getElementById("progressStage");
   const progressPercent = document.getElementById("progressPercent");
   const progressBar = document.getElementById("progressBar");
+  const resultEmpty = document.getElementById("resultEmpty");
   const resultContent = document.getElementById("resultContent");
 
   let selectedFile = null;
@@ -1175,52 +1358,104 @@
     const jobs = d.job_recommendations || [];
     if (jobs.length > 0) {
       jobs.forEach(job => {
-      const card = document.createElement("div");
-      card.className = "job-card";
-      const matchClass = job.match_level === "高" ? "match-high" : "match-mid";
-      
-      // 构建薪资显示HTML
-      let salaryHTML = '';
-      if (job.salary_range && job.salary_range.min_salary && job.salary_range.max_salary) {
-        const salaryText = `${job.salary_range.min_salary}-${job.salary_range.max_salary}K`;
-        const cityText = job.salary_range.city || '全国';
-        salaryHTML = `
-          <div class="job-salary">
-            <span class="salary-amount">${salaryText}</span>
-            <span class="salary-city">${cityText}</span>
-          </div>
-        `;
-      }
-      
-      card.innerHTML = `
-        <div class="job-header">
-          <div class="job-title">${job.title || ""}</div>
-          <span class="match-badge ${matchClass}">${job.match_level || ""}</span>
-        </div>
-        <div class="industry-tag">${job.industry || ""}</div>
-        ${salaryHTML}
-        <div class="job-reason">${job.reason || ""}</div>
-      `;
-      
-      // 添加点击跳转事件
-      card.style.cursor = 'pointer';
-      card.addEventListener('click', () => {
         try {
-          const jobTitle = encodeURIComponent(job.title || '');
-          const city = job.salary_range?.city || d.city || '';
-          const cityParam = city && city !== '全国' ? `&city=${encodeURIComponent(city)}` : '';
-          const bossUrl = `https://www.zhipin.com/job_detail/?query=${jobTitle}${cityParam}`;
-          window.open(bossUrl, '_blank');
+          // 验证数据
+          if (!validateJobData(job)) {
+            console.warn('Skipping invalid job card:', job);
+            return;
+          }
+          
+          const card = document.createElement("div");
+          card.className = "job-card";
+          
+          // 获取匹配度等级
+          const matchLevel = getMatchLevel(job.match_score || 70);
+          
+          // 构建薪资显示HTML
+          let salaryHTML = '';
+          if (job.salary_range && job.salary_range.min_salary && job.salary_range.max_salary) {
+            const salaryText = `${job.salary_range.min_salary}-${job.salary_range.max_salary}K`;
+            const cityText = job.salary_range.city || '全国';
+            salaryHTML = `
+              <div class="job-salary">
+                <span class="salary-amount">${salaryText}</span>
+                <span class="salary-city">${cityText}</span>
+              </div>
+            `;
+          }
+          
+          // 构建缺失技能HTML
+          const missingSkillsHTML = renderMissingSkills(job.missing_skills);
+          
+          // 构建成长路径HTML
+          const careerPathHTML = renderCareerPath(job.career_path);
+          const careerPathSection = careerPathHTML ? `
+            <div class="job-section">
+              <div class="section-icon">🚀</div>
+              <div class="section-content">
+                <div class="section-title">成长路径</div>
+                <div class="career-path">${careerPathHTML}</div>
+              </div>
+            </div>
+          ` : '';
+          
+          card.innerHTML = `
+            <div class="job-header">
+              <div class="job-title">${job.title || ""}</div>
+              <div class="match-badge-wrapper">
+                <span class="match-percentage">${job.match_score || 70}%</span>
+                <span class="match-badge ${matchLevel.class}">${matchLevel.level}</span>
+              </div>
+            </div>
+            <div class="industry-tag">${job.industry || ""}</div>
+            ${salaryHTML}
+            
+            <div class="job-section">
+              <div class="section-icon">💡</div>
+              <div class="section-content">
+                <div class="section-title">推荐原因</div>
+                <div class="job-reason">${job.reason || ""}</div>
+              </div>
+            </div>
+            
+            <div class="job-section">
+              <div class="section-icon">📚</div>
+              <div class="section-content">
+                <div class="section-title">需要学习</div>
+                <div class="skill-tags">${missingSkillsHTML}</div>
+              </div>
+            </div>
+            
+            ${careerPathSection}
+          `;
+          
+          // 添加点击跳转事件
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => {
+            try {
+              const jobTitle = encodeURIComponent(job.title || '');
+              const city = job.salary_range?.city || d.city || '';
+              const cityParam = city && city !== '全国' ? `&city=${encodeURIComponent(city)}` : '';
+              const bossUrl = `https://www.zhipin.com/job_detail/?query=${jobTitle}${cityParam}`;
+              window.open(bossUrl, '_blank');
+            } catch (error) {
+              console.error('Failed to open job portal:', error);
+              // 降级：使用不带城市参数的URL
+              const fallbackUrl = `https://www.zhipin.com/job_detail/?query=${encodeURIComponent(job.title || '')}`;
+              window.open(fallbackUrl, '_blank');
+            }
+          });
+          
+          jobsEl.appendChild(card);
         } catch (error) {
-          console.error('Failed to open job portal:', error);
-          // 降级：使用不带城市参数的URL
-          const fallbackUrl = `https://www.zhipin.com/job_detail/?query=${encodeURIComponent(job.title || '')}`;
-          window.open(fallbackUrl, '_blank');
+          console.error('Failed to render job card:', error, job);
         }
       });
       
-      jobsEl.appendChild(card);
-      });
+      // 如果所有卡片都渲染失败
+      if (jobsEl.children.length === 0) {
+        jobsEl.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--gray-500);">岗位数据加载失败</div>';
+      }
     } else {
       // 显示空状态的岗位卡片
       jobsEl.innerHTML = `
@@ -1426,6 +1661,8 @@
     statusMsg.textContent = "正在解析，请稍候...";
     statusMsg.className = "status-msg";
     uploadBtn.disabled = true;
+    resultEmpty.style.display = "flex";
+    resultContent.style.display = "none";
     setProgress(0, "准备上传...");
 
     try {
@@ -1453,7 +1690,7 @@
           } catch { reject(new Error("服务返回格式异常")); }
         };
         xhr.onerror = () => { clearTimer(); reject(new Error("网络错误，上传失败")); };
-        xhr.timeout = 300000;
+        xhr.timeout = 180000;
         xhr.ontimeout = () => { clearTimer(); reject(new Error("请求超时，请稍后重试")); };
         xhr.open("POST", `${API_BASE_URL}/upload`);
         xhr.send(formData);
@@ -1474,4 +1711,3 @@
 </script>
 </body>
 </html>
-<-10 Force rebuild Thu May  7 18:49:32 CST 2026 -->

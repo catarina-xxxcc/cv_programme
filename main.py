@@ -1,7 +1,438 @@
-from backend.main import app
+import io
+import json
+import os
+import re
+from pathlib import Path
+from typing import Any
+
+import fitz  # PyMuPDF
+from openai import OpenAI
+from docx import Document
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from pydantic import BaseModel
+
+load_dotenv()
+
+MAX_FILE_SIZE_MB = int(os.getenv("MAX_FILE_SIZE_MB", "5"))
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+DEFAULT_ALLOWED_ORIGINS = "http://localhost:3000,http://127.0.0.1:3000,https://catarina-xxxcc.github.io,https://cv-programme-git-main-catarina-xxxccs-projects.vercel.app,file://"
+ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", DEFAULT_ALLOWED_ORIGINS).split(",") if origin.strip()]
+ALLOWED_MIME_TYPES = {
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
+ALLOWED_EXTENSIONS = {".pdf", ".docx"}
+FRONTEND_DEMO_PATH = Path(__file__).resolve().parent.parent / "frontend" / "index.html"
+
+app = FastAPI(title="小小求职拿下！- AI 简历解析与 MBTI 引擎")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 临时允许所有源，方便测试
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+zhipu_api_key = os.getenv("ZHIPU_API_KEY", "").strip()
+if not zhipu_api_key:
+    raise RuntimeError("Missing ZHIPU_API_KEY. Add it to your environment or .env file.")
+client = OpenAI(api_key=zhipu_api_key, base_url="https://open.bigmodel.cn/api/paas/v4/")
+ZHIPU_MODEL = os.getenv("ZHIPU_MODEL", "glm-4-flash")
+
+
+def _file_extension(filename: str) -> str:
+    if not filename or "." not in filename:
+        return ""
+    return "." + filename.rsplit(".", 1)[-1].lower()
+
+
+def _extract_text(content_type: str, file_bytes: bytes) -> str:
+    raw_text = ""
+    if content_type == "application/pdf":
+        with fitz.open(stream=file_bytes, filetype="pdf") as doc:
+            for page in doc:
+                raw_text += page.get_text()
+    elif content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        doc = Document(io.BytesIO(file_bytes))
+        raw_text = "\n".join(para.text for para in doc.paragraphs)
+    return raw_text.strip()
+
+
+def _to_json_with_fallback(response_text: str) -> dict[str, Any]:
+    cleaned = response_text.strip()
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        pass
+
+    code_block_match = re.search(r"```json\s*(\{.*\})\s*```", cleaned, re.DOTALL)
+    if code_block_match:
+        return json.loads(code_block_match.group(1))
+
+    object_match = re.search(r"(\{.*\})", cleaned, re.DOTALL)
+    if object_match:
+        return json.loads(object_match.group(1))
+
+    raise ValueError("AI response is not valid JSON")
+
+
+def _parse_resume_with_ai(raw_text: str) -> dict[str, Any]:
+    prompt = f"""
+你是一个资深 HR 分析师、职业人格专家和严格的简历审查专家。请将简历解析为严格 JSON（不要使用 markdown 代码块）。
+
+【重要】你必须以高标准检查简历质量，仔细审查每一处表达，不要遗漏任何问题。诚实的反馈比礼貌的赞美更有价值。
+
+输出字段要求：
+1) inferred_mbti: 字符串，16型人格之一
+2) mbti_description: 字符串，对该 MBTI 人格的简短描述（60字以内，突出核心特质）
+3) candidate_summary: 字符串，基于简历内容的候选人简介（80字以内）
+4) city: 字符串，从简历中提取的城市信息（如："北京"、"上海"、"深圳"、"杭州"等）
+   - 如果简历中明确提及城市（如："北京市朝阳区"、"工作地点：上海"），提取城市名称
+   - 如果简历中未明确提及城市，返回空字符串 ""
+   - 只返回城市名称，不要包含"市"、"省"等后缀（如：返回"北京"而不是"北京市"）
+
+5) job_recommendations: 数组，推荐6个适合该候选人的岗位，覆盖不同行业，每项包含：
+   - title: 岗位名称
+   - industry: 所属行业（如：科技、金融、咨询、教育、创业、政府等）
+   
+   - match_score: 整数 0-100，匹配度分数【新增字段】
+     【计算规则】：
+     * 技能匹配度（40%权重）：候选人技能与岗位要求的重合度
+     * 工作经验匹配度（25%权重）：工作年限、项目经验与岗位要求的匹配度
+     * 教育背景匹配度（20%权重）：学历、专业与岗位要求的匹配度
+     * MBTI人格匹配度（15%权重）：人格特质与岗位特点的契合度
+     * 综合计算后取整，范围0-100
+     * 示例：技能高度匹配的技术岗位85-95分，跨行业转型岗位60-75分
+   
+   - reason: 推荐理由（30-50字，结合简历技能和MBTI特质）
+   
+   - missing_skills: 数组，候选人缺失的关键技能（0-5个）【新增字段】
+     【识别规则】：
+     * 只包含岗位要求中重要但候选人简历未体现的技能
+     * 按重要性排序（核心技能优先）
+     * 如果候选人技能完全满足岗位要求，返回空数组 []
+     * 避免列出过于基础或通用的技能
+     * 示例：["Docker", "Kubernetes", "微服务架构"]
+   
+   - career_path: 字符串，该岗位的职业成长路径（60-100字）【新增字段】
+     【生成规则】：
+     * 包含2-4个职业发展阶段，描述从当前岗位到高级岗位的晋升路线
+     * 使用具体岗位名称（如："初级产品经理 → 产品经理 → 高级产品经理 → 产品总监"）
+     * 基于行业标准和岗位特点，确保真实可行
+     * 简洁明了，突出晋升路线和技能成长
+     * 示例：
+       - 技术岗："初级算法工程师 → 算法工程师 → 高级算法工程师 → 算法专家/技术总监"
+       - 产品岗："产品助理 → 产品经理 → 高级产品经理 → 产品总监"
+       - 运营岗："运营专员 → 运营经理 → 高级运营经理 → 运营总监"
+   
+   - match_level: 匹配度，"高" 或 "中"（保留字段，用于向后兼容）
+   
+   - salary_range: 对象，该岗位的薪资范围，包含：
+     * min_salary: 整数，最低月薪（单位：千元，如 15 表示 15K）
+     * max_salary: 整数，最高月薪（单位：千元，如 25 表示 25K）
+     * city: 字符串，薪资对应的城市（使用上面提取的城市信息；如果城市为空，使用"全国"）
+   
+   【薪资推断规则】：
+   - 根据岗位名称、行业、城市和候选人背景推断2024-2025年的合理薪资范围
+   - 一线城市（北京、上海、深圳、杭州）薪资通常比二三线城市高 20-40%
+   - 技术岗位（算法工程师、后端开发、前端开发）通常高于运营、市场岗位
+   - 金融、互联网、AI行业通常高于传统行业
+   - 考虑候选人的教育背景和工作经验（应届生、1-3年、3-5年、5年以上）
+   - 薪资范围应该合理且符合市场行情，不要过高或过低
+   - 示例：
+     * 北京的算法工程师（3年经验）：25-40K
+     * 成都的算法工程师（3年经验）：18-30K
+     * 上海的产品经理（应届生）：12-18K
+     * 全国的市场专员（1年经验）：8-12K
+
+6) resume_diagnosis: 对象，对简历文本进行严格的质量诊断，包含：
+
+   - typos: 数组，发现的错别字。【检测标准】：
+     * 同音字错误（如："测式"应为"测试"，"沟通能里"应为"沟通能力"）
+     * 形近字错误（如："项日"应为"项目"）
+     * 多字/少字（如："的的项目"应为"的项目"）
+     * 标点错误（如：中文语境中使用英文逗号）
+     【要求】：仔细检查整个简历，每个错别字必须返回 {{"original": "原文片段(5-30字)", "suggestion": "正确写法"}}
+     【示例】：{{"original": "负责产品的测式工作", "suggestion": "负责产品的测试工作"}}
+
+   - grammar_issues: 数组，病句或语法问题。【检测标准】：
+     * 语序不当（如："使用了熟练Python"应为"熟练使用Python"）
+     * 成分残缺（如："负责开发"缺少宾语，应为"负责XX系统的开发"）
+     * 搭配不当（如："提高效率的增长"应为"提高效率"或"促进增长"）
+     * 表意不明（如："通过使用工具进行了工作"过于模糊）
+     * 冗长啰嗦（如："通过使用Python和数据分析工具进行了数据的分析"应为"使用Python进行数据分析"）
+     【要求】：关注动词搭配、介词使用、句子简洁性，每个问题必须返回 {{"original": "原句(10-40字)", "suggestion": "改进后的表达"}}
+     【示例】：{{"original": "通过使用Python进行了数据的分析", "suggestion": "使用Python进行数据分析"}}
+
+   - redundancy: 数组，语意冗杂或表达重复。【检测标准】：
+     * 重复词语（如："主要负责主要的项目"应为"负责主要的项目"）
+     * 重复表达（如："进行了优化和改进"可简化为"进行了优化"）
+     * 无意义修饰（如："非常很重要"应为"非常重要"）
+     * 可合并句子（如："负责开发。负责测试。"应为"负责开发和测试"）
+     【要求】：追求简洁有力的表达，每个冗余必须返回 {{"original": "冗余片段(10-40字)", "suggestion": "简化后的表达"}}
+     【示例】：{{"original": "主要负责主要的项目开发", "suggestion": "负责主要的项目开发"}}
+
+   - overall_score: 整数 1-100，简历整体质量评分。【评分标准】：
+     * 90-100分：无明显问题，表达专业简洁，用词准确
+     * 80-89分：有1-2个小问题，整体良好
+     * 70-79分：有3-5个问题，需要改进
+     * 60-69分：有6-10个问题，质量一般
+     * 60分以下：问题较多（>10个），需要大幅修改
+     【要求】：根据发现的问题数量严格评分，不要因为礼貌而虚高评分
+
+   - overall_comment: 字符串，一句话总体评价（30字以内）。
+     【要求】：如果有问题，必须明确指出（如："发现3处错别字和2处病句，建议仔细校对"）；如果质量优秀，可以正面评价（如："表达专业简洁，未发现明显问题"）
+
+【重要提示】：
+- 如果简历质量确实很好，typos/grammar_issues/redundancy 可以为空数组，overall_score 可以给 85-100 分
+- 但如果发现了问题，必须如实指出，不要遗漏，不要因为礼貌而隐瞒
+- original 字段必须是简历中的原文片段，不要编造
+- suggestion 必须是具体可行的修改建议，不要模糊表达
+
+如果信息缺失，请使用空字符串或空数组，不要省略字段。
+
+推断 inferred_mbti 时，规则如下，【软技能和行为描述的权重必须高于技术栈】：
+
+E vs I（外向 vs 内向）——这是最重要的维度，请仔细判断：
+- 只要简历中出现以下任意一项，必须判断为 E：
+  团队合作、公开演讲、演讲、领导力、组织活动、社团、部长、负责人、跨部门、客户沟通、培训、带领团队、主导、协调
+- 只有简历中完全没有上述信号，且明确描述独立工作、独自研究时，才判断为 I
+
+S vs N：
+- N：战略规划、创新、系统设计、跨领域、提出新方案
+- S：注重细节、流程执行、数据记录、操作规范
+
+T vs F：
+- F：关注团队氛围、帮助他人、志愿服务、用户体验、人文关怀
+- T：数据驱动、逻辑分析、优化效率、技术决策
+
+J vs P：
+- J：项目管理、按时交付、制定计划、结构化
+- P：灵活应变、多线并行、探索性、创意发散
+
+简历文本如下：
+{raw_text}
+"""
+    response = client.chat.completions.create(
+        model=ZHIPU_MODEL,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return _to_json_with_fallback(response.choices[0].message.content)
+
+
+def _validate_and_set_defaults(parsed_data: dict[str, Any]) -> dict[str, Any]:
+    """
+    验证AI返回的数据，为缺失字段设置默认值
+    
+    Args:
+        parsed_data: AI返回的原始数据
+        
+    Returns:
+        验证并补全后的数据
+        
+    Default Values:
+        - match_score: 70 (如果缺失或无效)
+        - missing_skills: [] (如果缺失)
+        - career_path: "" (如果缺失)
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # 验证job_recommendations字段存在
+        if "job_recommendations" not in parsed_data:
+            logger.warning("Missing job_recommendations field in parsed data")
+            return parsed_data
+        
+        jobs = parsed_data["job_recommendations"]
+        if not isinstance(jobs, list):
+            logger.warning("job_recommendations is not a list")
+            return parsed_data
+        
+        # 验证每个岗位推荐对象
+        for i, job in enumerate(jobs):
+            if not isinstance(job, dict):
+                logger.warning(f"Job recommendation {i} is not a dict")
+                continue
+            
+            job_title = job.get('title', f'Job {i}')
+            
+            # 验证match_score
+            if "match_score" not in job or not isinstance(job["match_score"], int):
+                logger.warning(f"Invalid match_score for job '{job_title}', using default 70")
+                job["match_score"] = 70
+            elif job["match_score"] < 0 or job["match_score"] > 100:
+                logger.warning(f"match_score out of range for job '{job_title}', clamping to 0-100")
+                job["match_score"] = max(0, min(100, job["match_score"]))
+            
+            # 验证missing_skills
+            if "missing_skills" not in job or not isinstance(job["missing_skills"], list):
+                logger.warning(f"Invalid missing_skills for job '{job_title}', using empty array")
+                job["missing_skills"] = []
+            else:
+                # 过滤无效技能，限制数量
+                valid_skills = [
+                    skill for skill in job["missing_skills"]
+                    if isinstance(skill, str) and skill.strip()
+                ]
+                if len(valid_skills) > 5:
+                    logger.warning(f"Too many missing_skills for job '{job_title}', limiting to 5")
+                    valid_skills = valid_skills[:5]
+                job["missing_skills"] = valid_skills
+            
+            # 验证career_path
+            if "career_path" not in job or not isinstance(job["career_path"], str):
+                logger.warning(f"Invalid career_path for job '{job_title}', using empty string")
+                job["career_path"] = ""
+            else:
+                # 截断过长文本
+                if len(job["career_path"]) > 100:
+                    logger.warning(f"career_path too long for job '{job_title}', truncating to 100 chars")
+                    job["career_path"] = job["career_path"][:100]
+        
+        return parsed_data
+    
+    except Exception as e:
+        logger.error(f"Data validation failed: {e}")
+        # 返回原始数据，不抛出异常，确保系统继续运行
+        return parsed_data
+
+
+SYSTEM_PROMPT = """你是一个专业的求职顾问和简历写作专家。你的任务是通过友好的对话，帮助没有简历的用户生成一份专业的简历。
+
+对话流程：
+1. 先了解用户的基本情况：姓名、学历、专业、毕业院校
+2. 了解工作经历或实习经历（如果是应届生则询问项目经历、社团经历）
+3. 了解技能特长（编程语言、软件工具、语言能力等）
+4. 了解求职意向（目标岗位、行业）
+5. 信息收集完毕后，主动说"我已经收集了足够的信息，现在为你生成简历模板"，然后输出简历
+
+输出简历时，使用以下 Markdown 格式，并在开头加上 [RESUME_TEMPLATE] 标记：
+
+[RESUME_TEMPLATE]
+# 姓名
+
+📧 邮箱 | 📱 电话 | 🎓 学校
+
+---
+
+## 教育背景
+**学校名称** · 专业 · 入学年份 - 毕业年份
+
+---
+
+## 技能
+- 技能1、技能2、技能3
+
+---
+
+## 实习 / 工作经历
+**公司名称** · 职位 · 时间段
+- 主要职责或成果描述
+
+---
+
+## 项目经历
+**项目名称** · 时间段
+- 项目描述和个人贡献
+
+---
+
+## 自我评价
+简短的自我介绍（2-3句话）
+
+注意：
+- 每次只问1-2个问题，不要一次问太多
+- 语气友好自然，像朋友聊天一样
+- 如果用户信息不完整，用合理的内容补充
+- 简历内容要专业、简洁、有力"""
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+
+
+@app.post("/chat")
+async def chat(request: ChatRequest) -> dict[str, Any]:
+    try:
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        for msg in request.messages:
+            messages.append({"role": msg.role, "content": msg.content})
+
+        response = client.chat.completions.create(
+            model=ZHIPU_MODEL,
+            messages=messages,
+        )
+        reply = response.choices[0].message.content
+
+        # 检测是否包含简历模板
+        has_resume = "[RESUME_TEMPLATE]" in reply
+        clean_reply = reply.replace("[RESUME_TEMPLATE]", "").strip()
+
+        return {
+            "reply": clean_reply,
+            "has_resume": has_resume,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Chat failed: {exc}") from exc
+    return {"message": "Resume AI API is ready."}
+
+
+@app.get("/demo")
+async def demo_page() -> FileResponse:
+    if not FRONTEND_DEMO_PATH.exists():
+        raise HTTPException(status_code=404, detail="Demo page not found.")
+    return FileResponse(FRONTEND_DEMO_PATH)
+
+
+@app.post("/upload")
+async def upload_resume(file: UploadFile = File(...)) -> dict[str, Any]:
+    content_type = file.content_type or ""
+    filename = file.filename or ""
+    ext = _file_extension(filename)
+
+    if content_type not in ALLOWED_MIME_TYPES or ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Only PDF and DOCX resumes are supported.")
+
+    file_bytes = await file.read()
+    if len(file_bytes) == 0:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    if len(file_bytes) > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Max allowed size is {MAX_FILE_SIZE_MB}MB.",
+        )
+
+    try:
+        raw_text = _extract_text(content_type, file_bytes)
+        if not raw_text:
+            raise HTTPException(status_code=400, detail="No readable text found in the uploaded file.")
+
+        parsed = _parse_resume_with_ai(raw_text)
+        
+        # 验证并设置默认值
+        validated_data = _validate_and_set_defaults(parsed)
+        
+        return {
+            "filename": filename,
+            "parse_status": "success",
+            "parsed_data": validated_data,
+            "message": "Resume parsed and structured successfully.",
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Parsing failed: {exc}") from exc
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
