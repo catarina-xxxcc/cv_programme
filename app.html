@@ -1,0 +1,1476 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>小小求职拿下 ✦ AI 简历解析 v2</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+    :root {
+      /* 樱花粉配色系统 */
+      --sakura-primary: #FFB7C5;
+      --sakura-light: #FFE4E9;
+      --sakura-lighter: #FFF5F7;
+      --sakura-dark: #FF9DB3;
+      --sakura-gradient: linear-gradient(135deg, #FFE4E9 0%, #FFF5F7 100%);
+      --sakura-gradient-hover: linear-gradient(135deg, #FFD4DC 0%, #FFE4E9 100%);
+      
+      /* 中性色 */
+      --white: #FFFFFF;
+      --gray-50: #FAFAFA;
+      --gray-100: #F5F5F5;
+      --gray-200: #E5E5E5;
+      --gray-300: #D4D4D4;
+      --gray-400: #A3A3A3;
+      --gray-500: #737373;
+      --gray-600: #525252;
+      --gray-700: #404040;
+      --gray-800: #262626;
+      --gray-900: #171717;
+      
+      /* 功能色 */
+      --success: #10B981;
+      --error: #EF4444;
+      --warning: #F59E0B;
+      --info: #3B82F6;
+      
+      /* 阴影系统 */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-sakura: 0 10px 30px -5px rgba(255, 183, 197, 0.3);
+      
+      /* 圆角系统 */
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+      
+      /* 间距系统 */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #FFF9FB;
+      color: var(--gray-800);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
+    }
+
+    /* 背景装饰 - 樱花粉点缀 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 183, 197, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -30%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 228, 233, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+
+    /* 顶部导航栏 */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 183, 197, 0.1);
+      padding: 0 var(--space-2xl);
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(255, 183, 197, 0.08);
+    }
+
+    header .logo {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FF9DB3 0%, #FFB7C5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    header .logo .sparkle {
+      font-size: 20px;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+      50% { opacity: 0.7; transform: scale(1.1) rotate(180deg); }
+    }
+
+    header .tagline {
+      font-size: 13px;
+      color: var(--gray-500);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    /* 主布局 */
+    .layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px;
+      align-items: start;
+      position: relative;
+      z-index: 1;
+    }
+
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 卡片基础样式 */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow);
+      border: 2px solid var(--gray-200);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-sakura);
+      transform: translateY(-2px);
+      border-color: var(--sakura-primary);
+    }
+
+    /* 上传面板 - 缩小尺寸 */
+    .upload-panel {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--gray-200);
+    }
+
+    .upload-panel h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .upload-panel h2::before {
+      content: '🌸';
+      font-size: 20px;
+    }
+
+    .upload-panel .sub {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    /* 拖拽区域 - 缩小 */
+    .dropzone {
+      border: 2px dashed var(--sakura-primary);
+      border-radius: var(--radius);
+      padding: 24px 16px;
+      text-align: center;
+      background: var(--sakura-lighter);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dropzone::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 228, 233, 0.5) 0%, rgba(255, 245, 247, 0.5) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .dropzone:hover::before,
+    .dropzone.dragging::before {
+      opacity: 1;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragging {
+      border-color: var(--sakura-primary);
+      background: var(--sakura-light);
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(255, 183, 197, 0.2);
+    }
+
+    .dropzone .icon {
+      font-size: 36px;
+      margin-bottom: 8px;
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .dropzone .dz-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dropzone .dz-hint {
+      font-size: 11px;
+      color: var(--gray-500);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 文件信息行 - 缩小 */
+    .file-input-row {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .file-name {
+      font-size: 12px;
+      color: var(--gray-600);
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gray-200);
+      padding: 8px 12px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .file-name:not(:empty) {
+      background: var(--sakura-lighter);
+      border-color: var(--sakura-primary);
+      color: var(--gray-700);
+      font-weight: 500;
+    }
+
+    /* 上传按钮 - 缩小 */
+    .btn-upload {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #FFB7C5 0%, #FF9DB3 100%);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(255, 183, 197, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-upload::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-upload:hover::before {
+      left: 100%;
+    }
+
+    .btn-upload:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 183, 197, 0.4);
+    }
+
+    .btn-upload:active {
+      transform: translateY(0);
+    }
+
+    .btn-upload:disabled {
+      background: var(--gray-300);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* 进度条 */
+    .progress-wrap {
+      margin-top: var(--space-md);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-bottom: var(--space-sm);
+      font-weight: 500;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: var(--gray-200);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #FFB7C5, #FF9DB3);
+      transition: width 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .status-msg {
+      margin-top: var(--space);
+      font-size: 13px;
+      color: var(--gray-600);
+      min-height: 20px;
+      font-weight: 500;
+    }
+
+    .status-msg.error {
+      color: var(--error);
+    }
+
+    .status-msg.ok {
+      color: var(--success);
+    }
+
+    /* 结果面板 */
+    .result-panel {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow);
+      border: 2px solid var(--gray-200);
+    }
+
+    .result-content { display: block; }
+
+    /* MBTI 人格区 */
+    .mbti-section {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .mbti-avatar {
+      width: 100px; height: 100px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--brand-light);
+      flex-shrink: 0;
+    }
+    .mbti-avatar-placeholder {
+      width: 100px; height: 100px;
+      border-radius: 12px;
+      background: var(--brand-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; flex-shrink: 0;
+    }
+    .mbti-info { flex: 1; padding-top: 2px; }
+    .mbti-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--brand-light);
+      border: 1px solid #a7f0e4; color: var(--brand-dark);
+      border-radius: 999px; padding: 5px 14px;
+      font-size: 18px; font-weight: 800; letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .mbti-badge .label {
+      font-size: 10px; font-weight: 600;
+      color: var(--brand); letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .mbti-name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    .mbti-desc { font-size: 13px; color: var(--ink-3); line-height: 1.6; }
+
+    .mbti-traits { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .mbti-trait {
+      font-size: 11px; font-weight: 500;
+      padding: 3px 9px; border-radius: 999px;
+      border: 1px solid currentColor;
+    }
+
+    /* 人格解读 */
+    .insight-box {
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .insight-title {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.6px; text-transform: uppercase;
+      margin-bottom: 7px; opacity: 0.7;
+    }
+    .insight-text { font-size: 13px; line-height: 1.75; }
+
+    /* 候选人简介 */
+    .summary-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px; font-size: 13px;
+      color: var(--ink-2); line-height: 1.75;
+      margin-bottom: 24px;
+    }
+
+    /* 岗位推荐 */
+    .section-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      color: var(--ink-4); margin-bottom: 12px;
+    }
+
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .job-card {
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 14px;
+      transition: all 0.18s;
+      cursor: pointer;
+      background: var(--white);
+    }
+    .job-card:hover {
+      border-color: var(--sakura-primary);
+      box-shadow: 0 4px 16px rgba(255,183,197,0.15);
+      transform: translateY(-2px);
+    }
+    .job-card:active {
+      transform: translateY(0);
+    }
+    .job-card .job-header {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; margin-bottom: 6px;
+    }
+    .job-card .job-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      line-height: 1.4;
+      letter-spacing: 0.2px;
+    }
+    .job-card .match-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 7px;
+      border-radius: 999px; flex-shrink: 0; margin-left: 6px;
+    }
+    .match-high { background: #dcfce7; color: #15803d; }
+    .match-mid { background: #fef9c3; color: #a16207; }
+
+    .job-card .industry-tag {
+      display: inline-block; font-size: 10px; font-weight: 500;
+      background: var(--surface); color: var(--ink-3);
+      border: 1px solid var(--border);
+      border-radius: 4px; padding: 2px 7px;
+      margin-bottom: 7px;
+    }
+    .job-card .job-reason { font-size: 11px; color: var(--ink-4); line-height: 1.5; }
+
+    /* 薪资信息样式 */
+    .job-salary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .salary-amount {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--sakura-primary);
+      letter-spacing: 0.3px;
+      font-family: 'Inter', sans-serif;
+    }
+    .salary-city {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-600);
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      padding: 3px 8px;
+    }
+
+    /* ── 简历诊断卡片 ── */
+    .diagnosis-panel {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 2px solid var(--gray-200);
+      display: none;
+    }
+    .diagnosis-panel.visible { display: flex; flex-direction: column; }
+
+    .diag-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 14px;
+    }
+    .diag-title {
+      font-size: 15px; font-weight: 700;
+      color: var(--ink); letter-spacing: -0.2px;
+    }
+    .score-wrap { text-align: right; }
+    .score-badge {
+      font-size: 28px; font-weight: 800;
+      color: var(--brand); line-height: 1;
+    }
+    .score-label { font-size: 10px; color: var(--ink-4); margin-top: 1px; }
+
+    .diag-comment {
+      font-size: 12px; color: var(--ink-3);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    .diag-section { margin-bottom: 12px; }
+    .diag-section-title {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      color: var(--ink-4); margin-bottom: 6px;
+    }
+    .diag-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 7px; padding: 8px 10px;
+      margin-bottom: 5px; font-size: 12px;
+    }
+    .diag-original { color: var(--red); text-decoration: line-through; margin-bottom: 3px; }
+    .diag-suggestion { color: #16a34a; }
+    .diag-empty { font-size: 12px; color: var(--ink-4); }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .jobs-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .jobs-grid { grid-template-columns: 1fr; }
+      .mbti-section { flex-direction: column; }
+    }
+
+    /* ── 聊天区域 ── */
+    .chat-section {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      padding: 0 24px;
+    }
+    .chat-panel {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .chat-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .chat-header-icon {
+      width: 32px; height: 32px;
+      background: var(--brand-light);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .chat-header-text h3 {
+      font-size: 14px; font-weight: 700; color: var(--ink);
+      letter-spacing: -0.2px;
+    }
+    .chat-header-text p { font-size: 11px; color: var(--ink-4); margin-top: 1px; }
+
+    /* 快捷提示词 */
+    .chat-prompts {
+      padding: 16px 24px 0;
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .prompt-chip {
+      font-size: 12px; font-weight: 500;
+      color: var(--brand-dark);
+      background: var(--brand-light);
+      border: 1px solid #a7f0e4;
+      border-radius: 999px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .prompt-chip:hover {
+      background: var(--brand);
+      color: #fff; border-color: var(--brand);
+    }
+
+    /* 消息列表 */
+    .chat-messages {
+      padding: 16px 24px;
+      min-height: 200px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-welcome {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--ink-4);
+      font-size: 13px;
+    }
+    .chat-welcome .welcome-icon { font-size: 32px; margin-bottom: 8px; }
+
+    .msg { display: flex; gap: 8px; align-items: flex-start; }
+    .msg.user { flex-direction: row-reverse; }
+
+    .msg-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    .msg.ai .msg-avatar { background: var(--brand-light); }
+    .msg.user .msg-avatar { background: #e0e7ff; }
+
+    .msg-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px; line-height: 1.65;
+    }
+    .msg.ai .msg-bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--ink-2);
+      border-top-left-radius: 4px;
+    }
+    .msg.user .msg-bubble {
+      background: var(--brand);
+      color: #fff;
+      border-top-right-radius: 4px;
+    }
+
+    /* 简历模板气泡 */
+    .resume-bubble {
+      background: var(--surface);
+      border: 1.5px solid var(--brand);
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--ink-2);
+      white-space: pre-wrap;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      position: relative;
+    }
+    .resume-bubble-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 10px;
+    }
+    .resume-label {
+      font-size: 11px; font-weight: 700;
+      color: var(--brand); text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .btn-copy {
+      font-size: 11px; font-weight: 600;
+      color: var(--brand-dark);
+      background: var(--brand-light);
+      border: 1px solid #a7f0e4;
+      border-radius: 6px; padding: 3px 10px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn-copy:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+    /* 输入区 */
+    .chat-input-area {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 8px; align-items: flex-end;
+    }
+    .chat-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--ink);
+      background: var(--surface);
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
+      min-height: 40px; max-height: 120px;
+      line-height: 1.5;
+    }
+    .chat-input:focus { border-color: var(--brand); background: var(--white); }
+    .chat-input::placeholder { color: var(--ink-4); }
+    .btn-send {
+      width: 38px; height: 38px;
+      background: var(--brand); color: #fff;
+      border: none; border-radius: 9px;
+      cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s; flex-shrink: 0;
+    }
+    .btn-send:hover { background: var(--brand-dark); }
+    .btn-send:disabled { background: #c0cdd8; cursor: not-allowed; }
+
+    .typing-indicator {
+      display: flex; gap: 4px; align-items: center; padding: 4px 0;
+    }
+    .typing-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--ink-4);
+      animation: typing 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { opacity: 0.3; transform: scale(1); }
+      30% { opacity: 1; transform: scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">小小求职拿下 <span class="sparkle">✦</span></div>
+  <div class="tagline">AI 简历解析 · MBTI 推断 · 岗位推荐</div>
+</header>
+
+<div class="layout">
+
+  <!-- 左侧：上传 -->
+  <div class="left-col">
+  <div class="upload-panel">
+    <h2>上传简历</h2>
+    <p class="sub">支持 PDF / DOCX，最大 5MB</p>
+
+    <div id="dropzone" class="dropzone">
+      <div class="icon">📄</div>
+      <div class="dz-text">点击选择文件或拖拽到这里</div>
+      <div class="dz-hint">支持 PDF / DOCX 格式</div>
+      <input id="fileInput" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;" />
+    </div>
+
+    <div class="file-input-row">
+      <div id="fileName" class="file-name">未选择文件</div>
+      <button id="uploadBtn" class="btn-upload" disabled>开始解析</button>
+    </div>
+
+    <div id="progressWrap" class="progress-wrap" hidden>
+      <div class="progress-meta">
+        <span id="progressStage">准备中...</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+    </div>
+    <div id="statusMsg" class="status-msg"></div>
+  </div><!-- end upload-panel -->
+
+  <!-- 简历诊断 -->
+  <div id="diagnosisPanel" class="diagnosis-panel">
+    <div class="diag-header">
+      <div class="diag-title">📋 简历诊断</div>
+      <div class="score-wrap">
+        <div class="score-badge" id="diagScore">—</div>
+        <div class="score-label">综合评分</div>
+      </div>
+    </div>
+    <div id="diagComment" class="diag-comment"></div>
+
+    <div class="diag-section">
+      <div class="diag-section-title">🔤 错别字</div>
+      <div id="diagTypos"></div>
+    </div>
+    <div class="diag-section">
+      <div class="diag-section-title">✏️ 病句 / 语法</div>
+      <div id="diagGrammar"></div>
+    </div>
+    <div class="diag-section">
+      <div class="diag-section-title">♻️ 语意冗杂</div>
+      <div id="diagRedundancy"></div>
+    </div>
+  </div>
+
+  </div><!-- end left-col -->
+
+  <!-- 右侧：结果 -->
+  <div class="result-panel">
+    <div id="resultContent" class="result-content">
+
+      <!-- MBTI 人格 -->
+      <div class="mbti-section">
+        <div id="mbtiAvatar" class="mbti-avatar-placeholder">🧠</div>
+        <div class="mbti-info">
+          <div id="mbtiBadge" class="mbti-badge">
+            <span class="label">MBTI</span>
+            <span id="mbtiValue">—</span>
+          </div>
+          <div id="mbtiName" class="mbti-name">上传简历后显示</div>
+          <div id="mbtiTraits" class="mbti-traits"></div>
+          <div id="mbtiDesc" class="mbti-desc">AI 将根据你的简历内容推断你的 MBTI 人格类型</div>
+        </div>
+      </div>
+
+      <!-- 人格深度解读 -->
+      <div id="mbtiInsightBox" class="insight-box" style="display:none">
+        <div class="insight-title">✦ 人格解读</div>
+        <div id="mbtiInsight" class="insight-text"></div>
+      </div>
+
+      <!-- 候选人简介 -->
+      <div class="summary-box" id="summaryText">上传简历后，这里将显示你的候选人简介...</div>
+
+      <!-- 岗位推荐 -->
+      <div class="section-title">推荐岗位</div>
+      <div id="jobsGrid" class="jobs-grid">
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 1</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 2</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 3</div>
+            <span class="match-badge match-mid">中</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 聊天区域 -->
+<div class="chat-section">
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-icon">✍️</div>
+      <div class="chat-header-text">
+        <h3>没有简历？让 AI 帮你生成一份</h3>
+        <p>告诉我你的经历，我来帮你写</p>
+      </div>
+    </div>
+
+    <div class="chat-prompts">
+      <div class="prompt-chip" onclick="sendPrompt('我是应届生，还没有简历，帮我生成一份')">🎓 我是应届生</div>
+      <div class="prompt-chip" onclick="sendPrompt('我有工作经验想换行，帮我重新写一份简历')">💼 我想换行业</div>
+      <div class="prompt-chip" onclick="sendPrompt('我是实习生，帮我写一份实习简历')">🌱 我要找实习</div>
+      <div class="prompt-chip" onclick="sendPrompt('帮我生成一份产品经理方向的简历')">📱 产品经理方向</div>
+      <div class="prompt-chip" onclick="sendPrompt('帮我生成一份数据分析方向的简历')">📊 数据分析方向</div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-welcome" id="chatWelcome">
+        <div class="welcome-icon">👋</div>
+        <div>点击上方快捷选项，或直接输入你的情况</div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea id="chatInput" class="chat-input" placeholder="描述你的情况，比如：我是大三学生，学金融的..." rows="1"></textarea>
+      <button id="sendBtn" class="btn-send" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // API配置 - 直接写在这里，不依赖外部config.js
+  const API_BASE_URL = "https://cv-programme.onrender.com";
+
+  // MBTI 中文名称映射
+  const MBTI_NAMES = {
+    INTJ: "建筑师", INTP: "逻辑学家", ENTJ: "指挥官", ENTP: "辩论家",
+    INFJ: "提倡者", INFP: "调停者", ENFJ: "主人公", ENFP: "竞选者",
+    ISTJ: "物流师", ISFJ: "守卫者", ESTJ: "总经理", ESFJ: "执政官",
+    ISTP: "鉴赏家", ISFP: "探险家", ESTP: "企业家", ESFP: "表演者"
+  };
+
+  // MBTI 人格详细解读
+  const MBTI_DETAIL = {
+    ENTJ: { color: "#7c3aed", bg: "#f5f3ff", traits: ["天生领导者", "战略思维", "果断执行", "目标驱动"], insight: "ENTJ 是天生的领导者，擅长制定长远战略并推动团队高效执行。他们逻辑清晰、意志坚定，在复杂局面中能迅速做出决策。对效率和成果有极高追求，适合承担管理与决策职责。" },
+    ENTP: { color: "#0891b2", bg: "#ecfeff", traits: ["创新思维", "善于辩论", "思维敏捷", "挑战权威"], insight: "ENTP 是充满创意的思想家，热衷于探索新想法和挑战既有观念。他们口才出众、反应迅速，擅长在复杂问题中找到突破口，是团队中的创新引擎。" },
+    INTJ: { color: "#0d9488", bg: "#f0fdfa", traits: ["独立思考", "系统规划", "追求完美", "洞察力强"], insight: "INTJ 是极具远见的战略家，善于构建复杂系统并独立推进目标。他们对知识有强烈渴望，做事严谨、标准极高，是少数能将宏观愿景落地为具体计划的人格类型。" },
+    INTP: { color: "#2563eb", bg: "#eff6ff", traits: ["逻辑严密", "深度思考", "创意无限", "追求真理"], insight: "INTP 是沉浸于思想世界的逻辑学家，热衷于分析复杂理论和构建精密模型。他们思维灵活、善于发现规律，在技术研究和创新领域往往能产出突破性成果。" },
+    ENFJ: { color: "#dc2626", bg: "#fef2f2", traits: ["感召力强", "关怀他人", "善于沟通", "推动成长"], insight: "ENFJ 是充满感召力的领导者，天生善于理解他人需求并激励团队成长。他们热情、有责任感，擅长建立深度信任关系，是优秀的导师和团队凝聚者。" },
+    ENFP: { color: "#ea580c", bg: "#fff7ed", traits: ["热情洋溢", "创意丰富", "善于共情", "激励他人"], insight: "ENFP 是充满活力的理想主义者，对人和可能性充满热情。他们创意无限、善于激励他人，能在多元环境中快速建立连接，是团队中的活力与灵感来源。" },
+    INFJ: { color: "#7c3aed", bg: "#f5f3ff", traits: ["深刻洞察", "理想主义", "坚定信念", "关怀他人"], insight: "INFJ 是罕见的理想主义者，兼具深刻的洞察力和强烈的使命感。他们善于理解他人内心，致力于推动有意义的改变，在需要同理心与远见的领域表现卓越。" },
+    INFP: { color: "#0891b2", bg: "#ecfeff", traits: ["富有同情心", "创意写作", "价值观驱动", "内省深刻"], insight: "INFP 是温柔的理想主义者，被强烈的个人价值观所驱动。他们富有创造力和同理心，善于用文字和艺术表达深层情感，在人文与创意领域往往有独特建树。" },
+    ISTJ: { color: "#374151", bg: "#f9fafb", traits: ["可靠负责", "注重细节", "遵守规则", "踏实执行"], insight: "ISTJ 是最可靠的执行者，以严谨、负责和一丝不苟著称。他们尊重规则和传统，做事有条不紊，是组织运转的重要支柱，在需要精确和稳定的岗位上表现出色。" },
+    ISFJ: { color: "#0d9488", bg: "#f0fdfa", traits: ["体贴入微", "忠诚可靠", "服务他人", "注重和谐"], insight: "ISFJ 是温暖而尽职的守护者，以细心、忠诚和无私奉献著称。他们善于记住他人的需求，默默付出，是团队中不可或缺的稳定力量。" },
+    ESTJ: { color: "#b45309", bg: "#fffbeb", traits: ["组织能力强", "务实高效", "责任心强", "重视秩序"], insight: "ESTJ 是高效的管理者，擅长建立秩序、制定规则并推动执行。他们务实、果断，对责任有强烈认同感，在需要组织协调和流程管理的岗位上如鱼得水。" },
+    ESFJ: { color: "#dc2626", bg: "#fef2f2", traits: ["热心助人", "善于社交", "重视和谐", "责任感强"], insight: "ESFJ 是热情的社交者，以关心他人和维护团队和谐为己任。他们善于察觉他人情绪，乐于提供帮助，在需要人际协调和服务意识的岗位上表现突出。" },
+    ISTP: { color: "#374151", bg: "#f9fafb", traits: ["动手能力强", "冷静分析", "灵活应变", "独立自主"], insight: "ISTP 是冷静的问题解决者，擅长在压力下快速分析并采取行动。他们喜欢探索事物运作原理，动手能力强，在技术和实操类工作中往往能展现出色的专业能力。" },
+    ISFP: { color: "#0891b2", bg: "#ecfeff", traits: ["艺术感强", "温和包容", "活在当下", "忠于自我"], insight: "ISFP 是安静的艺术家，以敏锐的审美和真诚的个性著称。他们不喜欢冲突，善于用行动表达关怀，在创意、设计和需要个人风格的领域往往有独特表现。" },
+    ESTP: { color: "#ea580c", bg: "#fff7ed", traits: ["行动力强", "善于交际", "把握机遇", "现实主义"], insight: "ESTP 是充满活力的实干家，善于在瞬息万变的环境中把握机遇。他们反应敏捷、善于交际，喜欢直接面对挑战，在销售、创业和需要快速决策的场景中表现亮眼。" },
+    ESFP: { color: "#7c3aed", bg: "#f5f3ff", traits: ["活泼开朗", "善于表演", "享受当下", "感染力强"], insight: "ESFP 是天生的表演者，以热情、幽默和强大的感染力著称。他们享受与人互动，善于活跃气氛，在需要展示、沟通和娱乐的场合总能成为焦点。" },
+  };
+
+  // 16personalities 人物图片（使用官方 CDN）
+  const MBTI_IMAGES = {
+    INTJ: "https://www.16personalities.com/static/images/personality-types/avatars/intj-architect.svg",
+    INTP: "https://www.16personalities.com/static/images/personality-types/avatars/intp-logician.svg",
+    ENTJ: "https://www.16personalities.com/static/images/personality-types/avatars/entj-commander.svg",
+    ENTP: "https://www.16personalities.com/static/images/personality-types/avatars/entp-debater.svg",
+    INFJ: "https://www.16personalities.com/static/images/personality-types/avatars/infj-advocate.svg",
+    INFP: "https://www.16personalities.com/static/images/personality-types/avatars/infp-mediator.svg",
+    ENFJ: "https://www.16personalities.com/static/images/personality-types/avatars/enfj-protagonist.svg",
+    ENFP: "https://www.16personalities.com/static/images/personality-types/avatars/enfp-campaigner.svg",
+    ISTJ: "https://www.16personalities.com/static/images/personality-types/avatars/istj-logistician.svg",
+    ISFJ: "https://www.16personalities.com/static/images/personality-types/avatars/isfj-defender.svg",
+    ESTJ: "https://www.16personalities.com/static/images/personality-types/avatars/estj-executive.svg",
+    ESFJ: "https://www.16personalities.com/static/images/personality-types/avatars/esfj-consul.svg",
+    ISTP: "https://www.16personalities.com/static/images/personality-types/avatars/istp-virtuoso.svg",
+    ISFP: "https://www.16personalities.com/static/images/personality-types/avatars/isfp-adventurer.svg",
+    ESTP: "https://www.16personalities.com/static/images/personality-types/avatars/estp-entrepreneur.svg",
+    ESFP: "https://www.16personalities.com/static/images/personality-types/avatars/esfp-entertainer.svg",
+  };
+
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("fileInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const fileNameEl = document.getElementById("fileName");
+  const statusMsg = document.getElementById("statusMsg");
+  const progressWrap = document.getElementById("progressWrap");
+  const progressStage = document.getElementById("progressStage");
+  const progressPercent = document.getElementById("progressPercent");
+  const progressBar = document.getElementById("progressBar");
+  const resultContent = document.getElementById("resultContent");
+
+  let selectedFile = null;
+  let parseTimer = null;
+
+  function clearTimer() { if (parseTimer) { clearInterval(parseTimer); parseTimer = null; } }
+
+  function setProgress(pct, stage) {
+    const p = Math.max(0, Math.min(100, Math.round(pct)));
+    progressWrap.hidden = false;
+    progressBar.style.width = p + "%";
+    progressPercent.textContent = p + "%";
+    if (stage) progressStage.textContent = stage;
+  }
+
+  function setFile(file) {
+    selectedFile = file || null;
+    uploadBtn.disabled = !selectedFile;
+    fileNameEl.textContent = selectedFile ? "📎 " + selectedFile.name : "未选择文件";
+    statusMsg.textContent = "";
+    statusMsg.className = "status-msg";
+    clearTimer();
+    progressWrap.hidden = true;
+    setProgress(0, "准备中...");
+  }
+
+  function validFile(f) {
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    return ext === "pdf" || ext === "docx";
+  }
+
+  fileInput.addEventListener("change", e => {
+    const f = e.target.files[0];
+    if (!f || !validFile(f)) { statusMsg.textContent = "仅支持 .pdf / .docx 文件"; statusMsg.className = "status-msg error"; return; }
+    setFile(f);
+  });
+
+  dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("dragging"); });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragging"));
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault(); dropzone.classList.remove("dragging");
+    const f = e.dataTransfer.files[0];
+    if (!f || !validFile(f)) { statusMsg.textContent = "仅支持 .pdf / .docx 文件"; statusMsg.className = "status-msg error"; return; }
+    setFile(f);
+  });
+
+  // 点击拖拽区域触发文件选择
+  dropzone.addEventListener("click", () => {
+    fileInput.click();
+  });
+
+  function renderResult(data) {
+    const d = data.parsed_data || {};
+    const mbti = (d.inferred_mbti || "").toUpperCase();
+
+    // MBTI 徽章 + 名称
+    document.getElementById("mbtiValue").textContent = mbti || "—";
+    document.getElementById("mbtiName").textContent = MBTI_NAMES[mbti] ? `${MBTI_NAMES[mbti]}` : "上传简历后显示";
+    document.getElementById("mbtiDesc").textContent = d.mbti_description || "AI 将根据你的简历内容推断你的 MBTI 人格类型";
+
+    // 特质标签 + 解读
+    const detail = MBTI_DETAIL[mbti];
+    const traitsEl = document.getElementById("mbtiTraits");
+    const insightBox = document.getElementById("mbtiInsightBox");
+    const insightEl = document.getElementById("mbtiInsight");
+    traitsEl.innerHTML = "";
+    if (detail) {
+      detail.traits.forEach(t => {
+        const span = document.createElement("span");
+        span.className = "mbti-trait";
+        span.style.color = detail.color;
+        span.style.borderColor = detail.color + "55";
+        span.style.background = detail.bg;
+        span.textContent = t;
+        traitsEl.appendChild(span);
+      });
+      insightEl.textContent = detail.insight;
+      insightBox.style.background = detail.bg;
+      insightBox.style.color = detail.color;
+      insightBox.style.display = "block";
+    }
+
+    // 头像
+    const avatarEl = document.getElementById("mbtiAvatar");
+    if (mbti && MBTI_IMAGES[mbti]) {
+      const img = document.createElement("img");
+      img.className = "mbti-avatar";
+      img.src = MBTI_IMAGES[mbti];
+      img.alt = mbti;
+      img.onerror = () => { avatarEl.parentNode.replaceChild(avatarEl, img); };
+      avatarEl.parentNode.replaceChild(img, avatarEl);
+    }
+
+    // 简介
+    document.getElementById("summaryText").textContent = d.candidate_summary || "上传简历后，这里将显示你的候选人简介...";
+
+    // 岗位推荐
+    const jobsEl = document.getElementById("jobsGrid");
+    jobsEl.innerHTML = "";
+    const jobs = d.job_recommendations || [];
+    if (jobs.length > 0) {
+      jobs.forEach(job => {
+      const card = document.createElement("div");
+      card.className = "job-card";
+      const matchClass = job.match_level === "高" ? "match-high" : "match-mid";
+      
+      // 构建薪资显示HTML
+      let salaryHTML = '';
+      if (job.salary_range && job.salary_range.min_salary && job.salary_range.max_salary) {
+        const salaryText = `${job.salary_range.min_salary}-${job.salary_range.max_salary}K`;
+        const cityText = job.salary_range.city || '全国';
+        salaryHTML = `
+          <div class="job-salary">
+            <span class="salary-amount">${salaryText}</span>
+            <span class="salary-city">${cityText}</span>
+          </div>
+        `;
+      }
+      
+      card.innerHTML = `
+        <div class="job-header">
+          <div class="job-title">${job.title || ""}</div>
+          <span class="match-badge ${matchClass}">${job.match_level || ""}</span>
+        </div>
+        <div class="industry-tag">${job.industry || ""}</div>
+        ${salaryHTML}
+        <div class="job-reason">${job.reason || ""}</div>
+      `;
+      
+      // 添加点击跳转事件
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        try {
+          const jobTitle = encodeURIComponent(job.title || '');
+          const city = job.salary_range?.city || d.city || '';
+          const cityParam = city && city !== '全国' ? `&city=${encodeURIComponent(city)}` : '';
+          const bossUrl = `https://www.zhipin.com/job_detail/?query=${jobTitle}${cityParam}`;
+          window.open(bossUrl, '_blank');
+        } catch (error) {
+          console.error('Failed to open job portal:', error);
+          // 降级：使用不带城市参数的URL
+          const fallbackUrl = `https://www.zhipin.com/job_detail/?query=${encodeURIComponent(job.title || '')}`;
+          window.open(fallbackUrl, '_blank');
+        }
+      });
+      
+      jobsEl.appendChild(card);
+      });
+    } else {
+      // 显示空状态的岗位卡片
+      jobsEl.innerHTML = `
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 1</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 2</div>
+            <span class="match-badge match-high">高</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+        <div class="job-card" style="opacity: 0.5; cursor: default;">
+          <div class="job-header">
+            <div class="job-title">岗位推荐 3</div>
+            <span class="match-badge match-mid">中</span>
+          </div>
+          <div class="industry-tag">行业</div>
+          <div class="job-salary">
+            <span class="salary-amount">--K</span>
+            <span class="salary-city">城市</span>
+          </div>
+          <div class="job-reason">上传简历后显示匹配原因</div>
+        </div>
+      `;
+    }
+
+    // 简历诊断
+    const diag = d.resume_diagnosis || {};
+    const diagPanel = document.getElementById("diagnosisPanel");
+    document.getElementById("diagScore").textContent = diag.overall_score || "—";
+    document.getElementById("diagComment").textContent = diag.overall_comment || "";
+
+    function renderDiagItems(containerId, items) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = "";
+      if (!items || items.length === 0) {
+        el.innerHTML = '<div class="diag-empty">未发现问题 ✓</div>';
+        return;
+      }
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "diag-item";
+        div.innerHTML = `<div class="diag-original">${item.original || ""}</div><div class="diag-suggestion">→ ${item.suggestion || ""}</div>`;
+        el.appendChild(div);
+      });
+    }
+
+    renderDiagItems("diagTypos", diag.typos);
+    renderDiagItems("diagGrammar", diag.grammar_issues);
+    renderDiagItems("diagRedundancy", diag.redundancy);
+    diagPanel.classList.add("visible");
+  }
+
+  // ── 聊天功能 ──
+  let chatHistory = [];
+  let isChatLoading = false;
+
+  const chatMessages = document.getElementById("chatMessages");
+  const chatInput = document.getElementById("chatInput");
+  const sendBtn = document.getElementById("sendBtn");
+
+  // 自动调整输入框高度
+  chatInput.addEventListener("input", () => {
+    chatInput.style.height = "auto";
+    chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + "px";
+  });
+
+  // 回车发送（Shift+Enter 换行）
+  chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  });
+
+  function sendPrompt(text) {
+    chatInput.value = text;
+    sendChat();
+  }
+
+  function appendMsg(role, content, isResume = false) {
+    const welcome = document.getElementById("chatWelcome");
+    if (welcome) welcome.remove();
+
+    const msg = document.createElement("div");
+    msg.className = `msg ${role}`;
+
+    const avatar = document.createElement("div");
+    avatar.className = "msg-avatar";
+    avatar.textContent = role === "ai" ? "🤖" : "👤";
+
+    if (isResume) {
+      const bubble = document.createElement("div");
+      bubble.className = "resume-bubble";
+      bubble.style.maxWidth = "85%";
+      bubble.innerHTML = `
+        <div class="resume-bubble-header">
+          <span class="resume-label">✦ 简历模板</span>
+          <button class="btn-copy" onclick="copyResume(this)">复制</button>
+        </div>
+        <div class="resume-content">${content.replace(/</g, "&lt;")}</div>
+      `;
+      msg.appendChild(avatar);
+      msg.appendChild(bubble);
+    } else {
+      const bubble = document.createElement("div");
+      bubble.className = "msg-bubble";
+      bubble.textContent = content;
+      msg.appendChild(avatar);
+      msg.appendChild(bubble);
+    }
+
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return msg;
+  }
+
+  function appendTyping() {
+    const msg = document.createElement("div");
+    msg.className = "msg ai";
+    msg.id = "typingMsg";
+    msg.innerHTML = `
+      <div class="msg-avatar">🤖</div>
+      <div class="msg-bubble">
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>`;
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById("typingMsg");
+    if (t) t.remove();
+  }
+
+  function copyResume(btn) {
+    const content = btn.closest(".resume-bubble").querySelector(".resume-content").textContent;
+    navigator.clipboard.writeText(content).then(() => {
+      btn.textContent = "已复制 ✓";
+      setTimeout(() => btn.textContent = "复制", 2000);
+    });
+  }
+
+  async function sendChat() {
+    const text = chatInput.value.trim();
+    if (!text || isChatLoading) return;
+
+    chatInput.value = "";
+    chatInput.style.height = "auto";
+    isChatLoading = true;
+    sendBtn.disabled = true;
+
+    appendMsg("user", text);
+    chatHistory.push({ role: "user", content: text });
+    appendTyping();
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: chatHistory }),
+      });
+      const data = await res.json();
+      removeTyping();
+
+      if (!res.ok) throw new Error(data.detail || "请求失败");
+
+      const reply = data.reply || "";
+      chatHistory.push({ role: "assistant", content: reply });
+      appendMsg("ai", reply, data.has_resume);
+
+    } catch (err) {
+      removeTyping();
+      appendMsg("ai", "抱歉，出了点问题：" + err.message);
+    } finally {
+      isChatLoading = false;
+      sendBtn.disabled = false;
+    }
+  }
+
+  uploadBtn.addEventListener("click", async () => {
+    if (!selectedFile) return;
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    statusMsg.textContent = "正在解析，请稍候...";
+    statusMsg.className = "status-msg";
+    uploadBtn.disabled = true;
+    setProgress(0, "准备上传...");
+
+    try {
+      const data = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        let parseStarted = false, parsePct = 75;
+
+        function startParse() {
+          if (parseStarted) return; parseStarted = true;
+          setProgress(72, "上传完成，AI 解析中...");
+          clearTimer();
+          parseTimer = setInterval(() => { parsePct = Math.min(95, parsePct + 1); setProgress(parsePct, "AI 解析中，请稍候..."); }, 350);
+        }
+
+        xhr.upload.onprogress = e => { if (e.lengthComputable) setProgress((e.loaded / e.total) * 70, "文件上传中..."); };
+        xhr.upload.onload = startParse;
+        xhr.onreadystatechange = () => { if (xhr.readyState >= 2) startParse(); };
+        xhr.onload = () => {
+          clearTimer();
+          try {
+            const payload = JSON.parse(xhr.responseText || "{}");
+            if (xhr.status < 200 || xhr.status >= 300) { reject(new Error(payload.detail || "请求失败")); return; }
+            setProgress(100, "解析完成");
+            resolve(payload);
+          } catch { reject(new Error("服务返回格式异常")); }
+        };
+        xhr.onerror = () => { clearTimer(); reject(new Error("网络错误，上传失败")); };
+        xhr.timeout = 300000;
+        xhr.ontimeout = () => { clearTimer(); reject(new Error("请求超时，请稍后重试")); };
+        xhr.open("POST", `${API_BASE_URL}/upload`);
+        xhr.send(formData);
+      });
+
+      statusMsg.textContent = "解析成功 ✓";
+      statusMsg.className = "status-msg ok";
+      renderResult(data);
+    } catch (err) {
+      clearTimer();
+      statusMsg.textContent = "解析失败：" + err.message;
+      statusMsg.className = "status-msg error";
+      setProgress(0, "上传失败");
+    } finally {
+      uploadBtn.disabled = !selectedFile;
+    }
+  });
+</script>
+</body>
+</html>
