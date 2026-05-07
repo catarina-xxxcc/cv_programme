@@ -98,6 +98,19 @@ def _parse_resume_with_ai(raw_text: str) -> dict[str, Any]:
    - industry: 所属行业（如：科技、金融、咨询、教育、创业、政府等）
    - reason: 推荐理由（30字以内，结合简历技能和MBTI特质）
    - match_level: 匹配度，"高" 或 "中"
+   
+   - match_score: 整数 0-100，精确匹配度分数（新增字段，与match_level配合使用）
+     【计算规则】：技能匹配40% + 经验匹配25% + 教育匹配20% + MBTI匹配15%
+     【示例】：高匹配岗位85-95分，中匹配岗位65-79分
+   
+   - missing_skills: 数组，候选人缺失的关键技能，0-5个（新增字段）
+     【规则】：只列出岗位重要但简历未体现的技能，完全匹配时返回空数组[]
+     【示例】：["Docker", "Kubernetes"]
+   
+   - career_path: 字符串，该岗位的职业成长路径，60-100字（新增字段）
+     【格式】：2-4个阶段，用箭头连接
+     【示例】："初级算法工程师 → 算法工程师 → 高级算法工程师 → 算法专家"
+   
    - salary_range: 对象，该岗位的薪资范围，包含：
      * min_salary: 整数，最低月薪（单位：千元，如 15 表示 15K）
      * max_salary: 整数，最高月薪（单位：千元，如 25 表示 25K）
@@ -189,6 +202,56 @@ J vs P：
         messages=[{"role": "user", "content": prompt}],
     )
     return _to_json_with_fallback(response.choices[0].message.content)
+
+
+def _add_default_values_for_new_fields(parsed_data: dict[str, Any]) -> dict[str, Any]:
+    """
+    为新增字段添加默认值（如果AI没有生成）
+    保持向后兼容，不影响现有字段
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    if "job_recommendations" in parsed_data and isinstance(parsed_data["job_recommendations"], list):
+        for job in parsed_data["job_recommendations"]:
+            if not isinstance(job, dict):
+                continue
+            
+            # 添加match_score默认值（如果缺失）
+            if "match_score" not in job:
+                # 根据match_level推断默认分数
+                if job.get("match_level") == "高":
+                    job["match_score"] = 85
+                elif job.get("match_level") == "中":
+                    job["match_score"] = 70
+                else:
+                    job["match_score"] = 70
+            else:
+                # 验证范围
+                if not isinstance(job["match_score"], int) or job["match_score"] < 0 or job["match_score"] > 100:
+                    job["match_score"] = 70
+            
+            # 添加missing_skills默认值（如果缺失）
+            if "missing_skills" not in job:
+                job["missing_skills"] = []
+            elif not isinstance(job["missing_skills"], list):
+                job["missing_skills"] = []
+            else:
+                # 过滤并限制数量
+                job["missing_skills"] = [
+                    s for s in job["missing_skills"]
+                    if isinstance(s, str) and s.strip()
+                ][:5]
+            
+            # 添加career_path默认值（如果缺失）
+            if "career_path" not in job:
+                job["career_path"] = ""
+            elif not isinstance(job["career_path"], str):
+                job["career_path"] = ""
+            else:
+                job["career_path"] = job["career_path"][:100]
+    
+    return parsed_data
 
 
 SYSTEM_PROMPT = """你是一个专业的求职顾问和简历写作专家。你的任务是通过友好的对话，帮助没有简历的用户生成一份专业的简历。
@@ -307,6 +370,8 @@ async def upload_resume(file: UploadFile = File(...)) -> dict[str, Any]:
             raise HTTPException(status_code=400, detail="No readable text found in the uploaded file.")
 
         parsed = _parse_resume_with_ai(raw_text)
+        # 为新增字段添加默认值（保持向后兼容）
+        parsed = _add_default_values_for_new_fields(parsed)
         return {
             "filename": filename,
             "parse_status": "success",
