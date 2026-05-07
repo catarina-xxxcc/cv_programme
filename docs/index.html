@@ -528,17 +528,19 @@
 
     .jobs-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
     }
 
     .job-card {
       border: 2px solid var(--gray-200);
       border-radius: 10px;
-      padding: 14px;
+      padding: 16px;
       transition: all 0.18s;
       cursor: pointer;
       background: var(--white);
+      display: flex;
+      flex-direction: column;
     }
     .job-card:hover {
       border-color: var(--sakura-primary);
@@ -549,15 +551,19 @@
       transform: translateY(0);
     }
     .job-card .job-header {
-      display: flex; justify-content: space-between;
-      align-items: flex-start; margin-bottom: 6px;
+      display: flex; 
+      justify-content: space-between;
+      align-items: flex-start; 
+      margin-bottom: 8px;
+      min-height: 50px;
     }
     .job-card .job-title {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--gray-900);
-      line-height: 1.4;
+      line-height: 1.3;
       letter-spacing: 0.2px;
+      flex: 1;
     }
     .job-card .match-badge {
       font-size: 10px; font-weight: 700; padding: 2px 7px;
@@ -567,13 +573,18 @@
     .match-mid { background: #fef9c3; color: #a16207; }
 
     .job-card .industry-tag {
-      display: inline-block; font-size: 10px; font-weight: 500;
+      display: inline-block; font-size: 11px; font-weight: 500;
       background: var(--surface); color: var(--ink-3);
       border: 1px solid var(--border);
-      border-radius: 4px; padding: 2px 7px;
-      margin-bottom: 7px;
+      border-radius: 4px; padding: 3px 8px;
+      margin-bottom: 10px;
     }
-    .job-card .job-reason { font-size: 11px; color: var(--ink-4); line-height: 1.5; }
+    .job-card .job-reason { 
+      font-size: 12px; 
+      color: var(--ink-4); 
+      line-height: 1.6;
+      min-height: 40px;
+    }
 
     /* ========== 新增功能样式 ========== */
     
@@ -582,10 +593,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
+      flex-shrink: 0;
     }
     .match-percentage {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
       color: var(--sakura-primary);
       font-family: 'Inter', sans-serif;
@@ -596,18 +608,20 @@
     /* 信息分组 */
     .job-section {
       display: flex;
-      gap: 10px;
-      padding: 12px;
+      gap: 8px;
+      padding: 10px;
       background: var(--sakura-lighter);
       border-radius: var(--radius-sm);
-      margin-top: 10px;
+      margin-top: 8px;
+      align-items: flex-start;
     }
     .section-icon {
-      font-size: 18px;
+      font-size: 16px;
       flex-shrink: 0;
+      line-height: 1;
     }
     .section-title {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       color: var(--gray-600);
       margin-bottom: 4px;
@@ -616,25 +630,27 @@
     }
     .section-content {
       flex: 1;
+      min-width: 0;
     }
 
     /* 技能标签 */
     .skill-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 4px;
     }
     .skill-tag {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      padding: 4px 10px;
+      padding: 3px 8px;
       background: var(--white);
       border: 1.5px solid var(--sakura-primary);
       color: var(--sakura-dark);
       border-radius: 999px;
+      white-space: nowrap;
     }
     .skill-complete {
-      font-size: 12px;
+      font-size: 11px;
       color: #15803d;
       font-weight: 600;
     }
@@ -644,9 +660,9 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      line-height: 1.6;
+      gap: 4px;
+      font-size: 10px;
+      line-height: 1.5;
     }
     .path-stage {
       font-weight: 600;
@@ -664,17 +680,18 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin: 8px 0;
+      margin: 10px 0;
+      min-height: 32px;
     }
     .salary-amount {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
       color: var(--sakura-primary);
       letter-spacing: 0.3px;
       font-family: 'Inter', sans-serif;
     }
     .salary-city {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: var(--gray-600);
       background: var(--gray-100);
@@ -730,13 +747,22 @@
     .diag-suggestion { color: #16a34a; }
     .diag-empty { font-size: 12px; color: var(--ink-4); }
 
+    @media (max-width: 1400px) {
+      .jobs-grid { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; }
       .jobs-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 560px) {
       .jobs-grid { grid-template-columns: 1fr; }
-      .mbti-section { flex-direction: column; }
+      .mbti-section { 
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .insight-box {
+        max-width: 100%;
+      }
     }
 
     /* ── 聊天区域 ── */
