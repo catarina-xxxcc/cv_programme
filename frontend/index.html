@@ -180,6 +180,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      height: 100%;
     }
 
     /* 卡片基础样式 */
@@ -205,9 +206,15 @@
       padding: var(--space-xl);
       box-shadow: var(--shadow);
       border: 2px solid var(--gray-200);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
-    .result-content { display: block; }
+    .result-content { 
+      display: block;
+      flex: 1;
+    }
 
     /* MBTI 人格区 */
     .mbti-section {
