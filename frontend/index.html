@@ -219,80 +219,104 @@
     /* MBTI 人格区 */
     .mbti-section {
       display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 24px;
-      align-items: flex-start;
-      padding-bottom: 28px;
+      grid-template-columns: auto 1fr;
+      gap: 20px;
+      align-items: center;
+      padding-bottom: 20px;
       border-bottom: 2px solid var(--sakura-lighter);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .mbti-avatar {
-      width: 110px; height: 110px;
-      border-radius: 16px;
+      width: 90px; height: 90px;
+      border-radius: 14px;
       object-fit: cover;
       background: var(--brand-light);
       flex-shrink: 0;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
     .mbti-avatar-placeholder {
-      width: 110px; height: 110px;
-      border-radius: 16px;
+      width: 90px; height: 90px;
+      border-radius: 14px;
       background: var(--brand-light);
       display: flex; align-items: center; justify-content: center;
-      font-size: 42px; flex-shrink: 0;
+      font-size: 36px; flex-shrink: 0;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    .mbti-info { flex: 1; padding-top: 4px; }
+    .mbti-info { 
+      flex: 1; 
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+    .mbti-info-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mbti-info-right {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
     .mbti-badge {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; gap: 6px;
       background: var(--brand-light);
       border: 2px solid #a7f0e4; color: var(--brand-dark);
-      border-radius: 999px; padding: 6px 16px;
-      font-size: 20px; font-weight: 900; letter-spacing: 0.5px;
-      margin-bottom: 10px;
+      border-radius: 999px; padding: 4px 12px;
+      font-size: 16px; font-weight: 900; letter-spacing: 0.5px;
       box-shadow: 0 2px 8px rgba(13, 148, 136, 0.15);
     }
     .mbti-badge .label {
-      font-size: 11px; font-weight: 700;
+      font-size: 10px; font-weight: 700;
       color: var(--brand); letter-spacing: 0.6px;
       text-transform: uppercase;
     }
     .mbti-name {
       font-family: 'Noto Serif SC', serif;
-      font-size: 32px;
+      font-size: 24px;
       font-weight: 800;
       color: var(--gray-900);
       letter-spacing: 0.3px;
-      margin-bottom: 14px;
       line-height: 1.2;
     }
     .mbti-desc { 
-      font-size: 14px; 
+      font-size: 13px; 
       color: var(--gray-600); 
-      line-height: 1.7;
+      line-height: 1.6;
       font-weight: 500;
     }
 
-    .mbti-traits { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .mbti-traits { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 5px;
+    }
     .mbti-trait {
-      font-size: 12px; font-weight: 600;
-      padding: 4px 11px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 9px; border-radius: 999px;
       border: 1.5px solid currentColor;
     }
 
     /* 人格解读 */
     .insight-box {
-      border-radius: 10px;
-      padding: 14px 16px;
-      min-width: 300px;
-      max-width: 400px;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: var(--sakura-lighter);
+      border: 1.5px solid var(--sakura-primary);
     }
     .insight-title {
-      font-size: 11px; font-weight: 700;
-      letter-spacing: 0.6px; text-transform: uppercase;
-      margin-bottom: 7px; opacity: 0.7;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 6px; 
+      color: var(--sakura-dark);
     }
-    .insight-text { font-size: 13px; line-height: 1.75; }
+    .insight-text { 
+      font-size: 12px; 
+      line-height: 1.6;
+      color: var(--gray-700);
+      font-weight: 500;
+    }
 
     /* 候选人简介 - 隐藏 */
     .summary-box {
@@ -301,9 +325,22 @@
 
     /* 岗位推荐 */
     .section-title {
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.6px;
-      color: var(--ink-4); margin-bottom: 12px;
+      font-size: 14px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--gray-800); 
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .section-title-hint {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-500);
+      text-transform: none;
+      letter-spacing: 0;
+      font-style: italic;
     }
 
     .jobs-grid {
@@ -1335,18 +1372,22 @@
       <div class="mbti-section">
         <div id="mbtiAvatar" class="mbti-avatar-placeholder">🧠</div>
         <div class="mbti-info">
-          <div id="mbtiBadge" class="mbti-badge">
-            <span class="label">MBTI</span>
-            <span id="mbtiValue">—</span>
+          <div class="mbti-info-left">
+            <div id="mbtiBadge" class="mbti-badge">
+              <span class="label">MBTI</span>
+              <span id="mbtiValue">—</span>
+            </div>
+            <div id="mbtiName" class="mbti-name">上传简历后显示</div>
+            <div id="mbtiTraits" class="mbti-traits"></div>
           </div>
-          <div id="mbtiName" class="mbti-name">上传简历后显示</div>
-          <div id="mbtiTraits" class="mbti-traits"></div>
-          <div id="mbtiDesc" class="mbti-desc">AI 将根据你的简历内容推断你的 MBTI 人格类型</div>
-        </div>
-        <!-- 人格深度解读 - 移到右边 -->
-        <div id="mbtiInsightBox" class="insight-box" style="display:none">
-          <div class="insight-title">✦ 人格解读</div>
-          <div id="mbtiInsight" class="insight-text"></div>
+          <div class="mbti-info-right">
+            <div id="mbtiDesc" class="mbti-desc">AI 将根据你的简历内容推断你的 MBTI 人格类型</div>
+            <!-- 人格深度解读 -->
+            <div id="mbtiInsightBox" class="insight-box" style="display:none">
+              <div class="insight-title">✦ 人格解读</div>
+              <div id="mbtiInsight" class="insight-text"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1354,7 +1395,10 @@
       <div class="summary-box" id="summaryText" style="display:none">上传简历后，这里将显示你的候选人简介...</div>
 
       <!-- 岗位推荐 -->
-      <div class="section-title">推荐岗位</div>
+      <div class="section-title">
+        推荐岗位
+        <span class="section-title-hint">💡 点击岗位名称查看详情</span>
+      </div>
       <div id="jobsGrid" class="jobs-grid">
         <div class="job-card" style="opacity: 0.5; cursor: default;">
           <div class="job-header">
