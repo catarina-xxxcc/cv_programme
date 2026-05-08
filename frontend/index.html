@@ -164,11 +164,11 @@
     /* 主布局 */
     .layout {
       display: grid;
-      grid-template-columns: 400px 1fr;
-      gap: 24px;
-      max-width: 1600px;
+      grid-template-columns: 420px 1fr;
+      gap: 32px;
+      max-width: 1800px;
       margin: 32px auto;
-      padding: 0 24px;
+      padding: 0 32px;
       align-items: start;
       position: relative;
       z-index: 1;
@@ -213,56 +213,64 @@
     .mbti-section {
       display: grid;
       grid-template-columns: auto 1fr auto;
-      gap: 20px;
+      gap: 24px;
       align-items: flex-start;
-      padding-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 20px;
+      padding-bottom: 28px;
+      border-bottom: 2px solid var(--sakura-lighter);
+      margin-bottom: 24px;
     }
     .mbti-avatar {
-      width: 100px; height: 100px;
-      border-radius: 12px;
+      width: 110px; height: 110px;
+      border-radius: 16px;
       object-fit: cover;
       background: var(--brand-light);
       flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
     .mbti-avatar-placeholder {
-      width: 100px; height: 100px;
-      border-radius: 12px;
+      width: 110px; height: 110px;
+      border-radius: 16px;
       background: var(--brand-light);
       display: flex; align-items: center; justify-content: center;
-      font-size: 36px; flex-shrink: 0;
+      font-size: 42px; flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    .mbti-info { flex: 1; padding-top: 2px; }
+    .mbti-info { flex: 1; padding-top: 4px; }
     .mbti-badge {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex; align-items: center; gap: 8px;
       background: var(--brand-light);
-      border: 1px solid #a7f0e4; color: var(--brand-dark);
-      border-radius: 999px; padding: 5px 14px;
-      font-size: 18px; font-weight: 800; letter-spacing: 0.5px;
-      margin-bottom: 8px;
+      border: 2px solid #a7f0e4; color: var(--brand-dark);
+      border-radius: 999px; padding: 6px 16px;
+      font-size: 20px; font-weight: 900; letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.15);
     }
     .mbti-badge .label {
-      font-size: 10px; font-weight: 600;
-      color: var(--brand); letter-spacing: 0.5px;
+      font-size: 11px; font-weight: 700;
+      color: var(--brand); letter-spacing: 0.6px;
       text-transform: uppercase;
     }
     .mbti-name {
       font-family: 'Noto Serif SC', serif;
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 32px;
+      font-weight: 800;
       color: var(--gray-900);
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      letter-spacing: 0.3px;
+      margin-bottom: 14px;
       line-height: 1.2;
     }
-    .mbti-desc { font-size: 13px; color: var(--ink-3); line-height: 1.6; }
+    .mbti-desc { 
+      font-size: 14px; 
+      color: var(--gray-600); 
+      line-height: 1.7;
+      font-weight: 500;
+    }
 
-    .mbti-traits { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .mbti-traits { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .mbti-trait {
-      font-size: 11px; font-weight: 500;
-      padding: 3px 9px; border-radius: 999px;
-      border: 1px solid currentColor;
+      font-size: 12px; font-weight: 600;
+      padding: 4px 11px; border-radius: 999px;
+      border: 1.5px solid currentColor;
     }
 
     /* 人格解读 */
@@ -293,61 +301,119 @@
 
     .jobs-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
     }
 
     .job-card {
       border: 2px solid var(--gray-200);
-      border-radius: 10px;
-      padding: 16px;
-      transition: all 0.18s;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       background: var(--white);
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
     }
+    
+    /* 匹配度渐变背景 */
+    .job-card[data-match-level="high"]::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #FF9DB3 0%, #FFB7C5 100%);
+    }
+    
+    .job-card[data-match-level="mid"]::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #FFD4DC 0%, #FFE4E9 100%);
+    }
+    
+    .job-card[data-match-level="low"]::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 100%);
+    }
+    
     .job-card:hover {
       border-color: var(--sakura-primary);
-      box-shadow: 0 4px 16px rgba(255,183,197,0.15);
-      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,183,197,0.2);
+      transform: translateY(-4px);
     }
     .job-card:active {
-      transform: translateY(0);
+      transform: translateY(-2px);
     }
     .job-card .job-header {
       display: flex; 
       justify-content: space-between;
       align-items: flex-start; 
-      margin-bottom: 8px;
-      min-height: 50px;
+      margin-bottom: 12px;
+      min-height: 56px;
     }
     .job-card .job-title {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 19px;
+      font-weight: 800;
       color: var(--gray-900);
       line-height: 1.3;
-      letter-spacing: 0.2px;
+      letter-spacing: 0.1px;
       flex: 1;
+      font-family: 'Noto Serif SC', serif;
     }
     .job-card .match-badge {
-      font-size: 10px; font-weight: 700; padding: 2px 7px;
-      border-radius: 999px; flex-shrink: 0; margin-left: 6px;
+      font-size: 11px; 
+      font-weight: 800; 
+      padding: 4px 10px;
+      border-radius: 999px; 
+      flex-shrink: 0; 
+      margin-left: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
-    .match-high { background: #dcfce7; color: #15803d; }
-    .match-mid { background: #fef9c3; color: #a16207; }
+    .match-high { 
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); 
+      color: #15803d;
+      box-shadow: 0 2px 8px rgba(21, 128, 61, 0.15);
+    }
+    .match-mid { 
+      background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%); 
+      color: #a16207;
+      box-shadow: 0 2px 8px rgba(161, 98, 7, 0.15);
+    }
+    .match-low { 
+      background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%); 
+      color: var(--gray-600);
+    }
 
     .job-card .industry-tag {
-      display: inline-block; font-size: 11px; font-weight: 500;
-      background: var(--surface); color: var(--ink-3);
-      border: 1px solid var(--border);
-      border-radius: 4px; padding: 3px 8px;
-      margin-bottom: 10px;
+      display: inline-block; 
+      font-size: 12px; 
+      font-weight: 600;
+      background: var(--sakura-lighter); 
+      color: var(--sakura-dark);
+      border: 1.5px solid var(--sakura-primary);
+      border-radius: 6px; 
+      padding: 4px 10px;
+      margin-bottom: 12px;
     }
     .job-card .job-reason { 
-      font-size: 12px; 
-      color: var(--ink-4); 
-      line-height: 1.6;
-      min-height: 40px;
+      font-size: 13px; 
+      color: var(--gray-600); 
+      line-height: 1.7;
+      min-height: 44px;
+      font-weight: 500;
     }
 
     /* ========== 新增功能样式 ========== */
@@ -357,15 +423,32 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       flex-shrink: 0;
     }
     .match-percentage {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--sakura-primary);
+      font-size: 26px;
+      font-weight: 900;
       font-family: 'Inter', sans-serif;
       line-height: 1;
+      letter-spacing: -0.5px;
+    }
+    
+    /* 匹配度颜色渐变 */
+    .match-percentage[data-score="high"] {
+      background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .match-percentage[data-score="mid"] {
+      background: linear-gradient(135deg, #a16207 0%, #ca8a04 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .match-percentage[data-score="low"] {
+      color: var(--gray-500);
     }
     .match-low { background: var(--gray-200); color: var(--gray-600); }
 
@@ -468,12 +551,12 @@
     .diagnosis-panel {
       background: var(--white);
       border-radius: var(--radius-lg);
-      padding: 24px;
+      padding: 28px;
       box-shadow: var(--shadow);
       border: 2px solid var(--gray-200);
       display: flex;
       flex-direction: column;
-      min-height: 400px;
+      min-height: 450px;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
@@ -487,77 +570,84 @@
       display: flex; 
       justify-content: space-between;
       align-items: center; 
-      margin-bottom: 20px;
-      padding-bottom: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
       border-bottom: 2px solid var(--sakura-lighter);
     }
     .diag-title {
-      font-size: 18px; 
-      font-weight: 700;
+      font-size: 22px; 
+      font-weight: 800;
       color: var(--gray-900); 
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
       font-family: 'Noto Serif SC', serif;
     }
     .score-wrap { text-align: right; }
     .score-badge {
-      font-size: 32px; 
-      font-weight: 800;
+      font-size: 40px; 
+      font-weight: 900;
       color: var(--sakura-primary); 
       line-height: 1;
+      font-family: 'Inter', sans-serif;
     }
     .score-label { 
-      font-size: 11px; 
+      font-size: 12px; 
       color: var(--gray-500); 
-      margin-top: 4px;
+      margin-top: 6px;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .diag-comment {
-      font-size: 13px; 
+      font-size: 14px; 
       color: var(--gray-700);
       background: var(--sakura-lighter); 
-      border: 1px solid var(--sakura-primary);
-      border-radius: var(--radius-sm); 
-      padding: 12px 16px; 
-      margin-bottom: 20px;
-      line-height: 1.7;
+      border: 1.5px solid var(--sakura-primary);
+      border-radius: var(--radius); 
+      padding: 16px 18px; 
+      margin-bottom: 24px;
+      line-height: 1.8;
+      font-weight: 500;
     }
-    .diag-section { margin-bottom: 16px; }
+    .diag-section { margin-bottom: 20px; }
     .diag-section-title {
-      font-size: 11px; 
-      font-weight: 700;
+      font-size: 12px; 
+      font-weight: 800;
       text-transform: uppercase; 
-      letter-spacing: 0.6px;
-      color: var(--gray-600); 
-      margin-bottom: 8px;
+      letter-spacing: 0.8px;
+      color: var(--gray-700); 
+      margin-bottom: 12px;
     }
     .diag-item {
       background: var(--gray-50); 
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius-sm); 
-      padding: 10px 12px;
-      margin-bottom: 6px; 
-      font-size: 13px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius); 
+      padding: 12px 14px;
+      margin-bottom: 8px; 
+      font-size: 14px;
       transition: all 0.2s ease;
+      line-height: 1.6;
     }
     .diag-item:hover {
       background: var(--sakura-lighter);
       border-color: var(--sakura-primary);
+      transform: translateX(4px);
     }
     .diag-original { 
       color: var(--error); 
       text-decoration: line-through; 
-      margin-bottom: 4px; 
+      margin-bottom: 6px;
+      font-weight: 500;
     }
     .diag-suggestion { 
       color: var(--success);
-      font-weight: 500;
+      font-weight: 600;
     }
     .diag-empty { 
-      font-size: 13px; 
+      font-size: 14px; 
       color: var(--gray-400);
       text-align: center;
-      padding: 20px;
+      padding: 24px;
     }
 
     @media (max-width: 1400px) {
@@ -1623,6 +1713,15 @@
           const matchScore = job.match_score || 70;
           const matchInfo = getMatchLevel(matchScore);
           
+          // 添加匹配度等级data属性用于CSS渐变
+          if (matchScore >= 80) {
+            card.setAttribute('data-match-level', 'high');
+          } else if (matchScore >= 60) {
+            card.setAttribute('data-match-level', 'mid');
+          } else {
+            card.setAttribute('data-match-level', 'low');
+          }
+          
           // 构建薪资显示HTML
           let salaryHTML = '';
           if (job.salary_range && job.salary_range.min_salary && job.salary_range.max_salary) {
@@ -1679,7 +1778,7 @@
             <div class="job-header">
               <div class="job-title" data-job-title="${job.title || ""}" data-city="${job.salary_range?.city || d.city || ''}" style="cursor: pointer; text-decoration: underline; text-decoration-color: transparent; transition: text-decoration-color 0.2s;">${job.title || ""}</div>
               <div class="match-badge-wrapper">
-                <span class="match-percentage">${matchScore}%</span>
+                <span class="match-percentage" data-score="${matchScore >= 80 ? 'high' : matchScore >= 60 ? 'mid' : 'low'}">${matchScore}%</span>
                 <span class="match-badge ${matchInfo.class}">${matchInfo.level}</span>
               </div>
             </div>
