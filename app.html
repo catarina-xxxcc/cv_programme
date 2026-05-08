@@ -2035,8 +2035,11 @@
    * @param {File} file - 选中的文件
    */
   function setSidebarFile(file) {
+    console.log('setSidebarFile called with:', file);
     sidebarSelectedFile = file || null;
     btnParseSidebar.disabled = !sidebarSelectedFile;
+    console.log('btnParseSidebar.disabled set to:', btnParseSidebar.disabled);
+    console.log('sidebarSelectedFile:', sidebarSelectedFile);
     
     // 更新上传区域显示
     const dropzoneContent = uploadDropzoneSidebar.querySelector('.dropzone-content');
@@ -2045,11 +2048,13 @@
         <span class="upload-icon">📎</span>
         <span class="upload-text" style="font-size: 12px;">${sidebarSelectedFile.name}</span>
       `;
+      console.log('Updated dropzone to show file name:', sidebarSelectedFile.name);
     } else {
       dropzoneContent.innerHTML = `
         <span class="upload-icon">📄</span>
         <span class="upload-text">上传新简历</span>
       `;
+      console.log('Reset dropzone to default state');
     }
     
     uploadProgressSidebar.hidden = true;
@@ -2087,7 +2092,9 @@
       alert("仅支持 .pdf / .docx 文件");
       return;
     }
+    console.log('File is valid, calling setSidebarFile');
     setSidebarFile(f);
+    console.log('After setSidebarFile, btnParseSidebar.disabled:', btnParseSidebar.disabled);
   });
   
   // 侧边栏拖拽区域事件
