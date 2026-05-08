@@ -1954,6 +1954,13 @@
   const progressBarSidebar = profileSidebar.querySelector('.progress-bar-sidebar');
   const progressTextSidebar = profileSidebar.querySelector('.progress-text-sidebar');
   
+  // 调试：检查元素是否找到
+  console.log('Sidebar elements:', {
+    sidebarFileInput,
+    uploadDropzoneSidebar,
+    btnParseSidebar
+  });
+  
   let sidebarSelectedFile = null;
   
   /**
@@ -2155,6 +2162,8 @@
   
   // 点击拖拽区域触发文件选择
   uploadDropzoneSidebar.addEventListener("click", () => {
+    console.log('Upload dropzone clicked!');
+    console.log('sidebarFileInput:', sidebarFileInput);
     sidebarFileInput.click();
   });
   
