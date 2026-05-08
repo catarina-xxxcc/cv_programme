@@ -1381,7 +1381,6 @@
             <div id="mbtiTraits" class="mbti-traits"></div>
           </div>
           <div class="mbti-info-right">
-            <div id="mbtiDesc" class="mbti-desc">AI 将根据你的简历内容推断你的 MBTI 人格类型</div>
             <!-- 人格深度解读 -->
             <div id="mbtiInsightBox" class="insight-box" style="display:none">
               <div class="insight-title">✦ 人格解读</div>
@@ -1723,7 +1722,6 @@
     // MBTI 徽章 + 名称
     document.getElementById("mbtiValue").textContent = mbti || "—";
     document.getElementById("mbtiName").textContent = MBTI_NAMES[mbti] ? `${MBTI_NAMES[mbti]}` : "上传简历后显示";
-    document.getElementById("mbtiDesc").textContent = d.mbti_description || "AI 将根据你的简历内容推断你的 MBTI 人格类型";
 
     // 特质标签 + 解读
     const detail = MBTI_DETAIL[mbti];
