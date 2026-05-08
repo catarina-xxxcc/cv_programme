@@ -1352,6 +1352,41 @@
         }
         return false;
       }
+    }
+    
+    /**
+     * 从 localStorage 加载数据
+     * @param {string} key - 存储键
+     * @returns {any} 解析后的数据，失败返回 null
+     */
+    static load(key) {
+      try {
+        const jsonData = localStorage.getItem(key);
+        return jsonData ? JSON.parse(jsonData) : null;
+      } catch (error) {
+        console.error('Failed to load from localStorage:', error);
+        return null;
+      }
+    }
+    
+    /**
+     * 从 localStorage 删除数据
+     * @param {string} key - 存储键
+     */
+    static remove(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.error('Failed to remove from localStorage:', error);
+      }
+    }
+    
+    /**
+     * 数据迁移（用于版本升级）
+     */
+    static migrate() {
+      const version = this.load(this.KEYS.VERSION);
+      
       if (!version) {
         // 首次使用，设置版本号
         this.save(this.KEYS.VERSION, this.CURRENT_VERSION);
@@ -1364,6 +1399,7 @@
       
       // 未来版本迁移逻辑
       console.log('Migrating data from version', version, 'to', this.CURRENT_VERSION);
+      this.save(this.KEYS.VERSION, this.CURRENT_VERSION);
     }
   }
   
