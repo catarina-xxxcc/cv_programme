@@ -1159,13 +1159,13 @@
   
   <!-- 上传区域 -->
   <section class="upload-area-section">
-    <input type="file" id="sidebarFileInput" accept=".pdf,.docx" hidden />
-    <div class="upload-dropzone-sidebar">
+    <input type="file" id="sidebarFileInput" accept=".pdf,.docx" style="display: none;" />
+    <label for="sidebarFileInput" class="upload-dropzone-sidebar" style="display: block; cursor: pointer;">
       <div class="dropzone-content">
         <span class="upload-icon">📄</span>
         <span class="upload-text">上传新简历</span>
       </div>
-    </div>
+    </label>
     <button class="btn-parse-sidebar" disabled>开始解析</button>
     <div class="upload-progress-sidebar" hidden>
       <div class="progress-bar-sidebar"></div>
@@ -2080,7 +2080,9 @@
   
   // 侧边栏文件输入事件
   sidebarFileInput.addEventListener("change", e => {
+    console.log('File input change event fired');
     const f = e.target.files[0];
+    console.log('Selected file:', f);
     if (!f || !validSidebarFile(f)) {
       alert("仅支持 .pdf / .docx 文件");
       return;
@@ -2091,43 +2093,28 @@
   // 侧边栏拖拽区域事件
   uploadDropzoneSidebar.addEventListener("dragover", e => {
     e.preventDefault();
+    e.stopPropagation();
     uploadDropzoneSidebar.style.background = 'var(--sakura-light)';
   });
   
-  uploadDropzoneSidebar.addEventListener("dragleave", () => {
+  uploadDropzoneSidebar.addEventListener("dragleave", e => {
+    e.preventDefault();
+    e.stopPropagation();
     uploadDropzoneSidebar.style.background = 'var(--sakura-lighter)';
   });
   
   uploadDropzoneSidebar.addEventListener("drop", e => {
     e.preventDefault();
+    e.stopPropagation();
+    console.log('File dropped');
     uploadDropzoneSidebar.style.background = 'var(--sakura-lighter)';
     const f = e.dataTransfer.files[0];
+    console.log('Dropped file:', f);
     if (!f || !validSidebarFile(f)) {
       alert("仅支持 .pdf / .docx 文件");
       return;
     }
     setSidebarFile(f);
-  });
-  
-  // 点击拖拽区域触发文件选择
-  uploadDropzoneSidebar.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Upload dropzone clicked!');
-    console.log('sidebarFileInput:', sidebarFileInput);
-    console.log('sidebarFileInput exists:', !!sidebarFileInput);
-    console.log('sidebarFileInput type:', sidebarFileInput?.type);
-    
-    if (sidebarFileInput) {
-      try {
-        sidebarFileInput.click();
-        console.log('File input click() called successfully');
-      } catch (error) {
-        console.error('Error calling file input click():', error);
-      }
-    } else {
-      console.error('sidebarFileInput element not found!');
-    }
   });
   
   // 侧边栏解析按钮事件
