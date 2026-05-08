@@ -2145,18 +2145,34 @@
    */
   function adjustMainLayout(state) {
     const layout = document.querySelector('.layout');
-    if (!layout) return;
+    const chatSection = document.querySelector('.chat-section');
     
     if (state === 'collapsed') {
-      layout.style.marginLeft = '84px';
+      if (layout) layout.style.marginLeft = '84px';
+      if (chatSection) {
+        chatSection.style.marginLeft = '116px'; // 84px + 32px padding
+        chatSection.style.marginRight = '32px';
+      }
     } else {
       // 根据屏幕宽度计算侧边栏宽度
       if (window.innerWidth > 1024) {
-        layout.style.marginLeft = 'calc(20% + 48px)';
+        if (layout) layout.style.marginLeft = 'calc(20% + 48px)';
+        if (chatSection) {
+          chatSection.style.marginLeft = 'calc(20% + 48px + 32px)';
+          chatSection.style.marginRight = '32px';
+        }
       } else if (window.innerWidth > 768) {
-        layout.style.marginLeft = 'calc(25% + 24px)';
+        if (layout) layout.style.marginLeft = 'calc(25% + 24px)';
+        if (chatSection) {
+          chatSection.style.marginLeft = 'calc(25% + 24px + 32px)';
+          chatSection.style.marginRight = '32px';
+        }
       } else {
-        layout.style.marginLeft = '24px';
+        if (layout) layout.style.marginLeft = '24px';
+        if (chatSection) {
+          chatSection.style.marginLeft = '56px'; // 24px + 32px
+          chatSection.style.marginRight = '32px';
+        }
       }
     }
   }
