@@ -123,7 +123,7 @@
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 80;
       box-shadow: 0 4px 20px rgba(255, 183, 197, 0.08);
     }
 
@@ -169,6 +169,8 @@
       align-items: start;
       position: relative;
       z-index: 1;
+      margin-left: calc(20% + 24px);
+      transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .left-col {
@@ -942,9 +944,420 @@
       0%, 60%, 100% { opacity: 0.3; transform: scale(1); }
       30% { opacity: 1; transform: scale(1.2); }
     }
+
+    /* ========== 用户侧边栏样式 ========== */
+    
+    /* 侧边栏容器 */
+    .profile-sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 20%;
+      min-width: 320px;
+      max-width: 400px;
+      background: var(--white);
+      border-right: 2px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 90;
+      overflow: hidden;
+      padding-top: 72px;
+    }
+    
+    .profile-sidebar[data-state="collapsed"] {
+      transform: translateX(calc(-100% + 60px));
+    }
+    
+    /* 切换按钮 */
+    .sidebar-toggle {
+      position: absolute;
+      right: 12px;
+      top: 16px;
+      width: 32px;
+      height: 32px;
+      background: var(--sakura-lighter);
+      border: 1.5px solid var(--sakura-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+    
+    .sidebar-toggle:hover {
+      background: var(--sakura-light);
+      transform: scale(1.1);
+    }
+    
+    .toggle-icon {
+      font-size: 14px;
+      color: var(--sakura-dark);
+      transition: transform 0.3s ease;
+    }
+    
+    .profile-sidebar[data-state="collapsed"] .toggle-icon {
+      transform: rotate(180deg);
+    }
+    
+    /* 用户信息区域 */
+    .user-info-section {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .user-avatar-wrapper {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 3px solid var(--sakura-light);
+    }
+    
+    .user-avatar-wrapper:hover {
+      transform: scale(1.05);
+      border-color: var(--sakura-primary);
+    }
+    
+    .user-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background: var(--sakura-lighter);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+    
+    .user-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .user-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gray-800);
+      text-align: center;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      cursor: text;
+      min-width: 80px;
+      outline: none;
+    }
+    
+    .user-name:hover {
+      border-color: var(--gray-300);
+      background: var(--gray-50);
+    }
+    
+    .user-name:focus {
+      border-color: var(--sakura-primary);
+      background: var(--white);
+    }
+    
+    .user-name:empty::before {
+      content: attr(data-placeholder);
+      color: var(--gray-400);
+    }
+    
+    /* 简历列表区域 */
+    .resume-list-section {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .resume-list-section .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--gray-600);
+      margin-bottom: 12px;
+    }
+    
+    .resume-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    
+    .resume-item {
+      background: var(--gray-50);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .resume-item:hover {
+      background: var(--sakura-lighter);
+      border-color: var(--sakura-primary);
+      transform: translateX(4px);
+    }
+    
+    .resume-item[data-active="true"] {
+      background: var(--sakura-light);
+      border-color: var(--sakura-primary);
+      box-shadow: 0 2px 8px rgba(255, 183, 197, 0.2);
+    }
+    
+    .resume-item-content {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    
+    .resume-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    
+    .resume-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .resume-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .resume-meta {
+      font-size: 11px;
+      color: var(--gray-500);
+      display: flex;
+      gap: 8px;
+    }
+    
+    .resume-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .active-indicator {
+      font-size: 16px;
+      color: var(--sakura-primary);
+    }
+    
+    .btn-delete {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      padding: 4px;
+    }
+    
+    .resume-item:hover .btn-delete {
+      opacity: 1;
+    }
+    
+    .btn-delete:hover {
+      transform: scale(1.2);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--gray-400);
+      font-size: 13px;
+    }
+    
+    .resume-list:not(:empty) + .empty-state {
+      display: none;
+    }
+    
+    /* 上传区域 */
+    .upload-area-section {
+      padding: 20px;
+      border-top: 1px solid var(--gray-200);
+      background: var(--gray-50);
+    }
+    
+    .upload-dropzone-sidebar {
+      border: 2px dashed var(--sakura-primary);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      background: var(--sakura-lighter);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 12px;
+    }
+    
+    .upload-dropzone-sidebar:hover {
+      background: var(--sakura-light);
+      transform: scale(1.02);
+    }
+    
+    .dropzone-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .upload-icon {
+      font-size: 28px;
+    }
+    
+    .upload-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    
+    .btn-parse-sidebar {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #FFB7C5 0%, #FF9DB3 100%);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(255, 183, 197, 0.3);
+    }
+    
+    .btn-parse-sidebar:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 183, 197, 0.4);
+    }
+    
+    .btn-parse-sidebar:disabled {
+      background: var(--gray-300);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .upload-progress-sidebar {
+      margin-top: 12px;
+      text-align: center;
+    }
+    
+    .progress-bar-sidebar {
+      height: 4px;
+      background: linear-gradient(90deg, #FFB7C5, #FF9DB3);
+      border-radius: var(--radius-full);
+      transition: width 0.3s ease;
+      margin-bottom: 6px;
+    }
+    
+    .progress-text-sidebar {
+      font-size: 11px;
+      color: var(--gray-600);
+      font-weight: 600;
+    }
+    
+    /* 主布局调整 - 为侧边栏留出空间 */
+    body {
+      padding-left: 0;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 1024px) {
+      .profile-sidebar {
+        width: 25%;
+        min-width: 280px;
+      }
+      
+      .layout {
+        margin-left: calc(25% + 24px);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .profile-sidebar {
+        width: 100%;
+        max-width: 100%;
+        transform: translateX(-100%);
+      }
+      
+      .profile-sidebar[data-state="expanded"] {
+        transform: translateX(0);
+      }
+      
+      .layout {
+        margin-left: 24px !important;
+      }
+    }
+    
+    /* ========== 结束：用户侧边栏样式 ========== */
   </style>
 </head>
 <body>
+
+<!-- 用户侧边栏 -->
+<aside id="profileSidebar" class="profile-sidebar" data-state="expanded">
+  <!-- 切换按钮 -->
+  <button class="sidebar-toggle" aria-label="切换侧边栏" aria-controls="profileSidebar" aria-expanded="true">
+    <span class="toggle-icon">◀</span>
+  </button>
+  
+  <!-- 用户信息区域 -->
+  <section class="user-info-section">
+    <div class="user-avatar-wrapper" role="button" tabindex="0" aria-label="点击上传头像">
+      <div class="user-avatar-placeholder">👤</div>
+      <input type="file" id="avatarInput" accept="image/*" style="display: none;" />
+    </div>
+    <div class="user-name" contenteditable="true" data-placeholder="用户">用户</div>
+  </section>
+  
+  <!-- 简历列表区域 -->
+  <section class="resume-list-section" aria-labelledby="resumeListTitle">
+    <h3 id="resumeListTitle" class="section-title">
+      我的简历 (<span class="resume-count" aria-live="polite">0</span>)
+    </h3>
+    <ul class="resume-list" role="list"></ul>
+    <div class="empty-state">还没有上传简历</div>
+  </section>
+  
+  <!-- 上传区域 -->
+  <section class="upload-area-section">
+    <div class="upload-dropzone-sidebar">
+      <input type="file" id="sidebarFileInput" accept=".pdf,.docx" hidden />
+      <div class="dropzone-content">
+        <span class="upload-icon">📄</span>
+        <span class="upload-text">上传新简历</span>
+      </div>
+    </div>
+    <button class="btn-parse-sidebar" disabled>开始解析</button>
+    <div class="upload-progress-sidebar" hidden>
+      <div class="progress-bar-sidebar"></div>
+      <span class="progress-text-sidebar">0%</span>
+    </div>
+  </section>
+</aside>
 
 <header>
   <div class="logo">小小求职拿下 <span class="sparkle">✦</span></div>
@@ -1118,6 +1531,173 @@
 <script>
   const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
   const API_BASE_URL = (window.APP_CONFIG?.API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
+
+  // ========== StorageManager 工具类 ==========
+  
+  class StorageManager {
+    static KEYS = {
+      USER_PROFILE: 'userProfile',
+      RESUMES: 'resumes',
+      ACTIVE_RESUME: 'activeResumeId',
+      SIDEBAR_STATE: 'sidebarState',
+      VERSION: 'version'
+    };
+    
+    static CURRENT_VERSION = '1.0';
+    
+    /**
+     * 保存数据到 localStorage
+     * @param {string} key - 存储键
+     * @param {any} data - 要存储的数据
+     * @returns {boolean} 是否成功
+     */
+    static save(key, data) {
+      try {
+        const jsonData = JSON.stringify(data);
+        localStorage.setItem(key, jsonData);
+        return true;
+      } catch (error) {
+        if (error.name === 'QuotaExceededError') {
+          console.error('LocalStorage quota exceeded');
+          alert('存储空间不足，请删除一些旧简历');
+        } else {
+          console.error('Failed to save to localStorage:', error);
+        }
+        return false;
+      }
+    }
+    
+    /**
+     * 从 localStorage 加载数据
+     * @param {string} key - 存储键
+     * @returns {any|null} 加载的数据或 null
+     */
+    static load(key) {
+      try {
+        const jsonData = localStorage.getItem(key);
+        if (!jsonData) return null;
+        return JSON.parse(jsonData);
+      } catch (error) {
+        console.error('Failed to load from localStorage:', error);
+        return null;
+      }
+    }
+    
+    /**
+     * 删除 localStorage 中的数据
+     * @param {string} key - 存储键
+     */
+    static remove(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.error('Failed to remove from localStorage:', error);
+      }
+    }
+    
+    /**
+     * 清空所有数据
+     */
+    static clear() {
+      try {
+        Object.values(this.KEYS).forEach(key => {
+          localStorage.removeItem(key);
+        });
+      } catch (error) {
+        console.error('Failed to clear localStorage:', error);
+      }
+    }
+    
+    /**
+     * 获取存储使用量（估算）
+     * @returns {number} 字节数
+     */
+    static getStorageSize() {
+      let total = 0;
+      try {
+        for (let key in localStorage) {
+          if (localStorage.hasOwnProperty(key)) {
+            total += localStorage[key].length + key.length;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to calculate storage size:', error);
+      }
+      return total;
+    }
+    
+    /**
+     * 验证数据结构
+     * @param {string} key - 存储键
+     * @param {any} data - 要验证的数据
+     * @returns {boolean} 是否有效
+     */
+    static validateData(key, data) {
+      if (!data) return false;
+      
+      switch (key) {
+        case this.KEYS.USER_PROFILE:
+          return typeof data === 'object' && 
+                 typeof data.name === 'string' &&
+                 typeof data.createdAt === 'number';
+        
+        case this.KEYS.RESUMES:
+          return Array.isArray(data) && data.every(resume => 
+            typeof resume === 'object' &&
+            typeof resume.id === 'string' &&
+            typeof resume.fileName === 'string' &&
+            typeof resume.uploadTime === 'number'
+          );
+        
+        case this.KEYS.ACTIVE_RESUME:
+          return typeof data === 'string';
+        
+        case this.KEYS.SIDEBAR_STATE:
+          return data === 'expanded' || data === 'collapsed';
+        
+        default:
+          return true;
+      }
+    }
+    
+    /**
+     * 初始化数据迁移
+     */
+    static migrate() {
+      const version = this.load(this.KEYS.VERSION);
+      
+      if (!version) {
+        // 首次使用，设置版本号
+        this.save(this.KEYS.VERSION, this.CURRENT_VERSION);
+        return;
+      }
+      
+      if (version === this.CURRENT_VERSION) {
+        return;
+      }
+      
+      // 未来版本迁移逻辑
+      console.log('Migrating data from version', version, 'to', this.CURRENT_VERSION);
+    }
+  }
+  
+  /**
+   * 生成 UUID v4
+   * @returns {string} UUID
+   */
+  function generateUUID() {
+    if (crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // Polyfill for older browsers
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+  
+  // ========== 结束：StorageManager ==========
 
   // MBTI 中文名称映射
   const MBTI_NAMES = {
@@ -1729,6 +2309,146 @@
       uploadBtn.disabled = !selectedFile;
     }
   });
+  
+  // ========== 侧边栏功能初始化 ==========
+  
+  // 初始化数据迁移
+  StorageManager.migrate();
+  
+  // 侧边栏元素
+  const profileSidebar = document.getElementById('profileSidebar');
+  const sidebarToggle = profileSidebar.querySelector('.sidebar-toggle');
+  const userNameEl = profileSidebar.querySelector('.user-name');
+  const userAvatarWrapper = profileSidebar.querySelector('.user-avatar-wrapper');
+  const avatarInput = document.getElementById('avatarInput');
+  const resumeList = profileSidebar.querySelector('.resume-list');
+  const resumeCount = profileSidebar.querySelector('.resume-count');
+  const sidebarFileInput = document.getElementById('sidebarFileInput');
+  const uploadDropzoneSidebar = profileSidebar.querySelector('.upload-dropzone-sidebar');
+  const btnParseSidebar = profileSidebar.querySelector('.btn-parse-sidebar');
+  const uploadProgressSidebar = profileSidebar.querySelector('.upload-progress-sidebar');
+  const progressBarSidebar = profileSidebar.querySelector('.progress-bar-sidebar');
+  const progressTextSidebar = profileSidebar.querySelector('.progress-text-sidebar');
+  
+  let sidebarSelectedFile = null;
+  
+  /**
+   * 切换侧边栏展开/收起状态
+   */
+  function toggleSidebar() {
+    const currentState = profileSidebar.getAttribute('data-state');
+    const newState = currentState === 'expanded' ? 'collapsed' : 'expanded';
+    
+    profileSidebar.setAttribute('data-state', newState);
+    sidebarToggle.setAttribute('aria-expanded', newState === 'expanded');
+    
+    // 保存状态到 localStorage
+    StorageManager.save(StorageManager.KEYS.SIDEBAR_STATE, newState);
+    
+    // 调整主布局
+    adjustMainLayout(newState);
+    
+    // 屏幕阅读器通知
+    announceToScreenReader(`侧边栏已${newState === 'expanded' ? '展开' : '收起'}`);
+  }
+  
+  /**
+   * 调整主布局以适应侧边栏状态
+   * @param {string} state - 'expanded' 或 'collapsed'
+   */
+  function adjustMainLayout(state) {
+    const layout = document.querySelector('.layout');
+    if (!layout) return;
+    
+    if (state === 'collapsed') {
+      layout.style.marginLeft = '84px';
+    } else {
+      // 根据屏幕宽度计算侧边栏宽度
+      if (window.innerWidth > 1024) {
+        layout.style.marginLeft = 'calc(20% + 24px)';
+      } else if (window.innerWidth > 768) {
+        layout.style.marginLeft = 'calc(25% + 24px)';
+      } else {
+        layout.style.marginLeft = '24px';
+      }
+    }
+  }
+  
+  /**
+   * 屏幕阅读器通知
+   * @param {string} message - 通知消息
+   */
+  function announceToScreenReader(message) {
+    // 创建或获取 live region
+    let liveRegion = document.getElementById('sr-live-region');
+    if (!liveRegion) {
+      liveRegion = document.createElement('div');
+      liveRegion.id = 'sr-live-region';
+      liveRegion.className = 'sr-only';
+      liveRegion.setAttribute('role', 'status');
+      liveRegion.setAttribute('aria-live', 'polite');
+      liveRegion.setAttribute('aria-atomic', 'true');
+      liveRegion.style.position = 'absolute';
+      liveRegion.style.left = '-10000px';
+      liveRegion.style.width = '1px';
+      liveRegion.style.height = '1px';
+      liveRegion.style.overflow = 'hidden';
+      document.body.appendChild(liveRegion);
+    }
+    
+    liveRegion.textContent = message;
+    setTimeout(() => liveRegion.textContent = '', 1000);
+  }
+  
+  /**
+   * 恢复侧边栏状态
+   */
+  function restoreSidebarState() {
+    const savedState = StorageManager.load(StorageManager.KEYS.SIDEBAR_STATE);
+    
+    // 检查是否是首次访问
+    const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];
+    const isFirstVisit = resumes.length === 0;
+    
+    if (isFirstVisit) {
+      // 首次访问，默认展开
+      profileSidebar.setAttribute('data-state', 'expanded');
+      sidebarToggle.setAttribute('aria-expanded', 'true');
+    } else if (savedState) {
+      // 恢复保存的状态
+      profileSidebar.setAttribute('data-state', savedState);
+      sidebarToggle.setAttribute('aria-expanded', savedState === 'expanded');
+    }
+    
+    // 调整布局
+    adjustMainLayout(profileSidebar.getAttribute('data-state'));
+  }
+  
+  // 绑定切换按钮事件
+  sidebarToggle.addEventListener('click', toggleSidebar);
+  
+  // 键盘支持：Escape 键收起侧边栏（移动端）
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && window.innerWidth < 768) {
+      if (profileSidebar.getAttribute('data-state') === 'expanded') {
+        toggleSidebar();
+      }
+    }
+  });
+  
+  // 窗口大小改变时调整布局
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      adjustMainLayout(profileSidebar.getAttribute('data-state'));
+    }, 200);
+  });
+  
+  // 页面加载时恢复状态
+  restoreSidebarState();
+  
+  // ========== 结束：侧边栏功能 ==========
 </script>
 </body>
 </html>
