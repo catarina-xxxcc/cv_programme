@@ -169,7 +169,7 @@
       max-width: 1800px;
       margin: 32px auto;
       padding: 0 32px;
-      align-items: start;
+      align-items: stretch;
       position: relative;
       z-index: 1;
       margin-left: calc(20% + 48px);
@@ -309,23 +309,26 @@
       border: 2px solid var(--gray-200);
       border-radius: 12px;
       padding: 20px;
+      padding-top: 24px;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       background: var(--white);
       display: flex;
       flex-direction: column;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
     
-    /* 匹配度渐变背景 */
+    /* 匹配度渐变背景 - 顶部装饰条 */
     .job-card[data-match-level="high"]::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #FF9DB3 0%, #FFB7C5 100%);
+      height: 5px;
+      background: linear-gradient(90deg, #FF9DB3 0%, #FFB7C5 50%, #FF9DB3 100%);
+      border-radius: 10px 10px 0 0;
+      z-index: 1;
     }
     
     .job-card[data-match-level="mid"]::before {
@@ -334,8 +337,10 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #FFD4DC 0%, #FFE4E9 100%);
+      height: 5px;
+      background: linear-gradient(90deg, #FFD4DC 0%, #FFE4E9 50%, #FFD4DC 100%);
+      border-radius: 10px 10px 0 0;
+      z-index: 1;
     }
     
     .job-card[data-match-level="low"]::before {
@@ -344,8 +349,10 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #F5F5F5 0%, #E5E5E5 100%);
+      height: 5px;
+      background: linear-gradient(90deg, #E5E5E5 0%, #F5F5F5 50%, #E5E5E5 100%);
+      border-radius: 10px 10px 0 0;
+      z-index: 1;
     }
     
     .job-card:hover {
@@ -436,19 +443,22 @@
     
     /* 匹配度颜色渐变 */
     .match-percentage[data-score="high"] {
-      background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+      background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(21, 128, 61, 0.2));
     }
     .match-percentage[data-score="mid"] {
-      background: linear-gradient(135deg, #a16207 0%, #ca8a04 100%);
+      background: linear-gradient(135deg, #a16207 0%, #eab308 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(161, 98, 7, 0.2));
     }
     .match-percentage[data-score="low"] {
       color: var(--gray-500);
+      font-weight: 800;
     }
     .match-low { background: var(--gray-200); color: var(--gray-600); }
 
@@ -556,7 +566,7 @@
       border: 2px solid var(--gray-200);
       display: flex;
       flex-direction: column;
-      min-height: 450px;
+      height: 100%;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
@@ -1698,7 +1708,8 @@
     jobsEl.innerHTML = "";
     const jobs = d.job_recommendations || [];
     if (jobs.length > 0) {
-      jobs.forEach(job => {
+      // 只显示前5个岗位推荐
+      jobs.slice(0, 5).forEach(job => {
         try {
           // 验证并修正数据
           if (!validateJobData(job)) {
