@@ -1882,60 +1882,6 @@
       sendBtn.disabled = false;
     }
   }
-
-  uploadBtn.addEventListener("click", async () => {
-    if (!selectedFile) return;
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    statusMsg.textContent = "正在解析，请稍候...";
-    statusMsg.className = "status-msg";
-    uploadBtn.disabled = true;
-    setProgress(0, "准备上传...");
-
-    try {
-      const data = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        let parseStarted = false, parsePct = 75;
-
-        function startParse() {
-          if (parseStarted) return; parseStarted = true;
-          setProgress(72, "上传完成，AI 解析中...");
-          clearTimer();
-          parseTimer = setInterval(() => { parsePct = Math.min(95, parsePct + 1); setProgress(parsePct, "AI 解析中，请稍候..."); }, 350);
-        }
-
-        xhr.upload.onprogress = e => { if (e.lengthComputable) setProgress((e.loaded / e.total) * 70, "文件上传中..."); };
-        xhr.upload.onload = startParse;
-        xhr.onreadystatechange = () => { if (xhr.readyState >= 2) startParse(); };
-        xhr.onload = () => {
-          clearTimer();
-          try {
-            const payload = JSON.parse(xhr.responseText || "{}");
-            if (xhr.status < 200 || xhr.status >= 300) { reject(new Error(payload.detail || "请求失败")); return; }
-            setProgress(100, "解析完成");
-            resolve(payload);
-          } catch { reject(new Error("服务返回格式异常")); }
-        };
-        xhr.onerror = () => { clearTimer(); reject(new Error("网络错误，上传失败")); };
-        xhr.timeout = 180000;
-        xhr.ontimeout = () => { clearTimer(); reject(new Error("请求超时，请稍后重试")); };
-        xhr.open("POST", `${API_BASE_URL}/upload`);
-        xhr.send(formData);
-      });
-
-      statusMsg.textContent = "解析成功 ✓";
-      statusMsg.className = "status-msg ok";
-      renderResult(data);
-    } catch (err) {
-      clearTimer();
-      statusMsg.textContent = "解析失败：" + err.message;
-      statusMsg.className = "status-msg error";
-      setProgress(0, "上传失败");
-    } finally {
-      uploadBtn.disabled = !selectedFile;
-    }
-  });
   
   // ========== 侧边栏功能初始化 ==========
   
