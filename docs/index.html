@@ -2152,26 +2152,30 @@
       if (chatSection) {
         chatSection.style.marginLeft = '116px'; // 84px + 32px padding
         chatSection.style.marginRight = '32px';
+        chatSection.style.maxWidth = 'calc(100vw - 116px - 32px)';
       }
     } else {
       // 根据屏幕宽度计算侧边栏宽度
       if (window.innerWidth > 1024) {
         if (layout) layout.style.marginLeft = 'calc(20% + 48px)';
         if (chatSection) {
-          chatSection.style.marginLeft = 'calc(20% + 48px + 32px)';
+          chatSection.style.marginLeft = 'calc(20% + 80px)'; // 20% + 48px + 32px
           chatSection.style.marginRight = '32px';
+          chatSection.style.maxWidth = 'calc(80% - 80px - 32px)';
         }
       } else if (window.innerWidth > 768) {
         if (layout) layout.style.marginLeft = 'calc(25% + 24px)';
         if (chatSection) {
-          chatSection.style.marginLeft = 'calc(25% + 24px + 32px)';
+          chatSection.style.marginLeft = 'calc(25% + 56px)'; // 25% + 24px + 32px
           chatSection.style.marginRight = '32px';
+          chatSection.style.maxWidth = 'calc(75% - 56px - 32px)';
         }
       } else {
         if (layout) layout.style.marginLeft = '24px';
         if (chatSection) {
           chatSection.style.marginLeft = '56px'; // 24px + 32px
           chatSection.style.marginRight = '32px';
+          chatSection.style.maxWidth = 'calc(100vw - 56px - 32px)';
         }
       }
     }
