@@ -687,11 +687,10 @@
 
     /* ── 聊天区域 ── */
     .chat-section {
-      max-width: 1800px;
+      max-width: calc(1800px - 20% - 48px);
       margin: 0 auto 40px;
-      padding: 0 32px;
-      margin-left: calc(20% + 48px);
-      transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      margin-left: calc(20% + 48px + 32px);
+      margin-right: 32px;
     }
     .chat-panel {
       background: var(--white);
@@ -713,10 +712,16 @@
       font-size: 16px;
     }
     .chat-header-text h3 {
-      font-size: 14px; font-weight: 700; color: var(--ink);
-      letter-spacing: -0.2px;
+      font-size: 18px; font-weight: 800; color: var(--gray-900);
+      letter-spacing: 0.2px;
+      font-family: 'Noto Serif SC', serif;
     }
-    .chat-header-text p { font-size: 11px; color: var(--ink-4); margin-top: 1px; }
+    .chat-header-text p { 
+      font-size: 14px; 
+      color: var(--gray-600); 
+      margin-top: 4px;
+      font-weight: 500;
+    }
 
     /* 快捷提示词 */
     .chat-prompts {
@@ -1399,7 +1404,7 @@
     <div class="chat-header">
       <div class="chat-header-icon">✍️</div>
       <div class="chat-header-text">
-        <h3>没有简历？让 AI 帮你生成一份</h3>
+        <h3>简历助手</h3>
         <p>告诉我你的经历，我来帮你写</p>
       </div>
     </div>
