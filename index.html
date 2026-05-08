@@ -1023,6 +1023,9 @@
       cursor: pointer;
       transition: all 0.3s ease;
       margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+      pointer-events: auto;
     }
     
     .upload-dropzone-sidebar:hover {
@@ -1156,8 +1159,8 @@
   
   <!-- 上传区域 -->
   <section class="upload-area-section">
+    <input type="file" id="sidebarFileInput" accept=".pdf,.docx" hidden />
     <div class="upload-dropzone-sidebar">
-      <input type="file" id="sidebarFileInput" accept=".pdf,.docx" hidden />
       <div class="dropzone-content">
         <span class="upload-icon">📄</span>
         <span class="upload-text">上传新简历</span>
@@ -1996,7 +1999,7 @@
     } else {
       // 根据屏幕宽度计算侧边栏宽度
       if (window.innerWidth > 1024) {
-        layout.style.marginLeft = 'calc(20% + 24px)';
+        layout.style.marginLeft = 'calc(20% + 48px)';
       } else if (window.innerWidth > 768) {
         layout.style.marginLeft = 'calc(25% + 24px)';
       } else {
@@ -2161,10 +2164,24 @@
   });
   
   // 点击拖拽区域触发文件选择
-  uploadDropzoneSidebar.addEventListener("click", () => {
+  uploadDropzoneSidebar.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log('Upload dropzone clicked!');
     console.log('sidebarFileInput:', sidebarFileInput);
-    sidebarFileInput.click();
+    console.log('sidebarFileInput exists:', !!sidebarFileInput);
+    console.log('sidebarFileInput type:', sidebarFileInput?.type);
+    
+    if (sidebarFileInput) {
+      try {
+        sidebarFileInput.click();
+        console.log('File input click() called successfully');
+      } catch (error) {
+        console.error('Error calling file input click():', error);
+      }
+    } else {
+      console.error('sidebarFileInput element not found!');
+    }
   });
   
   // 侧边栏解析按钮事件
