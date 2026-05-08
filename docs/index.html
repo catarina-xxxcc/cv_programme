@@ -975,7 +975,8 @@
     .sidebar-toggle {
       position: absolute;
       right: 12px;
-      top: 16px;
+      top: 50%;
+      transform: translateY(-50%);
       width: 32px;
       height: 32px;
       background: var(--sakura-lighter);
@@ -2447,6 +2448,307 @@
   
   // 页面加载时恢复状态
   restoreSidebarState();
+  
+  // ========== 侧边栏上传功能 ==========
+  
+  /**
+   * 设置侧边栏选中的文件
+   * @param {File} file - 选中的文件
+   */
+  function setSidebarFile(file) {
+    sidebarSelectedFile = file || null;
+    btnParseSidebar.disabled = !sidebarSelectedFile;
+    
+    // 更新上传区域显示
+    const dropzoneContent = uploadDropzoneSidebar.querySelector('.dropzone-content');
+    if (sidebarSelectedFile) {
+      dropzoneContent.innerHTML = `
+        <span class="upload-icon">📎</span>
+        <span class="upload-text" style="font-size: 12px;">${sidebarSelectedFile.name}</span>
+      `;
+    } else {
+      dropzoneContent.innerHTML = `
+        <span class="upload-icon">📄</span>
+        <span class="upload-text">上传新简历</span>
+      `;
+    }
+    
+    uploadProgressSidebar.hidden = true;
+    progressBarSidebar.style.width = '0%';
+    progressTextSidebar.textContent = '0%';
+  }
+  
+  /**
+   * 验证文件类型
+   * @param {File} file - 要验证的文件
+   * @returns {boolean} 是否有效
+   */
+  function validSidebarFile(file) {
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+    return ext === "pdf" || ext === "docx";
+  }
+  
+  /**
+   * 设置侧边栏上传进度
+   * @param {number} percent - 进度百分比
+   */
+  function setSidebarProgress(percent) {
+    const p = Math.max(0, Math.min(100, Math.round(percent)));
+    uploadProgressSidebar.hidden = false;
+    progressBarSidebar.style.width = p + "%";
+    progressTextSidebar.textContent = p + "%";
+  }
+  
+  // 侧边栏文件输入事件
+  sidebarFileInput.addEventListener("change", e => {
+    const f = e.target.files[0];
+    if (!f || !validSidebarFile(f)) {
+      alert("仅支持 .pdf / .docx 文件");
+      return;
+    }
+    setSidebarFile(f);
+  });
+  
+  // 侧边栏拖拽区域事件
+  uploadDropzoneSidebar.addEventListener("dragover", e => {
+    e.preventDefault();
+    uploadDropzoneSidebar.style.background = 'var(--sakura-light)';
+  });
+  
+  uploadDropzoneSidebar.addEventListener("dragleave", () => {
+    uploadDropzoneSidebar.style.background = 'var(--sakura-lighter)';
+  });
+  
+  uploadDropzoneSidebar.addEventListener("drop", e => {
+    e.preventDefault();
+    uploadDropzoneSidebar.style.background = 'var(--sakura-lighter)';
+    const f = e.dataTransfer.files[0];
+    if (!f || !validSidebarFile(f)) {
+      alert("仅支持 .pdf / .docx 文件");
+      return;
+    }
+    setSidebarFile(f);
+  });
+  
+  // 点击拖拽区域触发文件选择
+  uploadDropzoneSidebar.addEventListener("click", () => {
+    sidebarFileInput.click();
+  });
+  
+  // 侧边栏解析按钮事件
+  btnParseSidebar.addEventListener("click", async () => {
+    if (!sidebarSelectedFile) return;
+    
+    const formData = new FormData();
+    formData.append("file", sidebarSelectedFile);
+    
+    btnParseSidebar.disabled = true;
+    setSidebarProgress(0);
+    
+    try {
+      const data = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        let parseStarted = false, parsePct = 75;
+        
+        function startParse() {
+          if (parseStarted) return;
+          parseStarted = true;
+          setSidebarProgress(72);
+          
+          const parseTimer = setInterval(() => {
+            parsePct = Math.min(95, parsePct + 1);
+            setSidebarProgress(parsePct);
+          }, 350);
+          
+          xhr.parseTimer = parseTimer;
+        }
+        
+        xhr.upload.onprogress = e => {
+          if (e.lengthComputable) setSidebarProgress((e.loaded / e.total) * 70);
+        };
+        xhr.upload.onload = startParse;
+        xhr.onreadystatechange = () => { if (xhr.readyState >= 2) startParse(); };
+        xhr.onload = () => {
+          if (xhr.parseTimer) clearInterval(xhr.parseTimer);
+          try {
+            const payload = JSON.parse(xhr.responseText || "{}");
+            if (xhr.status < 200 || xhr.status >= 300) {
+              reject(new Error(payload.detail || "请求失败"));
+              return;
+            }
+            setSidebarProgress(100);
+            resolve(payload);
+          } catch {
+            reject(new Error("服务返回格式异常"));
+          }
+        };
+        xhr.onerror = () => {
+          if (xhr.parseTimer) clearInterval(xhr.parseTimer);
+          reject(new Error("网络错误，上传失败"));
+        };
+        xhr.timeout = 180000;
+        xhr.ontimeout = () => {
+          if (xhr.parseTimer) clearInterval(xhr.parseTimer);
+          reject(new Error("请求超时，请稍后重试"));
+        };
+        xhr.open("POST", `${API_BASE_URL}/upload`);
+        xhr.send(formData);
+      });
+      
+      // 解析成功，渲染结果
+      renderResult(data);
+      
+      // 保存简历到 localStorage
+      const resume = {
+        id: generateUUID(),
+        fileName: sidebarSelectedFile.name,
+        uploadTime: Date.now(),
+        fileSize: sidebarSelectedFile.size,
+        fileType: sidebarSelectedFile.name.endsWith('.pdf') ? 'pdf' : 'docx',
+        parseResult: data
+      };
+      
+      const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];
+      resumes.unshift(resume);
+      StorageManager.save(StorageManager.KEYS.RESUMES, resumes);
+      StorageManager.save(StorageManager.KEYS.ACTIVE_RESUME, resume.id);
+      
+      // 更新简历列表显示
+      renderResumeList();
+      
+      // 首次上传后自动收起侧边栏
+      const isFirstUpload = resumes.length === 1;
+      if (isFirstUpload) {
+        setTimeout(() => {
+          toggleSidebar();
+        }, 1000);
+      }
+      
+      // 清空选择
+      setSidebarFile(null);
+      sidebarFileInput.value = '';
+      
+    } catch (err) {
+      alert("解析失败：" + err.message);
+      setSidebarProgress(0);
+    } finally {
+      btnParseSidebar.disabled = !sidebarSelectedFile;
+    }
+  });
+  
+  /**
+   * 渲染简历列表
+   */
+  function renderResumeList() {
+    const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];
+    const activeResumeId = StorageManager.load(StorageManager.KEYS.ACTIVE_RESUME);
+    
+    resumeList.innerHTML = '';
+    resumeCount.textContent = resumes.length;
+    
+    if (resumes.length === 0) {
+      return;
+    }
+    
+    resumes.forEach(resume => {
+      const li = document.createElement('li');
+      li.className = 'resume-item';
+      li.setAttribute('data-resume-id', resume.id);
+      li.setAttribute('data-active', resume.id === activeResumeId);
+      
+      const uploadDate = new Date(resume.uploadTime);
+      const dateStr = `${uploadDate.getMonth() + 1}-${uploadDate.getDate()} ${uploadDate.getHours()}:${String(uploadDate.getMinutes()).padStart(2, '0')}`;
+      const sizeStr = (resume.fileSize / 1024 / 1024).toFixed(1) + ' MB';
+      
+      li.innerHTML = `
+        <div class="resume-item-content">
+          <div class="resume-icon">📄</div>
+          <div class="resume-info">
+            <div class="resume-name">${resume.fileName}</div>
+            <div class="resume-meta">
+              <span class="upload-time">${dateStr}</span>
+              <span class="file-size">${sizeStr}</span>
+            </div>
+          </div>
+          <div class="resume-actions">
+            ${resume.id === activeResumeId ? '<span class="active-indicator">✓</span>' : ''}
+            <button class="btn-delete" aria-label="删除简历" onclick="deleteResume('${resume.id}')">🗑️</button>
+          </div>
+        </div>
+      `;
+      
+      // 点击切换简历
+      li.addEventListener('click', (e) => {
+        if (!e.target.closest('.btn-delete')) {
+          switchResume(resume.id);
+        }
+      });
+      
+      resumeList.appendChild(li);
+    });
+  }
+  
+  /**
+   * 切换简历
+   * @param {string} resumeId - 简历 ID
+   */
+  function switchResume(resumeId) {
+    const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];
+    const resume = resumes.find(r => r.id === resumeId);
+    
+    if (!resume || !resume.parseResult) {
+      alert('简历数据不存在');
+      return;
+    }
+    
+    // 更新活动简历
+    StorageManager.save(StorageManager.KEYS.ACTIVE_RESUME, resumeId);
+    
+    // 渲染结果
+    renderResult(resume.parseResult);
+    
+    // 更新列表显示
+    renderResumeList();
+  }
+  
+  /**
+   * 删除简历
+   * @param {string} resumeId - 简历 ID
+   */
+  function deleteResume(resumeId) {
+    if (!confirm('确定要删除这份简历吗？')) {
+      return;
+    }
+    
+    const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];
+    const index = resumes.findIndex(r => r.id === resumeId);
+    
+    if (index === -1) return;
+    
+    resumes.splice(index, 1);
+    StorageManager.save(StorageManager.KEYS.RESUMES, resumes);
+    
+    // 如果删除的是活动简历，选择最新的
+    const activeResumeId = StorageManager.load(StorageManager.KEYS.ACTIVE_RESUME);
+    if (activeResumeId === resumeId) {
+      if (resumes.length > 0) {
+        switchResume(resumes[0].id);
+      } else {
+        StorageManager.remove(StorageManager.KEYS.ACTIVE_RESUME);
+        // 清空结果显示
+        document.getElementById("mbtiValue").textContent = "—";
+        document.getElementById("mbtiName").textContent = "上传简历后显示";
+        document.getElementById("jobsGrid").innerHTML = '';
+      }
+    }
+    
+    renderResumeList();
+  }
+  
+  // 页面加载时渲染简历列表
+  renderResumeList();
+  
+  // ========== 结束：侧边栏上传功能 ==========
   
   // ========== 结束：侧边栏功能 ==========
 </script>
