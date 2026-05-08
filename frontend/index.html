@@ -2119,10 +2119,18 @@
   
   // 侧边栏解析按钮事件
   btnParseSidebar.addEventListener("click", async () => {
-    if (!sidebarSelectedFile) return;
+    console.log('Parse button clicked');
+    console.log('sidebarSelectedFile:', sidebarSelectedFile);
+    
+    if (!sidebarSelectedFile) {
+      console.log('No file selected, returning');
+      return;
+    }
     
     const formData = new FormData();
     formData.append("file", sidebarSelectedFile);
+    
+    console.log('FormData created, starting upload to:', `${API_BASE_URL}/upload`);
     
     btnParseSidebar.disabled = true;
     setSidebarProgress(0);
@@ -2146,34 +2154,53 @@
         }
         
         xhr.upload.onprogress = e => {
-          if (e.lengthComputable) setSidebarProgress((e.loaded / e.total) * 70);
+          if (e.lengthComputable) {
+            const progress = (e.loaded / e.total) * 70;
+            console.log('Upload progress:', progress + '%');
+            setSidebarProgress(progress);
+          }
         };
-        xhr.upload.onload = startParse;
-        xhr.onreadystatechange = () => { if (xhr.readyState >= 2) startParse(); };
+        xhr.upload.onload = () => {
+          console.log('Upload complete, starting parse');
+          startParse();
+        };
+        xhr.onreadystatechange = () => { 
+          if (xhr.readyState >= 2) startParse(); 
+        };
         xhr.onload = () => {
+          console.log('XHR onload, status:', xhr.status);
+          console.log('Response:', xhr.responseText);
           if (xhr.parseTimer) clearInterval(xhr.parseTimer);
           try {
             const payload = JSON.parse(xhr.responseText || "{}");
             if (xhr.status < 200 || xhr.status >= 300) {
+              console.error('Server error:', payload);
               reject(new Error(payload.detail || "请求失败"));
               return;
             }
             setSidebarProgress(100);
+            console.log('Parse successful:', payload);
             resolve(payload);
-          } catch {
+          } catch (e) {
+            console.error('JSON parse error:', e);
             reject(new Error("服务返回格式异常"));
           }
         };
-        xhr.onerror = () => {
+        xhr.onerror = (e) => {
+          console.error('XHR error:', e);
           if (xhr.parseTimer) clearInterval(xhr.parseTimer);
           reject(new Error("网络错误，上传失败"));
         };
         xhr.timeout = 180000;
         xhr.ontimeout = () => {
+          console.error('XHR timeout');
           if (xhr.parseTimer) clearInterval(xhr.parseTimer);
           reject(new Error("请求超时，请稍后重试"));
         };
+        
+        console.log('Opening XHR connection...');
         xhr.open("POST", `${API_BASE_URL}/upload`);
+        console.log('Sending FormData...');
         xhr.send(formData);
       });
       
