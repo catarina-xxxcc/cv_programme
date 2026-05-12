@@ -1288,8 +1288,8 @@
     /* 智能解析按钮 */
     .btn-smart-parser {
       width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #FF9DB3 0%, #FFB7C5 100%);
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: var(--white);
       border: none;
       border-radius: var(--radius);
@@ -1297,17 +1297,79 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(255, 183, 197, 0.3);
-      margin-top: 12px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
+      gap: 12px;
+      text-align: left;
     }
     
     .btn-smart-parser:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 183, 197, 0.4);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.45);
+    }
+    
+    .btn-smart-parser:active {
+      transform: translateY(0);
+    }
+    
+    .btn-smart-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .btn-smart-text {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .btn-smart-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    
+    .btn-smart-desc {
+      font-size: 11px;
+      opacity: 0.85;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    
+    .btn-smart-arrow {
+      font-size: 16px;
+      opacity: 0.7;
+      transition: transform 0.3s;
+    }
+    
+    .btn-smart-parser:hover .btn-smart-arrow {
+      transform: translateX(3px);
+      opacity: 1;
+    }
+    
+    .smart-parser-section {
+      padding: 16px 20px 20px;
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    .smart-parser-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--sakura-light), transparent);
+    }
+    
+    .divider-text {
+      font-size: 11px;
+      color: var(--gray-500);
+      font-weight: 600;
+      white-space: nowrap;
     }
     
     /* 模态框遮罩 */
@@ -1991,11 +2053,22 @@
       <div class="progress-bar-sidebar"></div>
       <span class="progress-text-sidebar">0%</span>
     </div>
-    
-    <!-- 智能简历解析按钮 -->
+  </section>
+
+  <!-- 智能简历解析 - 独立区域 -->
+  <section class="smart-parser-section">
+    <div class="smart-parser-divider">
+      <span class="divider-line"></span>
+      <span class="divider-text">✨ 智能工具</span>
+      <span class="divider-line"></span>
+    </div>
     <button class="btn-smart-parser" id="btnSmartParser">
-      <span>📄</span>
-      <span>智能简历解析</span>
+      <span class="btn-smart-icon">🤖</span>
+      <span class="btn-smart-text">
+        <span class="btn-smart-title">智能简历解析</span>
+        <span class="btn-smart-desc">AI 提取简历信息，分字段存储</span>
+      </span>
+      <span class="btn-smart-arrow">→</span>
     </button>
   </section>
 </aside>
