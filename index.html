@@ -165,8 +165,7 @@
     .layout {
       display: grid;
       grid-template-columns: 420px 1fr;
-      column-gap: 32px;
-      row-gap: 36px;
+      gap: 32px;
       max-width: 1800px;
       margin: 32px auto;
       padding: 0 32px;
@@ -725,7 +724,7 @@
 
     /* ========== Agent 求职面板 ========== */
     .agent-section {
-      grid-column: 1 / -1;
+      margin: 8px 32px 40px calc(20% + 48px);
     }
 
     .agent-panel {
@@ -780,37 +779,41 @@
     }
 
     .agent-header-text p {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--gray-500);
       font-weight: 500;
-      margin-top: 4px;
-      line-height: 1.5;
+      margin-top: 2px;
     }
 
     .btn-clear-chat {
-      height: 40px;
-      background: linear-gradient(135deg, #FF9DB3 0%, #FFB7C5 100%);
+      background: none;
       border: none;
-      border-radius: var(--radius);
-      color: var(--white);
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 18px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 0 16px;
+      padding: 8px;
+      border-radius: var(--radius-sm);
       transition: all 0.2s ease;
-      flex-shrink: 0;
-      white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(255, 183, 197, 0.3);
+      opacity: 0.5;
     }
 
     .btn-clear-chat:hover {
-      filter: brightness(1.05);
-      transform: scale(1.02);
-      box-shadow: 0 6px 20px rgba(255, 183, 197, 0.4);
+      opacity: 1;
+      background: rgba(255, 183, 197, 0.2);
+    }
+
+    /* --- Welcome message (always visible) --- */
+    .agent-welcome {
+      padding: 16px 24px;
+      background: var(--sakura-lighter);
+      border-bottom: 1px solid rgba(255, 183, 197, 0.15);
+      flex-shrink: 0;
+    }
+
+    .agent-welcome p {
+      font-size: 14px;
+      color: var(--gray-700);
+      line-height: 1.7;
+      font-weight: 500;
     }
 
     /* --- Function cards --- */
@@ -896,38 +899,34 @@
       gap: 12px;
     }
 
-    /* Preset questions (居中) */
+    /* Preset questions */
     .preset-questions {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding: 16px 0 8px;
+      gap: 8px;
+      padding: 8px 0;
     }
 
     .preset-question {
-      max-width: 520px;
-      width: 100%;
-      padding: 14px 20px;
+      padding: 12px 16px;
       background: var(--sakura-lighter);
       border: 1.5px solid var(--sakura-primary);
       border-radius: var(--radius);
       cursor: pointer;
       transition: all 0.2s ease;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--gray-700);
-      line-height: 1.6;
-      text-align: center;
+      line-height: 1.5;
     }
 
     .preset-question:hover {
       background: var(--sakura-light);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-sakura);
+      transform: translateX(4px);
+      box-shadow: var(--shadow-sm);
     }
 
-    /* Chat messages (经典交替流) */
+    /* Chat messages inside agent */
     .msg { display: flex; gap: 10px; align-items: flex-start; }
     .msg.user { flex-direction: row-reverse; }
 
@@ -1520,6 +1519,10 @@
         margin-left: calc(25% + 24px);
       }
 
+      .agent-section {
+        margin-left: calc(25% + 24px);
+      }
+
       .agent-card {
         padding: 10px 12px;
       }
@@ -1542,6 +1545,11 @@
 
       .layout {
         margin-left: 24px !important;
+      }
+
+      .agent-section {
+        margin-left: 24px;
+        margin-right: 24px;
       }
 
       .agent-cards {
@@ -1718,6 +1726,7 @@
 
     </div>
   </div>
+</div>
 
 <!-- Agent 求职面板 -->
 <div class="agent-section">
@@ -1727,13 +1736,18 @@
       <div class="agent-header-left">
         <span class="agent-icon">🤖</span>
         <div class="agent-header-text">
-          <h3 id="agentTitle">求职小助手</h3>
-          <p id="agentSubtitle">同学你好👋，我是你的求职小助手。不管是想跨行转赛道、精修简历，还是想提前演练面试，我都会陪你一起复盘规划，助你顺利拿下心仪的 Offer！</p>
+          <h3 id="agentTitle">求职 Agent</h3>
+          <p id="agentSubtitle">温暖陪伴你的求职旅程 🌸</p>
         </div>
       </div>
-      <button class="btn-clear-chat" onclick="clearAgentChat()" title="开启新对话">
-        <span>开启新对话 +</span>
+      <button class="btn-clear-chat" onclick="clearAgentChat()" title="清除对话">
+        <span>🗑️</span>
       </button>
+    </div>
+
+    <!-- Welcome message (always visible) -->
+    <div class="agent-welcome" id="agentWelcome">
+      <p>同学你好👋，我是你的求职小助手。不管是想跨行转赛道、精修简历，还是想提前演练面试，我都会陪你一起复盘规划，助你顺利拿下心仪的 Offer！</p>
     </div>
 
     <!-- Function cards (horizontal) -->
@@ -1792,7 +1806,6 @@
       </button>
     </div>
   </div>
-</div>
 </div>
 
 <script src="./config.js"></script>
@@ -2306,16 +2319,19 @@
    */
   function updateAgentHeader(mode) {
     const titleEl = document.getElementById("agentTitle");
+    const subtitleEl = document.getElementById("agentSubtitle");
 
-    const titles = {
-      default:       "求职小助手",
-      career_switch: "求职小助手 · 换赛道",
-      resume_tailor: "求职小助手 · 修改简历",
-      career_planning: "求职小助手 · 职业规划",
-      interview_sim: "🎯 面试模拟中"
+    const headers = {
+      default:       { title: "求职 Agent",        subtitle: "温暖陪伴你的求职旅程 🌸" },
+      career_switch: { title: "求职 Agent · 换赛道",  subtitle: "帮你找到新方向 🚀" },
+      resume_tailor: { title: "求职 Agent · 修改简历", subtitle: "针对目标岗位优化 📝" },
+      career_planning: { title: "求职 Agent · 职业规划", subtitle: "规划你的未来 🗺️" },
+      interview_sim: { title: "🎯 面试模拟中",        subtitle: "面试模拟进行中..." }
     };
 
-    titleEl.textContent = titles[mode] || titles.default;
+    const h = headers[mode] || headers.default;
+    titleEl.textContent = h.title;
+    subtitleEl.textContent = h.subtitle;
   }
 
   /**
@@ -2333,7 +2349,7 @@
   }
 
   /**
-   * 获取当前简历上下文（包含完整信息，让 AI 充分感知已有数据）
+   * 获取当前简历上下文
    */
   function getResumeContext() {
     const activeResumeId = StorageManager.load(StorageManager.KEYS.ACTIVE_RESUME);
@@ -2351,18 +2367,9 @@
     return {
       has_resume: true,
       resume_id: activeResumeId,
-      candidate_name: d.name || "",
       candidate_summary: d.candidate_summary || "",
-      education: d.education || "",
-      school: d.school || "",
-      major: d.major || "",
-      key_skills: d.key_skills || [],
-      work_experience_years: d.work_experience_years || 0,
       inferred_mbti: d.inferred_mbti || "",
-      mbti_description: d.mbti_description || "",
-      city: d.city || "",
-      job_recommendations: d.job_recommendations || [],
-      resume_raw_text: active.rawText || ""
+      job_recommendations: d.job_recommendations || []
     };
   }
 
@@ -2373,16 +2380,27 @@
     let pq = document.getElementById("presetQuestions");
     if (pq) pq.remove();
 
-        
+    const context = getResumeContext();
+    const hasResume = context.has_resume;
+
     pq = document.createElement("div");
     pq.className = "preset-questions";
     pq.id = "presetQuestions";
 
-    const questions = [
-      "有哪些技巧可以使简历更加吸引HR的注意？",
-      "有什么秘诀可以使得简历在众多求职者中脱颖而出？",
-      "有哪些常见的面试问题以及回答方式？"
-    ];
+    let questions = [];
+    if (hasResume) {
+      questions = [
+        "基于我的专业，我简历里的核心竞争力在哪里？",
+        "我的简历离进入大厂实习还差哪些硬技能？",
+        "根据我的项目经历，最适合投递哪个方向的岗位？"
+      ];
+    } else {
+      questions = [
+        "有哪些技巧可以使简历更加吸引HR的注意？",
+        "有什么秘诀可以使得简历在众多求职者中脱颖而出？",
+        "有哪些常见的面试问题以及回答方式？"
+      ];
+    }
 
     questions.forEach(q => {
       const el = document.createElement("div");
@@ -2691,19 +2709,24 @@
    */
   function adjustMainLayout(state) {
     const layout = document.querySelector('.layout');
+    const agentSection = document.querySelector('.agent-section');
 
     if (state === 'collapsed') {
       if (layout) layout.style.marginLeft = '84px';
+      if (agentSection) agentSection.style.marginLeft = '84px';
     } else {
       if (window.innerWidth > 1024) {
         const ml = 'calc(20% + 48px)';
         if (layout) layout.style.marginLeft = ml;
+        if (agentSection) agentSection.style.marginLeft = ml;
       } else if (window.innerWidth > 768) {
         const ml = 'calc(25% + 24px)';
         if (layout) layout.style.marginLeft = ml;
+        if (agentSection) agentSection.style.marginLeft = ml;
       } else {
         const ml = '24px';
         if (layout) layout.style.marginLeft = ml;
+        if (agentSection) agentSection.style.marginLeft = ml;
       }
     }
   }
@@ -2975,8 +2998,7 @@
         uploadTime: Date.now(),
         fileSize: sidebarSelectedFile.size,
         fileType: sidebarSelectedFile.name.endsWith('.pdf') ? 'pdf' : 'docx',
-        parseResult: data,
-        rawText: data.raw_text || ''
+        parseResult: data
       };
       
       const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];
