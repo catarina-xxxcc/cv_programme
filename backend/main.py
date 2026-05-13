@@ -1,3 +1,4 @@
+import copy
 import io
 import json
 import os
@@ -400,6 +401,34 @@ class InterviewState(BaseModel):
     feedbacks: list[str] = []  # 每个问题的反馈
 
 
+def _parse_interview_feedback(reply: str) -> dict:
+    """从 AI 回复中解析评分和反馈，支持多种自然语言格式"""
+    result: dict[str, Any] = {"score": None, "feedback": None}
+
+    # 匹配各种评分格式
+    # "评分：8/10", "得分 8", "8分（满分10分）", "评分: 8"
+    score_patterns = [
+        r'(?:评分|得分|分数)[：:]\s*(\d{1,2})(?:/10)?',
+        r'(\d{1,2})\s*分\s*(?:[/|/]\s*10|\(满分10分\))?',
+        r'得分[：:]\s*(\d{1,2})\s*分',
+    ]
+    for pat in score_patterns:
+        m = re.search(pat, reply)
+        if m:
+            result["score"] = max(0, min(10, int(m.group(1))))
+            break
+
+    # 匹配反馈建议部分（"反馈建议：" / "建议：" / "改进建议：" 之后的内容，直到下一个双换行或末尾）
+    fb_match = re.search(
+        r'(?:反馈建议?|改进建议?|建议)[：:]\s*([\s\S]+?)(?=\n\n［|\n\n【|\n\n\d+[.、]|\Z)',
+        reply
+    )
+    if fb_match:
+        result["feedback"] = fb_match.group(1).strip()
+
+    return result
+
+
 class ChatRequest(BaseModel):
     messages: list[ChatMessage]
     mode: str = "default"
@@ -484,19 +513,40 @@ MBTI 类型: {ctx.inferred_mbti or "未知"}
         # 处理面试状态更新
         interview_state = request.interview_state
         updated_interview_state = None
-        
+
         if request.mode == "interview_sim":
-            # 如果面试状态是活跃的，需要更新状态
-            if interview_state.is_active:
-                # 这里可以添加逻辑来解析AI回复中的评分和反馈
-                # 暂时先返回原始状态
-                updated_interview_state = interview_state
+            # 深拷贝当前状态用于更新
+            new_state = copy.deepcopy(interview_state)
+
+            if new_state.is_active:
+                # ── 面试进行中：解析 AI 回复中的评分和反馈 ──
+                parsed = _parse_interview_feedback(clean_reply)
+                has_score = parsed["score"] is not None
+                has_feedback = parsed["feedback"] is not None
+
+                if has_score:
+                    new_state.scores.append(parsed["score"])
+                if has_feedback:
+                    new_state.feedbacks.append(parsed["feedback"])
+
+                # 只有当本回合确认为"回答了上一题"（AI 给出评分）后，才推进题号
+                if has_score:
+                    new_state.current_question_index = len(new_state.scores)
             else:
-                # 检查是否应该激活面试状态
-                # 如果AI的回复包含"目标岗位"确认，可以激活状态
-                if "目标岗位" in clean_reply or "面试类型" in clean_reply:
-                    # 用户可能刚刚提供了目标岗位信息
-                    updated_interview_state = interview_state
+                # ── 首次进入面试模式：激活状态 ──
+                new_state.is_active = True
+
+                # 尝试从 AI 回复中提取目标岗位
+                pos_match = re.search(r'目标岗位[：:]\s*([^\n。]+)', clean_reply)
+                if pos_match:
+                    new_state.target_position = pos_match.group(1).strip()
+
+                # 尝试提取面试类型
+                type_match = re.search(r'(技术面|行为面|综合面)', clean_reply)
+                if type_match:
+                    new_state.interview_type = type_match.group(1)
+
+            updated_interview_state = new_state
 
         return {
             "reply": clean_reply,

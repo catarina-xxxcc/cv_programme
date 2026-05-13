@@ -2291,6 +2291,15 @@
   let agentChatHistory = [];
   let isAgentLoading = false;
   let currentMode = 'default';
+  let interviewState = {
+    is_active: false,
+    target_position: "",
+    interview_type: "",
+    current_question_index: 0,
+    total_questions: 8,
+    scores: [],
+    feedbacks: []
+  };
 
   const agentMessages = document.getElementById("agentMessages");
   const agentInput = document.getElementById("agentInput");
@@ -2430,6 +2439,21 @@
     currentMode = mode;
     updateAgentHeader(mode);
     updateInputPlaceholder(mode);
+
+    // 点击面试模拟时重置面试状态，并移除旧进度显示
+    if (mode === 'interview_sim') {
+      interviewState = {
+        is_active: false,
+        target_position: "",
+        interview_type: "",
+        current_question_index: 0,
+        total_questions: 8,
+        scores: [],
+        feedbacks: []
+      };
+      const oldProgress = document.getElementById('interviewProgress');
+      if (oldProgress) oldProgress.remove();
+    }
   }
 
   /**
@@ -2559,6 +2583,19 @@
       // 移除卡片激活状态
       document.querySelectorAll(".agent-card").forEach(c => c.classList.remove("active"));
 
+      // 重置面试状态（如果是面试模式）
+      interviewState = {
+        is_active: false,
+        target_position: "",
+        interview_type: "",
+        current_question_index: 0,
+        total_questions: 8,
+        scores: [],
+        feedbacks: []
+      };
+      const oldProgress = document.getElementById('interviewProgress');
+      if (oldProgress) oldProgress.remove();
+
       // 重新显示预设问题
       showPresetQuestions();
 
@@ -2569,6 +2606,46 @@
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) overlay.remove();
     });
+  }
+
+  /**
+   * 更新面试模拟进度显示条
+   */
+  function updateInterviewProgress() {
+    // 清除旧的进度条
+    const oldProgress = document.getElementById('interviewProgress');
+    if (oldProgress) oldProgress.remove();
+
+    // 非面试模式或未激活时不显示
+    if (currentMode !== 'interview_sim' || !interviewState.is_active) return;
+
+    const answered = interviewState.scores.length;
+    const total = interviewState.total_questions;
+    const pct = Math.round((answered / total) * 100);
+
+    const progress = document.createElement('div');
+    progress.id = 'interviewProgress';
+    progress.style.cssText =
+      'display:flex;align-items:center;gap:12px;padding:10px 24px;' +
+      'background:var(--sakura-lighter);border-bottom:1px solid var(--gray-200);' +
+      'font-size:13px;color:var(--gray-700);';
+
+    progress.innerHTML = `
+      <span>🎯 面试进度</span>
+      <div style="flex:1;height:6px;background:var(--gray-200);border-radius:999px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#FFB7C5,#FF9DB3);border-radius:999px;transition:width 0.4s ease;"></div>
+      </div>
+      <span style="font-weight:700;color:var(--sakura-dark);white-space:nowrap;">
+        ${answered}/${total} 题
+      </span>
+      ${interviewState.target_position ? `<span style="color:var(--gray-500);font-size:12px;">| ${interviewState.target_position}</span>` : ''}
+    `;
+
+    // 插入到 agent-cards 之后、agent-messages 之前
+    const cards = document.getElementById('agentCards');
+    if (cards && cards.nextSibling) {
+      cards.parentNode.insertBefore(progress, cards.nextSibling);
+    }
   }
 
   /**
@@ -2600,7 +2677,8 @@
         body: JSON.stringify({
           messages: agentChatHistory,
           mode: currentMode,
-          resume_context: resumeCtx
+          resume_context: resumeCtx,
+          interview_state: currentMode === 'interview_sim' ? interviewState : {}
         }),
       });
       const data = await res.json();
@@ -2616,6 +2694,12 @@
         currentMode = data.mode;
         updateAgentHeader(currentMode);
         updateInputPlaceholder(currentMode);
+      }
+
+      // 面试模拟模式：更新面试状态 & 进度显示
+      if (data.interview_state) {
+        interviewState = data.interview_state;
+        updateInterviewProgress();
       }
 
       appendMsg("ai", reply, data.has_resume_template || false);
