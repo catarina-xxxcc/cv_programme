@@ -1733,7 +1733,7 @@
         <span class="agent-icon">🤖</span>
         <div class="agent-header-text">
           <h3 id="agentTitle">求职小助手</h3>
-          <p id="agentSubtitle" style="font-size:13px;color:var(--gray-600);font-weight:500;">同学你好👋，我是你的求职小助手。不管是想跨行转赛道、精修简历，还是想提前演练面试，我都会陪你一起复盘规划，助你顺利拿下心仪的 Offer！</p>
+          <p id="agentSubtitle" style="font-size:13px;color:var(--gray-600);font-weight:500;">同学你好👋，我是你的智能求职小助手。无论是想精准跨行、复刻金牌简历，还是需要职业规划、全真模拟面试，你需要的职场助力，我这里都有。准备好了吗？让我们开始复盘，直通心仪 Offer！</p>
         </div>
       </div>
       <button class="btn-clear-chat" onclick="clearAgentChat()" title="新建对话">
@@ -2370,27 +2370,15 @@
     let pq = document.getElementById("presetQuestions");
     if (pq) pq.remove();
 
-    const context = getResumeContext();
-    const hasResume = context.has_resume;
-
     pq = document.createElement("div");
     pq.className = "preset-questions";
     pq.id = "presetQuestions";
 
-    let questions = [];
-    if (hasResume) {
-      questions = [
-        "基于我的专业，我简历里的核心竞争力在哪里？",
-        "我的简历离进入大厂实习还差哪些硬技能？",
-        "根据我的项目经历，最适合投递哪个方向的岗位？"
-      ];
-    } else {
-      questions = [
-        "有哪些技巧可以使简历更加吸引HR的注意？",
-        "有什么秘诀可以使得简历在众多求职者中脱颖而出？",
-        "有哪些常见的面试问题以及回答方式？"
-      ];
-    }
+    const questions = [
+      "有哪些技巧可以使简历更加吸引HR的注意？",
+      "有什么秘诀可以使得简历在众多求职者中脱颖而出？",
+      "有哪些常见的面试问题以及回答方式？"
+    ];
 
     questions.forEach(q => {
       const el = document.createElement("div");
