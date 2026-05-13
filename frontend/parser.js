@@ -147,6 +147,9 @@
     parserFileInfo.style.display = 'block';
     parserParseBtn.disabled = false;
     hideStatusMsg(parserStatus);
+
+    // 自动开始解析 - 用户上传后立即解析
+    startParsing();
   }
 
   // --- 动态加载库 ---
@@ -327,7 +330,9 @@
   }
 
   // --- 主解析流程 ---
-  parserParseBtn.addEventListener('click', async function() {
+  parserParseBtn.addEventListener('click', function() { startParsing(); });
+
+  async function startParsing() {
     if (!parserSelectedFile) return;
 
     parserLoading.style.display = 'block';
@@ -396,7 +401,7 @@
       parserLoading.style.display = 'none';
       parserParseBtn.disabled = false;
     }
-  });
+  }
 
   // --- 预览渲染 ---
   function renderPreview(data) {
