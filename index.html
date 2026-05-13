@@ -1333,6 +1333,56 @@
     .btn-smart-arrow { font-size: 14px; color: var(--sakura-primary); transition: transform 0.3s; }
     .btn-smart-parser:hover .btn-smart-arrow { transform: translateX(3px); color: var(--white); }
 
+    /* 插件介绍弹窗样式 */
+    .guide-section { margin-bottom: 20px; }
+    .guide-section:last-child { margin-bottom: 0; }
+    .guide-hero {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px; background: var(--sakura-lighter); border-radius: 12px;
+    }
+    .guide-hero-icon { font-size: 36px; }
+    .guide-hero-text h3 { font-size: 16px; color: var(--gray-800); margin-bottom: 4px; }
+    .guide-hero-text p { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+    .guide-features { display: flex; flex-direction: column; gap: 10px; }
+    .guide-feature {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; background: var(--gray-50); border-radius: 8px;
+      font-size: 13px; color: var(--gray-700);
+    }
+    .feature-icon { font-size: 16px; flex-shrink: 0; }
+    .guide-section-title {
+      font-size: 14px; font-weight: 700; color: var(--gray-700);
+      margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--sakura-lighter);
+    }
+    .guide-steps { display: flex; flex-direction: column; gap: 12px; }
+    .guide-step { display: flex; gap: 12px; align-items: flex-start; }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--sakura-primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .step-content strong { font-size: 13px; color: var(--gray-800); }
+    .step-content p { font-size: 12px; color: var(--gray-600); margin-top: 2px; line-height: 1.5; }
+    .step-content code {
+      background: var(--sakura-lighter); padding: 1px 6px; border-radius: 4px;
+      font-size: 11px; color: var(--sakura-dark);
+    }
+    .guide-preview {
+      background: var(--gray-50); border-radius: 10px; padding: 14px;
+      border: 1px solid var(--gray-200);
+    }
+    .preview-field {
+      display: flex; padding: 6px 0; border-bottom: 1px solid var(--gray-100);
+      font-size: 13px;
+    }
+    .preview-field:last-child { border-bottom: none; }
+    .pf-label {
+      width: 70px; flex-shrink: 0; color: var(--gray-500); font-weight: 600;
+    }
+    .pf-value { color: var(--gray-800); }
+
     /* 模态框 */
     .parser-modal-overlay {
       display: none;
@@ -1558,120 +1608,95 @@
   </section>
 </aside>
 
-<!-- 智能简历解析模态框 -->
+<!-- 智能简历解析 - 插件介绍弹窗 -->
 <div id="parserModalOverlay" class="parser-modal-overlay">
   <div class="parser-modal">
     <div class="parser-modal-header">
-      <h2 class="parser-modal-title">🤖 智能简历解析</h2>
+      <h2 class="parser-modal-title">✨ 简历自动填充插件</h2>
       <button class="parser-modal-close" id="parserCloseBtn">&times;</button>
     </div>
-    <div class="parser-tabs">
-      <button class="parser-tab active" data-parser-tab="upload">上传简历</button>
-      <button class="parser-tab" data-parser-tab="manual">手动填写</button>
-    </div>
     <div class="parser-modal-content">
-      <div id="parserUploadTab" class="parser-tab-content active">
-        <div class="parser-upload-area" id="parserUploadArea">
-          <input type="file" id="parserFileInput" accept=".pdf,.docx,.txt" hidden>
-          <div class="parser-upload-icon">📄</div>
-          <div class="parser-upload-text">点击或拖拽上传简历</div>
-          <div class="parser-upload-hint">支持 PDF、DOCX、TXT 格式</div>
-        </div>
-        <div id="parserFileInfo" class="parser-file-info" style="display:none;">
-          <span id="parserFileName"></span>
-          <span id="parserFileSize"></span>
-        </div>
-        <div id="parserStatus" class="parser-status-msg" style="display:none;"></div>
-        <div id="parserLoading" class="parser-loading" style="display:none;">
-          <div class="parser-spinner"></div>
-          <span>正在解析简历...</span>
-        </div>
-        <div id="parserPreview" class="parser-preview" style="display:none;"></div>
-        <div class="parser-actions">
-          <button id="parserParseBtn" class="parser-btn-primary" disabled>开始解析</button>
-          <button id="parserEditBtn" class="parser-btn-secondary" style="display:none;">编辑</button>
-          <button id="parserSettingsBtn" class="parser-btn-icon" title="API 设置">⚙️</button>
+      
+      <!-- 插件介绍 -->
+      <div class="guide-section">
+        <div class="guide-hero">
+          <div class="guide-hero-icon">🚀</div>
+          <div class="guide-hero-text">
+            <h3>一键填充招聘表单</h3>
+            <p>上传简历 → AI 智能解析 → 打开招聘网站 → 自动填充所有字段</p>
+          </div>
         </div>
       </div>
-      <div id="parserManualTab" class="parser-tab-content">
-        <form id="parserManualForm" class="parser-form">
-          <div class="parser-form-group">
-            <label>姓名 <span class="required">*</span></label>
-            <input type="text" name="name" id="parserName" required>
-          </div>
-          <div class="parser-form-group">
-            <label>邮箱 <span class="required">*</span></label>
-            <input type="email" name="email" id="parserEmail" required>
-          </div>
-          <div class="parser-form-group">
-            <label>电话 <span class="required">*</span></label>
-            <input type="tel" name="phone" id="parserPhone" required>
-          </div>
-          <div class="parser-form-row">
-            <div class="parser-form-group">
-              <label>学校</label>
-              <input type="text" name="education" id="parserEducation">
-            </div>
-            <div class="parser-form-group">
-              <label>专业</label>
-              <input type="text" name="major" id="parserMajor">
-            </div>
-          </div>
-          <div class="parser-form-row">
-            <div class="parser-form-group">
-              <label>学历</label>
-              <select name="degree" id="parserDegree">
-                <option value="">请选择</option>
-                <option value="高中">高中</option>
-                <option value="大专">大专</option>
-                <option value="本科">本科</option>
-                <option value="硕士">硕士</option>
-                <option value="博士">博士</option>
-              </select>
-            </div>
-            <div class="parser-form-group">
-              <label>毕业时间</label>
-              <input type="text" name="graduationDate" id="parserGradDate" placeholder="例如：2027.6">
-            </div>
-          </div>
-          <div class="parser-form-group">
-            <label>工作经历</label>
-            <textarea name="workExperience" id="parserWorkExp" rows="4" placeholder="公司名称、职位、时间、工作内容..."></textarea>
-          </div>
-          <div class="parser-form-group">
-            <label>技能</label>
-            <textarea name="skills" id="parserSkills" rows="3" placeholder="语言: 英语CET-6&#10;编程: Python, JavaScript"></textarea>
-          </div>
-          <div class="parser-form-group">
-            <label>自我介绍</label>
-            <textarea name="introduction" id="parserIntro" rows="3"></textarea>
-          </div>
-          <div id="parserFormStatus" class="parser-status-msg" style="display:none;"></div>
-          <button type="submit" class="parser-btn-primary" style="width:100%;">保存简历</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- API 设置模态框 -->
-<div id="settingsModalOverlay" class="parser-modal-overlay">
-  <div class="parser-modal" style="max-width:420px;">
-    <div class="parser-modal-header">
-      <h2 class="parser-modal-title">⚙️ API 设置</h2>
-      <button class="parser-modal-close" id="settingsCloseBtn">&times;</button>
-    </div>
-    <div class="parser-modal-content">
-      <div class="parser-form-group">
-        <label>DeepSeek API Key</label>
-        <input type="password" id="settingsApiKey" placeholder="sk-..." class="parser-input">
-        <div class="parser-hint">💡 配置 API Key 可获得更准确的解析结果<br>获取地址: <a href="https://platform.deepseek.com" target="_blank" style="color:var(--sakura-primary);">platform.deepseek.com</a></div>
+      <!-- 功能亮点 -->
+      <div class="guide-section">
+        <div class="guide-features">
+          <div class="guide-feature">
+            <span class="feature-icon">📄</span>
+            <span class="feature-text">支持 PDF / DOCX / TXT 格式</span>
+          </div>
+          <div class="guide-feature">
+            <span class="feature-icon">🤖</span>
+            <span class="feature-text">DeepSeek AI 智能解析</span>
+          </div>
+          <div class="guide-feature">
+            <span class="feature-icon">📋</span>
+            <span class="feature-text">分字段存储：姓名、邮箱、电话、教育、工作经历、技能...</span>
+          </div>
+          <div class="guide-feature">
+            <span class="feature-icon">⚡</span>
+            <span class="feature-text">Boss直聘、拉勾、智联等招聘网站一键填充</span>
+          </div>
+        </div>
       </div>
-      <div id="settingsStatus" class="parser-status-msg" style="display:none;"></div>
-      <div class="parser-actions" style="justify-content:flex-end;">
-        <button id="settingsTestBtn" class="parser-btn-secondary">测试连接</button>
-        <button id="settingsSaveBtn" class="parser-btn-primary">保存设置</button>
+
+      <!-- 安装步骤 -->
+      <div class="guide-section">
+        <h4 class="guide-section-title">📦 安装步骤</h4>
+        <div class="guide-steps">
+          <div class="guide-step">
+            <span class="step-num">1</span>
+            <div class="step-content">
+              <strong>下载插件文件</strong>
+              <p>从 <a href="https://github.com/catarina-xxxcc/cv_programme" target="_blank" style="color:var(--sakura-primary);">GitHub 仓库</a> 下载 <code>chrome-extension-mvp</code> 文件夹</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">2</span>
+            <div class="step-content">
+              <strong>打开 Chrome 扩展页面</strong>
+              <p>地址栏输入 <code>chrome://extensions</code>，开启右上角「开发者模式」</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">3</span>
+            <div class="step-content">
+              <strong>加载插件</strong>
+              <p>点击「加载已解压的扩展程序」→ 选择 <code>chrome-extension-mvp</code> 文件夹</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">4</span>
+            <div class="step-content">
+              <strong>开始使用</strong>
+              <p>点击浏览器右上角插件图标 → 上传简历 → 解析 → 去招聘网站自动填充</p>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- 解析效果预览 -->
+      <div class="guide-section">
+        <h4 class="guide-section-title">👀 解析效果预览</h4>
+        <div class="guide-preview">
+          <div class="preview-field"><span class="pf-label">姓名</span><span class="pf-value">蔡佳宜</span></div>
+          <div class="preview-field"><span class="pf-label">学校</span><span class="pf-value">深圳大学</span></div>
+          <div class="preview-field"><span class="pf-label">专业</span><span class="pf-value">金融科技</span></div>
+          <div class="preview-field"><span class="pf-label">技能</span><span class="pf-value">Python、JavaScript、React...</span></div>
+          <div class="preview-field"><span class="pf-label">工作经历</span><span class="pf-value">自动识别多段经历，分公司/职位/时间</span></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
