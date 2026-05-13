@@ -161,19 +161,25 @@
       letter-spacing: 0.5px;
     }
 
+    /* 主区域（包裹 layout 和 Agent，统一对齐） */
+    .main-area {
+      margin-left: calc(20% + 48px);
+      margin-right: auto;
+      max-width: 1800px;
+      padding: 0 32px;
+      transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     /* 主布局 */
     .layout {
       display: grid;
       grid-template-columns: 420px 1fr;
       gap: 32px;
-      max-width: 1800px;
-      margin: 32px auto;
-      padding: 0 32px;
+      margin: 32px 0;
+      padding: 0;
       align-items: stretch;
       position: relative;
       z-index: 1;
-      margin-left: calc(20% + 48px);
-      transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .left-col {
@@ -724,7 +730,8 @@
 
     /* ========== Agent 求职面板 ========== */
     .agent-section {
-      margin: 8px 32px 40px calc(20% + 48px);
+      margin: 8px 0 40px;
+      padding: 0;
     }
 
     .agent-panel {
@@ -786,35 +793,27 @@
     }
 
     .btn-clear-chat {
-      background: none;
+      background: var(--sakura-dark);
       border: none;
-      font-size: 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
       cursor: pointer;
-      padding: 8px;
-      border-radius: var(--radius-sm);
-      transition: all 0.2s ease;
-      opacity: 0.5;
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      transition: all 0.25s ease;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(255, 157, 179, 0.25);
     }
 
     .btn-clear-chat:hover {
-      opacity: 1;
-      background: rgba(255, 183, 197, 0.2);
+      background: #e88a9e;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255, 157, 179, 0.4);
     }
 
-    /* --- Welcome message (always visible) --- */
-    .agent-welcome {
-      padding: 16px 24px;
-      background: var(--sakura-lighter);
-      border-bottom: 1px solid rgba(255, 183, 197, 0.15);
-      flex-shrink: 0;
-    }
-
-    .agent-welcome p {
-      font-size: 14px;
-      color: var(--gray-700);
-      line-height: 1.7;
-      font-weight: 500;
-    }
+    /* --- Welcome message has been moved to header subtitle --- */
 
     /* --- Function cards --- */
     .agent-cards {
@@ -905,9 +904,13 @@
       flex-direction: column;
       gap: 8px;
       padding: 8px 0;
+      align-items: center;
     }
 
     .preset-question {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
       padding: 12px 16px;
       background: var(--sakura-lighter);
       border: 1.5px solid var(--sakura-primary);
@@ -1515,11 +1518,7 @@
         min-width: 280px;
       }
 
-      .layout {
-        margin-left: calc(25% + 24px);
-      }
-
-      .agent-section {
+      .main-area {
         margin-left: calc(25% + 24px);
       }
 
@@ -1543,13 +1542,8 @@
         transform: translateX(0);
       }
 
-      .layout {
+      .main-area {
         margin-left: 24px !important;
-      }
-
-      .agent-section {
-        margin-left: 24px;
-        margin-right: 24px;
       }
 
       .agent-cards {
@@ -1619,6 +1613,8 @@
   <div class="logo">小小求职拿下 <span class="sparkle">✦</span></div>
   <div class="tagline">AI 简历解析 · MBTI 推断 · 岗位推荐</div>
 </header>
+
+<div class="main-area">
 
 <div class="layout">
 
@@ -1736,18 +1732,13 @@
       <div class="agent-header-left">
         <span class="agent-icon">🤖</span>
         <div class="agent-header-text">
-          <h3 id="agentTitle">求职 Agent</h3>
-          <p id="agentSubtitle">温暖陪伴你的求职旅程 🌸</p>
+          <h3 id="agentTitle">求职小助手</h3>
+          <p id="agentSubtitle" style="font-size:13px;color:var(--gray-600);font-weight:500;">同学你好👋，我是你的求职小助手。不管是想跨行转赛道、精修简历，还是想提前演练面试，我都会陪你一起复盘规划，助你顺利拿下心仪的 Offer！</p>
         </div>
       </div>
-      <button class="btn-clear-chat" onclick="clearAgentChat()" title="清除对话">
-        <span>🗑️</span>
+      <button class="btn-clear-chat" onclick="clearAgentChat()" title="新建对话">
+        <span>新建对话+</span>
       </button>
-    </div>
-
-    <!-- Welcome message (always visible) -->
-    <div class="agent-welcome" id="agentWelcome">
-      <p>同学你好👋，我是你的求职小助手。不管是想跨行转赛道、精修简历，还是想提前演练面试，我都会陪你一起复盘规划，助你顺利拿下心仪的 Offer！</p>
     </div>
 
     <!-- Function cards (horizontal) -->
@@ -1806,6 +1797,7 @@
       </button>
     </div>
   </div>
+</div>
 </div>
 
 <script src="./config.js"></script>
@@ -2319,19 +2311,17 @@
    */
   function updateAgentHeader(mode) {
     const titleEl = document.getElementById("agentTitle");
-    const subtitleEl = document.getElementById("agentSubtitle");
 
-    const headers = {
-      default:       { title: "求职 Agent",        subtitle: "温暖陪伴你的求职旅程 🌸" },
-      career_switch: { title: "求职 Agent · 换赛道",  subtitle: "帮你找到新方向 🚀" },
-      resume_tailor: { title: "求职 Agent · 修改简历", subtitle: "针对目标岗位优化 📝" },
-      career_planning: { title: "求职 Agent · 职业规划", subtitle: "规划你的未来 🗺️" },
-      interview_sim: { title: "🎯 面试模拟中",        subtitle: "面试模拟进行中..." }
+    const titles = {
+      default:       "求职小助手",
+      career_switch: "求职小助手 · 换赛道",
+      resume_tailor: "求职小助手 · 修改简历",
+      career_planning: "求职小助手 · 职业规划",
+      interview_sim: "🎯 面试模拟中"
     };
 
-    const h = headers[mode] || headers.default;
-    titleEl.textContent = h.title;
-    subtitleEl.textContent = h.subtitle;
+    titleEl.textContent = titles[mode] || titles.default;
+    // 副标题已固定显示欢迎语，不再动态更新
   }
 
   /**
@@ -2553,8 +2543,8 @@
     overlay.className = "modal-overlay";
     overlay.innerHTML = `
       <div class="modal-box">
-        <h3>清除对话</h3>
-        <p>确定要清除所有对话记录吗？这将清空当前对话历史。</p>
+        <h3>新建对话</h3>
+        <p>确定要开始新对话吗？这将清空当前的对话历史。</p>
         <div class="modal-actions">
           <button class="modal-btn modal-btn-cancel" id="modalCancel">取消</button>
           <button class="modal-btn modal-btn-confirm" id="modalConfirm">确定</button>
@@ -2708,25 +2698,20 @@
    * @param {string} state - 'expanded' 或 'collapsed'
    */
   function adjustMainLayout(state) {
-    const layout = document.querySelector('.layout');
-    const agentSection = document.querySelector('.agent-section');
+    const mainArea = document.querySelector('.main-area');
 
     if (state === 'collapsed') {
-      if (layout) layout.style.marginLeft = '84px';
-      if (agentSection) agentSection.style.marginLeft = '84px';
+      if (mainArea) mainArea.style.marginLeft = '84px';
     } else {
       if (window.innerWidth > 1024) {
         const ml = 'calc(20% + 48px)';
-        if (layout) layout.style.marginLeft = ml;
-        if (agentSection) agentSection.style.marginLeft = ml;
+        if (mainArea) mainArea.style.marginLeft = ml;
       } else if (window.innerWidth > 768) {
         const ml = 'calc(25% + 24px)';
-        if (layout) layout.style.marginLeft = ml;
-        if (agentSection) agentSection.style.marginLeft = ml;
+        if (mainArea) mainArea.style.marginLeft = ml;
       } else {
         const ml = '24px';
-        if (layout) layout.style.marginLeft = ml;
-        if (agentSection) agentSection.style.marginLeft = ml;
+        if (mainArea) mainArea.style.marginLeft = ml;
       }
     }
   }
