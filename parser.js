@@ -61,56 +61,50 @@
   }
   function hideStatusMsg(el) { el.style.display = 'none'; }
 
-  // --- 扩展通信 ---
+  // --- 扩展通信（通过 content script 中转） ---
+  var pendingRequests = {};
+  var requestCounter = 0;
+
+  // 监听 content script 的响应
+  window.addEventListener('message', function(event) {
+    if (event.source !== window) return;
+    if (!event.data || event.data.type !== 'RESUME_EXT_RESPONSE') return;
+    var id = event.data.requestId;
+    if (pendingRequests[id]) {
+      pendingRequests[id](event.data.response);
+      delete pendingRequests[id];
+    }
+  });
+
   function sendToExtension(message) {
     return new Promise(function(resolve, reject) {
-      if (!EXTENSION_ID) {
-        reject(new Error('扩展未连接'));
-        return;
-      }
-      try {
-        chrome.runtime.sendMessage(EXTENSION_ID, message, function(response) {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message));
-          } else {
-            resolve(response);
-          }
-        });
-      } catch (e) {
-        reject(e);
-      }
+      if (!extensionConnected) { reject(new Error('扩展未连接')); return; }
+      var id = 'req_' + (++requestCounter);
+      var timeout = setTimeout(function() {
+        delete pendingRequests[id];
+        reject(new Error('扩展响应超时'));
+      }, 5000);
+      pendingRequests[id] = function(response) {
+        clearTimeout(timeout);
+        resolve(response);
+      };
+      window.postMessage({ type: 'RESUME_EXT_MSG', requestId: id, payload: message }, '*');
     });
   }
 
-  // 检测扩展是否安装 - 通过 content script 注入的标记检测
+  // 检测扩展是否安装
   function detectExtension() {
     return new Promise(function(resolve) {
-      // 方法1：检查 content script 是否注入了标记
-      if (document.documentElement.getAttribute('data-resume-ext-id')) {
-        EXTENSION_ID = document.documentElement.getAttribute('data-resume-ext-id');
+      // 检查 content script 是否注入了标记
+      var extId = document.documentElement.getAttribute('data-resume-ext-id');
+      if (extId) {
+        EXTENSION_ID = extId;
+        extensionConnected = true;
         resolve(true);
-        return;
+      } else {
+        extensionConnected = false;
+        resolve(false);
       }
-      // 方法2：尝试已知的扩展 ID（如果用户手动设置了）
-      var savedId = localStorage.getItem('extensionId');
-      if (savedId) {
-        EXTENSION_ID = savedId;
-        try {
-          chrome.runtime.sendMessage(savedId, { action: 'ping' }, function(response) {
-            if (chrome.runtime.lastError || !response) {
-              EXTENSION_ID = null;
-              resolve(false);
-            } else {
-              resolve(true);
-            }
-          });
-        } catch (e) {
-          EXTENSION_ID = null;
-          resolve(false);
-        }
-        return;
-      }
-      resolve(false);
     });
   }
 

@@ -1,11 +1,31 @@
 /**
  * Content Script
  * 在招聘网站页面中运行，负责检测表单并自动填充
- * 同时在网站页面注入扩展 ID 标记，让网站能检测到扩展已安装
+ * 同时作为网站和扩展之间的通信桥梁
  */
 
 // 注入扩展 ID 标记到页面，让网站能检测到扩展
 document.documentElement.setAttribute('data-resume-ext-id', chrome.runtime.id);
+
+// 监听网站发来的 postMessage（网站 → content script → background）
+window.addEventListener('message', function(event) {
+  // 只接受来自同一页面的消息
+  if (event.source !== window) return;
+  if (!event.data || event.data.type !== 'RESUME_EXT_MSG') return;
+  
+  var payload = event.data.payload;
+  console.log('[Content Script] 收到网站消息:', payload.action);
+  
+  // 转发给 background
+  chrome.runtime.sendMessage(payload, function(response) {
+    // 把 background 的响应发回给网站
+    window.postMessage({
+      type: 'RESUME_EXT_RESPONSE',
+      requestId: event.data.requestId,
+      response: response
+    }, '*');
+  });
+});
 
 // 监听来自 background 的自动填充消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
