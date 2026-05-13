@@ -1304,31 +1304,34 @@
     .btn-smart-parser {
       width: 100%;
       padding: 14px 16px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: var(--white);
-      border: none;
+      background: linear-gradient(135deg, #FFE4E9 0%, #FFF5F7 100%);
+      color: var(--gray-700);
+      border: 2px solid var(--sakura-primary);
       border-radius: var(--radius);
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 2px 8px rgba(255, 183, 197, 0.2);
       display: flex;
       align-items: center;
       gap: 12px;
       text-align: left;
     }
     .btn-smart-parser:hover {
+      background: linear-gradient(135deg, #FFB7C5 0%, #FFE4E9 100%);
+      color: var(--white);
       transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.45);
+      box-shadow: 0 6px 20px rgba(255, 183, 197, 0.4);
     }
     .btn-smart-parser:active { transform: translateY(0); }
-    .btn-smart-icon { font-size: 24px; flex-shrink: 0; }
+    .btn-smart-icon { font-size: 20px; flex-shrink: 0; }
     .btn-smart-text { display: flex; flex-direction: column; flex: 1; }
-    .btn-smart-title { font-size: 14px; font-weight: 700; }
-    .btn-smart-desc { font-size: 11px; opacity: 0.85; font-weight: 400; margin-top: 2px; }
-    .btn-smart-arrow { font-size: 16px; opacity: 0.7; transition: transform 0.3s; }
-    .btn-smart-parser:hover .btn-smart-arrow { transform: translateX(3px); opacity: 1; }
+    .btn-smart-title { font-size: 14px; font-weight: 700; color: var(--sakura-dark); }
+    .btn-smart-parser:hover .btn-smart-title { color: var(--white); }
+    .btn-smart-desc { font-size: 11px; opacity: 0.75; font-weight: 400; margin-top: 2px; }
+    .btn-smart-arrow { font-size: 14px; color: var(--sakura-primary); transition: transform 0.3s; }
+    .btn-smart-parser:hover .btn-smart-arrow { transform: translateX(3px); color: var(--white); }
 
     /* 模态框 */
     .parser-modal-overlay {
@@ -1545,12 +1548,12 @@
       <span class="divider-line"></span>
     </div>
     <button class="btn-smart-parser" id="btnSmartParser">
-      <span class="btn-smart-icon">🧩</span>
+      <span class="btn-smart-icon">✨</span>
       <span class="btn-smart-text">
         <span class="btn-smart-title">智能简历解析</span>
-        <span class="btn-smart-desc">上传简历 → AI解析 → 存入插件 → 一键填充</span>
+        <span class="btn-smart-desc">上传 → AI解析 → 存入插件 → 一键填充</span>
       </span>
-      <span class="btn-smart-arrow">→</span>
+      <span class="btn-smart-arrow">›</span>
     </button>
   </section>
 </aside>
