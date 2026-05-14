@@ -93,18 +93,25 @@
   // ===== HTML 构建 =====
 
   function buildProfileHTML() {
+    var avatars = [
+      '👩‍💻', '👨‍💻', '👩‍🎨', '👨‍🎨',
+      '🧑‍🎓', '👩‍🔬', '👨‍🚀', '👩‍🎤',
+      '🧑‍💼', '👩‍🏫', '👨‍🔧', '🧑‍🎨',
+      '👩‍⚕️', '👨‍🍳', '🧑‍🚒', '🦸‍♀️'
+    ];
+    var avatarGrid = avatars.map(function(emoji) {
+      return '<button class="ob-avatar-option" data-avatar="' + emoji + '">' + emoji + '</button>';
+    }).join('');
+
     return '<div class="ob-card ob-card-enter">' +
       '<div class="ob-welcome-emoji">🌸</div>' +
       '<h2 class="ob-title">欢迎来到小小求职拿下</h2>' +
       '<p class="ob-subtitle">花 1 分钟了解你，为你推荐最合适的方向</p>' +
-      '<div class="ob-avatar-wrap" id="obAvatarWrap">' +
-        '<div class="ob-avatar-circle" id="obAvatarCircle">' +
-          '<span class="ob-avatar-placeholder">👤</span>' +
-          '<img id="obAvatarImg" class="ob-avatar-img" style="display:none;" />' +
-        '</div>' +
-        '<div class="ob-avatar-hint">点击上传头像（可跳过）</div>' +
-        '<input type="file" id="obAvatarInput" accept="image/*" style="display:none;" />' +
+      '<div class="ob-avatar-selected" id="obAvatarSelected">' +
+        '<span class="ob-avatar-big" id="obAvatarBig">👤</span>' +
       '</div>' +
+      '<p class="ob-avatar-label">选择你的形象</p>' +
+      '<div class="ob-avatar-grid" id="obAvatarGrid">' + avatarGrid + '</div>' +
       '<div class="ob-input-wrap">' +
         '<input type="text" id="obNicknameInput" class="ob-nickname-input" placeholder="输入你的昵称" maxlength="20" />' +
       '</div>' +
@@ -164,30 +171,30 @@
   // ===== 事件绑定 =====
 
   function bindProfileEvents() {
-    var avatarWrap = document.getElementById('obAvatarWrap');
-    var avatarInput = document.getElementById('obAvatarInput');
+    var avatarGrid = document.getElementById('obAvatarGrid');
     var nicknameInput = document.getElementById('obNicknameInput');
     var continueBtn = document.getElementById('obContinueBtn');
 
-    avatarWrap.addEventListener('click', function() { avatarInput.click(); });
-
-    avatarInput.addEventListener('change', function(e) {
-      var file = e.target.files[0];
-      if (!file) return;
-      if (file.size > 2 * 1024 * 1024) { alert('图片太大啦，请选择 2MB 以内的图片'); return; }
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        avatarData = ev.target.result;
-        var img = document.getElementById('obAvatarImg');
-        img.src = avatarData;
-        img.style.display = 'block';
-        document.querySelector('.ob-avatar-placeholder').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
+    // 头像选择
+    avatarGrid.addEventListener('click', function(e) {
+      var btn = e.target.closest('.ob-avatar-option');
+      if (!btn) return;
+      // 移除其他选中状态
+      avatarGrid.querySelectorAll('.ob-avatar-option').forEach(function(b) {
+        b.classList.remove('ob-avatar-option-active');
+      });
+      btn.classList.add('ob-avatar-option-active');
+      avatarData = btn.getAttribute('data-avatar');
+      document.getElementById('obAvatarBig').textContent = avatarData;
+      checkCanContinue();
     });
 
     nicknameInput.addEventListener('input', function() {
       nickname = nicknameInput.value.trim();
+      checkCanContinue();
+    });
+
+    function checkCanContinue() {
       if (nickname.length > 0) {
         continueBtn.disabled = false;
         continueBtn.classList.remove('ob-btn-disabled');
@@ -195,13 +202,11 @@
         continueBtn.disabled = true;
         continueBtn.classList.add('ob-btn-disabled');
       }
-    });
+    }
 
     continueBtn.addEventListener('click', function() {
       if (!nickname) return;
-      // 保存用户资料
       saveProfile();
-      // 进入问题步骤
       showQuestion(0);
     });
   }

@@ -1598,22 +1598,40 @@
     }
 
     /* 头像 */
-    .ob-avatar-wrap { margin-bottom: 24px; cursor: pointer; }
-    .ob-avatar-circle {
-      width: 90px; height: 90px; border-radius: 50%;
-      border: 3px dashed var(--sakura-primary);
+    .ob-avatar-selected {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--sakura-lighter);
+      border: 3px solid var(--sakura-primary);
       display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 8px; overflow: hidden;
+      margin: 0 auto 8px; font-size: 40px;
       transition: all 0.3s;
     }
-    .ob-avatar-circle:hover {
-      border-color: var(--sakura-dark);
-      transform: scale(1.05);
-      box-shadow: 0 4px 16px rgba(255, 183, 197, 0.4);
+    .ob-avatar-big { font-size: 40px; }
+    .ob-avatar-label {
+      font-size: 12px; color: var(--gray-500); margin-bottom: 12px;
     }
-    .ob-avatar-placeholder { font-size: 36px; }
-    .ob-avatar-img { width: 100%; height: 100%; object-fit: cover; }
-    .ob-avatar-hint { font-size: 12px; color: var(--gray-400); }
+    .ob-avatar-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 8px; margin-bottom: 24px; max-width: 280px; margin-left: auto; margin-right: auto;
+    }
+    .ob-avatar-option {
+      width: 52px; height: 52px; border-radius: 12px;
+      border: 2px solid var(--gray-200); background: white;
+      font-size: 26px; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto;
+    }
+    .ob-avatar-option:hover {
+      border-color: var(--sakura-primary);
+      background: var(--sakura-lighter);
+      transform: scale(1.1);
+    }
+    .ob-avatar-option-active {
+      border-color: var(--sakura-primary) !important;
+      background: var(--sakura-light) !important;
+      box-shadow: 0 2px 8px rgba(255, 183, 197, 0.4);
+      transform: scale(1.1);
+    }
 
     /* 昵称输入 */
     .ob-input-wrap { margin-bottom: 24px; }
