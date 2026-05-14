@@ -75,6 +75,8 @@
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      overflow-y: scroll;
+      scrollbar-gutter: stable;
       position: relative;
     }
 
@@ -730,6 +732,7 @@
 
     /* ========== Agent 求职面板 ========== */
     .agent-section {
+      grid-column: 1 / -1;
       margin: 8px 0 40px;
       padding: 0;
     }
@@ -2391,7 +2394,6 @@
 
     </div>
   </div>
-</div>
 
 <!-- Agent 求职面板 -->
 <div class="agent-section">
@@ -2466,6 +2468,7 @@
       </button>
     </div>
   </div>
+</div>
 </div>
 </div>
 
