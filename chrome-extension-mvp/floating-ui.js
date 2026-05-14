@@ -47,14 +47,14 @@ var FloatingUI = (function() {
     .af-btn-close { background: #FFB7C5; color: white; }\
     .af-btn-close:hover { background: #FF9DB3; }\
     .af-record {\
-      position: fixed; bottom: 90px; right: 24px; z-index: 2147483647;\
-      background: linear-gradient(135deg, #667eea, #764ba2);\
+      position: fixed; bottom: 86px; right: 24px; z-index: 2147483647;\
+      background: linear-gradient(135deg, #FFB7C5, #FF9DB3);\
       color: white; border: none; border-radius: 24px;\
-      padding: 10px 20px; font-size: 13px; font-weight: 600;\
-      cursor: pointer; box-shadow: 0 4px 16px rgba(102,126,234,0.4);\
+      padding: 8px 16px; font-size: 12px; font-weight: 600;\
+      cursor: pointer; box-shadow: 0 4px 12px rgba(255,157,179,0.4);\
       animation: afSlideIn 0.3s ease; transition: all 0.2s;\
     }\
-    .af-record:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(102,126,234,0.6); }\
+    .af-record:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,157,179,0.6); }\
     .af-dialog {\
       position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);\
       z-index: 2147483647; background: white; border-radius: 16px;\
@@ -100,11 +100,13 @@ var FloatingUI = (function() {
   }
 
   /**
-   * 显示自动填充触发按钮
+   * 显示自动填充触发按钮 + 记录投递按钮
    */
   function showAutofillTrigger() {
     init();
     if (triggerBtn) return;
+
+    // 填充按钮
     triggerBtn = document.createElement('button');
     triggerBtn.className = 'af-trigger';
     triggerBtn.innerHTML = '📋';
@@ -140,11 +142,13 @@ var FloatingUI = (function() {
 
     triggerBtn.addEventListener('click', function(e) {
       if (isDragging) { e.preventDefault(); return; }
-      // 触发自动填充
       performAutofill();
     });
 
     shadow.appendChild(triggerBtn);
+
+    // 记录投递按钮（始终显示，不依赖填充成功）
+    showRecordButton();
   }
 
   /**
@@ -313,8 +317,6 @@ var FloatingUI = (function() {
       }
 
       showConfirmation(fillResult);
-      // 延迟显示记录按钮
-      setTimeout(function() { showRecordButton(); }, 500);
     });
   }
 
