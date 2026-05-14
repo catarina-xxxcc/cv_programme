@@ -6,21 +6,14 @@
 // 注入扩展 ID 标记
 document.documentElement.setAttribute('data-resume-ext-id', chrome.runtime.id);
 
-// ===== 页面加载后检测表单并显示触发按钮 =====
+// ===== 页面加载后显示浮动按钮 =====
 function initAutofillTrigger() {
-  if (FieldMatcher.hasFormFields()) {
-    FloatingUI.showAutofillTrigger();
-  }
+  // 排除自己的网站
+  var host = window.location.hostname;
+  if (host === 'catarina-xxxcc.github.io' || host === 'cv-programme.vercel.app') return;
 
-  // 监听 DOM 变化
-  var observer = new MutationObserver(function() {
-    if (FieldMatcher.hasFormFields()) {
-      FloatingUI.showAutofillTrigger();
-    } else {
-      FloatingUI.hideAutofillTrigger();
-    }
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
+  // 始终显示浮动按钮（填充+记录）
+  FloatingUI.showAutofillTrigger();
 }
 
 // 延迟初始化（等待页面加载完成）
