@@ -40,8 +40,20 @@ var FieldMatcher = (function() {
     var prev = element.previousElementSibling;
     if (prev && (prev.tagName === 'LABEL' || prev.tagName === 'SPAN' || prev.tagName === 'DIV')) {
       var text = prev.textContent.trim();
-      if (text.length < 30) return text.toLowerCase();
+      if (text.length > 0 && text.length < 30) return text.toLowerCase();
     }
+    // 父容器中的 label/span（React 组件常见模式）
+    var wrapper = element.closest('[class*="form"], [class*="field"], [class*="item"], [class*="group"]');
+    if (wrapper) {
+      var wrapperLabel = wrapper.querySelector('label, [class*="label"], [class*="title"]');
+      if (wrapperLabel && wrapperLabel !== element) {
+        var wText = wrapperLabel.textContent.trim();
+        if (wText.length > 0 && wText.length < 30) return wText.toLowerCase();
+      }
+    }
+    // data-* 属性
+    var dataLabel = element.getAttribute('data-label') || element.getAttribute('data-name') || element.getAttribute('data-field');
+    if (dataLabel) return dataLabel.toLowerCase();
     return '';
   }
 
@@ -111,20 +123,29 @@ var FieldMatcher = (function() {
   }
 
   /**
-   * 分析页面中所有表单元素
+   * 分析页面中所有表单元素（包括非标准元素）
    * @param {HTMLElement} [root=document]
    * @returns {Array} 匹配结果数组
    */
   function analyzeFormFields(root) {
     root = root || document;
-    var elements = root.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select');
+    // 标准表单元素
+    var standardSelector = 'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select';
+    // 非标准：contenteditable、role=textbox、自定义输入组件
+    var customSelector = '[contenteditable="true"], [role="textbox"], [role="combobox"], [data-testid*="input"], [class*="input" i][class*="field" i]';
+    
+    var elements = root.querySelectorAll(standardSelector + ', ' + customSelector);
     var results = [];
     var matched = {};
 
     for (var i = 0; i < elements.length; i++) {
       var el = elements[i];
-      // 跳过隐藏元素
-      if (el.offsetParent === null && el.type !== 'hidden') continue;
+      // 跳过隐藏元素（但不跳过 visibility:hidden 的，因为有些框架先隐藏再显示）
+      if (el.offsetParent === null && !el.closest('[style*="display"]') && el.type !== 'hidden') {
+        // 再检查一下是否真的不可见
+        var rect = el.getBoundingClientRect();
+        if (rect.width === 0 && rect.height === 0) continue;
+      }
 
       var result = matchField(el);
       if (result && !matched[result.fieldCategory]) {
@@ -137,10 +158,12 @@ var FieldMatcher = (function() {
   }
 
   /**
-   * 检测页面是否有表单元素
+   * 检测页面是否有表单元素（包括非标准）
    */
   function hasFormFields() {
-    return document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select').length > 0;
+    var standardCount = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select').length;
+    var customCount = document.querySelectorAll('[contenteditable="true"], [role="textbox"], [role="combobox"]').length;
+    return (standardCount + customCount) > 0;
   }
 
   return {

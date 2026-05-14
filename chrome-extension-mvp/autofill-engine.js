@@ -107,6 +107,11 @@ var AutofillEngine = (function() {
 
     var matches = FieldMatcher.analyzeFormFields();
 
+    // 如果智能匹配没有结果，尝试按顺序填充可见的空输入框
+    if (matches.length === 0) {
+      matches = fallbackMatch(resumeData);
+    }
+
     for (var i = 0; i < matches.length; i++) {
       var match = matches[i];
       var element = match.element;
@@ -119,7 +124,7 @@ var AutofillEngine = (function() {
 
       try {
         // 保存原始值
-        originalValues.push({ element: element, originalValue: element.value });
+        originalValues.push({ element: element, originalValue: element.value || element.textContent || '' });
 
         if (element.tagName === 'SELECT') {
           var success = fillSelect(element, value);
@@ -127,13 +132,27 @@ var AutofillEngine = (function() {
             skipped.push({ fieldName: match.fieldCategory, reason: '无匹配选项', element: element });
             continue;
           }
+        } else if (element.getAttribute('contenteditable') === 'true' || element.getAttribute('role') === 'textbox') {
+          // 非标准输入（contenteditable / role=textbox）
+          element.textContent = value;
+          element.innerHTML = value;
         } else {
+          // 标准 input/textarea
           // 尊重 maxlength
           var maxLen = element.getAttribute('maxlength');
           if (maxLen && value.length > parseInt(maxLen)) {
             value = value.substring(0, parseInt(maxLen));
           }
-          element.value = value;
+          // React 兼容：使用 nativeInputValueSetter
+          var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+          var nativeTextareaValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value');
+          if (element.tagName === 'TEXTAREA' && nativeTextareaValueSetter) {
+            nativeTextareaValueSetter.set.call(element, value);
+          } else if (nativeInputValueSetter) {
+            nativeInputValueSetter.set.call(element, value);
+          } else {
+            element.value = value;
+          }
         }
 
         // 触发事件
@@ -147,6 +166,34 @@ var AutofillEngine = (function() {
     }
 
     return { filled: filled, skipped: skipped };
+  }
+
+  /**
+   * 降级匹配：当智能匹配无结果时，按页面上输入框的顺序尝试匹配
+   */
+  function fallbackMatch(resumeData) {
+    var allInputs = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="password"]), textarea, [contenteditable="true"], [role="textbox"]');
+    var results = [];
+    var fieldOrder = ['name', 'phone', 'email', 'education', 'major', 'workExperience', 'skills'];
+    var fieldIdx = 0;
+
+    for (var i = 0; i < allInputs.length && fieldIdx < fieldOrder.length; i++) {
+      var el = allInputs[i];
+      // 跳过已有值的、不可见的
+      var currentVal = el.value || el.textContent || '';
+      if (currentVal.trim().length > 0) continue;
+      var rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) continue;
+
+      var category = fieldOrder[fieldIdx];
+      var value = getResumeValue(resumeData, category);
+      if (value) {
+        results.push({ element: el, fieldCategory: category, confidence: 50, matchedAttribute: 'fallback' });
+        fieldIdx++;
+      }
+    }
+
+    return results;
   }
 
   /**
