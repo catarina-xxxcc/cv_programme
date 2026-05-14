@@ -2714,6 +2714,11 @@
       resume_id: activeResumeId,
       candidate_summary: d.candidate_summary || "",
       inferred_mbti: d.inferred_mbti || "",
+      mbti_description: d.mbti_description || "",
+      city: d.city || "",
+      resume_diagnosis: d.resume_diagnosis || null,
+      extracted_skills: d.extracted_skills || [],
+      resume_text: active.rawText || "",
       job_recommendations: d.job_recommendations || []
     };
   }
@@ -2799,6 +2804,9 @@
       const oldProgress = document.getElementById('interviewProgress');
       if (oldProgress) oldProgress.remove();
     }
+
+    // 自动发送消息（携带简历上下文）
+    setTimeout(() => sendAgentChat(), 100);
   }
 
   /**
@@ -3014,6 +3022,7 @@
 
     // 获取简历上下文
     const resumeCtx = getResumeContext();
+    console.log("📤 Agent 发送的简历上下文:", JSON.stringify({has_resume: resumeCtx.has_resume, fields: Object.keys(resumeCtx)}));
 
     try {
       const res = await fetch(`${API_BASE_URL}/chat`, {
@@ -3401,7 +3410,8 @@
         uploadTime: Date.now(),
         fileSize: sidebarSelectedFile.size,
         fileType: sidebarSelectedFile.name.endsWith('.pdf') ? 'pdf' : 'docx',
-        parseResult: data
+        parseResult: data,
+        rawText: data.raw_text || ""
       };
 
       const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];

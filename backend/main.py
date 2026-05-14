@@ -130,7 +130,14 @@ def _parse_resume_with_ai(raw_text: str) -> dict[str, Any]:
      * 上海的产品经理（应届生）：12-18K
      * 全国的市场专员（1年经验）：8-12K
 
-6) resume_diagnosis: 对象，对简历文本进行严格的质量诊断，包含：
+6) extracted_skills: 数组，从简历中提取的关键技能标签（如：["Python", "机器学习", "项目管理", "团队管理"]），不超过15个
+    【要求】：
+    - 从简历全文提取，包括硬技能（编程语言、工具、框架）和软技能（沟通、管理、领导力）
+    - 优先提取简历中明确写出的技能关键词
+    - 如果简历中没有明确技能，可以从工作描述中推断合理的关键技能
+    - 按重要性排序，最重要的在前
+
+7) resume_diagnosis: 对象，对简历文本进行严格的质量诊断，包含：
 
    - typos: 数组，发现的错别字。【检测标准】：
      * 同音字错误（如："测式"应为"测试"，"沟通能里"应为"沟通能力"）
@@ -251,7 +258,18 @@ def _add_default_values_for_new_fields(parsed_data: dict[str, Any]) -> dict[str,
                 job["career_path"] = ""
             else:
                 job["career_path"] = job["career_path"][:100]
-    
+
+    # 添加extracted_skills默认值（如果AI没有生成）
+    if "extracted_skills" not in parsed_data:
+        parsed_data["extracted_skills"] = []
+    elif not isinstance(parsed_data["extracted_skills"], list):
+        parsed_data["extracted_skills"] = []
+    else:
+        parsed_data["extracted_skills"] = [
+            s for s in parsed_data["extracted_skills"]
+            if isinstance(s, str) and s.strip()
+        ][:15]
+
     return parsed_data
 
 
@@ -272,15 +290,15 @@ DEFAULT_SYSTEM_PROMPT = """你是一个温暖贴心的 AI 求职 Agent，名叫"
 
 【对话原则】
 1. 每次回复要简短有力，不要一次性输出太多
-2. 多问问题，深入了解用户
+2. 如果上下文中已有用户的简历信息，直接基于这些信息回答，不要再询问简历中已有的内容
 3. 给出真诚的反馈，不要一味讨好
 4. 当用户说得不清楚时，追问细节
 5. 回复要结构清晰，使用分点或分段，便于用户阅读
 
 【简历上下文处理】
-- 如果用户已上传简历，你会在上下文中看到简历信息
-- 不要重复询问简历中已有的信息（如工作年限、行业、技能等）
-- 直接基于简历内容展开深度对话
+- 注意：简历信息会在下面的【用户简历信息】和【简历原文】中提供
+- 你必须直接基于那些信息展开对话
+- 不要询问简历中已有的信息（如姓名、城市、技能、经验、教育背景等）
 
 【边界处理】
 - 如果用户提出与求职完全无关的话题（如天气、娱乐八卦、政治、体育等），先简短友好回应，然后自然引导回求职话题
@@ -289,7 +307,7 @@ DEFAULT_SYSTEM_PROMPT = """你是一个温暖贴心的 AI 求职 Agent，名叫"
 
 CAREER_SWITCH_PROMPT = """你是一个专业的职业转型顾问。你的任务是帮助用户分析如何从一个行业切换到另一个行业。
 
-工作流程：
+工作流程（如果上下文中已有用户简历信息，跳过第1步和第5步，直接基于数据分析）：
 1. 先了解用户的当前行业、目标行业和职业背景
 2. 分析用户的可迁移技能（在目标行业中仍然有价值的技能）
 3. 识别用户的技能缺口（目标行业需要但用户当前不具备的技能）
@@ -297,11 +315,11 @@ CAREER_SWITCH_PROMPT = """你是一个专业的职业转型顾问。你的任务
 5. 询问用户的时间规划和优先级，提供分阶段的行动建议
 6. 支持追问和深入讨论
 
-语气温暖专业，每次回复聚焦一个主题，多提问了解用户情况。"""
+语气温暖专业，每次回复聚焦一个主题。如果上下文中已有用户的简历信息，不要再问基本信息，直接基于已有信息分析。"""
 
 RESUME_TAILOR_PROMPT = """你是一个专业的简历优化专家。你的任务是帮助用户根据目标岗位修改和优化简历。
 
-工作流程：
+工作流程（如果上下文中已有用户简历信息，跳过第1步和第2步，直接基于数据分析）：
 1. 首先确认用户已有的简历（上下文中的简历数据）
 2. 如果用户尚未上传简历，引导用户先上传简历
 3. 询问用户的目标岗位和投递方向
@@ -313,11 +331,13 @@ RESUME_TAILOR_PROMPT = """你是一个专业的简历优化专家。你的任务
 输出简历时使用以下格式：
 [RESUME_TEMPLATE]
 # 姓名
-...标准简历格式..."""
+...标准简历格式...
+
+【重要】如果上下文中已有用户的简历信息和技能标签，不要询问用户的基本信息（姓名、学历、技能、经历等），直接基于已有数据分析并给出建议。"""
 
 CAREER_PLANNING_PROMPT = """你是一个专业的职业规划顾问。你的任务是帮助用户规划短中长期职业发展路径。
 
-工作流程：
+工作流程（如果上下文中已有用户简历信息，跳过第1步，直接基于已有数据分析）：
 1. 了解用户的现状（当前阶段、经验年限、技能水平）
 2. 了解用户的兴趣和目标
 3. 给出短期（0-1年）的具体行动建议
@@ -332,7 +352,8 @@ INTERVIEW_SIM_PROMPT = """你是一个专业的面试官，正在为用户进行
 
 【面试模拟流程】
 1. 第一阶段：目标岗位确认
-   - 首先询问用户的目标岗位和行业
+   - 如果上下文中已有用户简历信息和推荐岗位，直接基于岗位信息选择最匹配的岗位进行面试
+   - 如果上下文中没有简历信息，才询问用户的目标岗位和行业
    - 确认目标岗位后，询问用户希望进行哪种类型的面试（技术面/行为面/综合面）
    - 根据用户的选择，准备相应类型的面试问题
 
@@ -374,7 +395,7 @@ INTERVIEW_SIM_PROMPT = """你是一个专业的面试官，正在为用户进行
 5. 如果用户回答不完整，可以适当追问
 6. 用户可随时说"结束"退出面试模拟模式
 
-现在，请开始面试模拟。首先询问用户的目标岗位和行业。"""
+现在，请开始面试模拟。如果上下文中已有用户简历和推荐岗位，直接选择匹配度最高的岗位作为面试目标，不要问用户"你的目标岗位是什么"。"""
 
 
 class ChatMessage(BaseModel):
@@ -387,6 +408,11 @@ class ResumeContext(BaseModel):
     resume_id: str = ""
     candidate_summary: str = ""
     inferred_mbti: str = ""
+    mbti_description: str = ""
+    city: str = ""
+    resume_diagnosis: dict | None = None
+    extracted_skills: list = []
+    resume_text: str = ""
     job_recommendations: list = []
 
 
@@ -449,27 +475,70 @@ async def chat(request: ChatRequest) -> dict[str, Any]:
         }
         system = mode_prompts.get(request.mode, DEFAULT_SYSTEM_PROMPT)
 
-        # 如果有简历上下文，附加到 system prompt
+        # 如果有简历上下文，在 system prompt 最前面注入简历数据
         ctx = request.resume_context
-        resume_section = ""
+        print(f"🔍 [DEBUG] has_resume={ctx.has_resume}, has_text={bool(ctx.resume_text)}, has_skills={bool(ctx.extracted_skills)}, has_diag={ctx.resume_diagnosis is not None}")
         if ctx and ctx.has_resume:
-            resume_section = f"""
+            # 构建简历数据块
+            resume_block = "\n【用户简历数据】\n"
+            city_str = f"（{ctx.city}）" if ctx.city else ""
+            resume_block += f"候选人简介: {ctx.candidate_summary or '暂无'} {city_str}\n"
 
-【用户简历信息】
-候选人简介: {ctx.candidate_summary or "暂无"}
-MBTI 类型: {ctx.inferred_mbti or "未知"}
-"""
+            mbti_line = f"MBTI: {ctx.inferred_mbti or '未知'}"
+            if ctx.mbti_description:
+                mbti_line += f" — {ctx.mbti_description}"
+            resume_block += mbti_line + "\n"
+
+            if ctx.extracted_skills:
+                resume_block += f"技能标签: {'、'.join(ctx.extracted_skills[:15])}\n"
+
+            diag = ctx.resume_diagnosis
+            if diag and isinstance(diag, dict):
+                score = diag.get("overall_score")
+                comment = diag.get("overall_comment", "")
+                if score is not None:
+                    resume_block += f"简历评分: {score}/100" + (f" — {comment}" if comment else "") + "\n"
+
+            # 岗位推荐
             if ctx.job_recommendations:
-                jobs = ctx.job_recommendations[:3]
-                job_list = "\n".join(
-                    f"- {j.get('title', '未知')} ({j.get('industry', '未知')})"
-                    for j in jobs
-                )
-                resume_section += f"\n推荐岗位:\n{job_list}"
+                resume_block += f"\n推荐岗位（共{len(ctx.job_recommendations)}个）:\n"
+                for i, j in enumerate(ctx.job_recommendations, 1):
+                    title = j.get('title', '未知')
+                    industry = j.get('industry', '未知')
+                    score = j.get('match_score', '')
+                    score_str = f"（{score}分）" if score else ""
+                    reason = j.get('reason', '')
+                    reason_str = f" — {reason}" if reason else ""
+                    sr = j.get('salary_range', {})
+                    salary_str = ""
+                    if sr and sr.get('min_salary') and sr.get('max_salary'):
+                        sc = sr.get('city', '')
+                        salary_str = f" {sr['min_salary']}-{sr['max_salary']}K" + (f"（{sc}）" if sc else "")
+                    ms = j.get('missing_skills', [])
+                    ms_str = f" 需补:{','.join(ms[:3])}" if ms else ""
+                    cp = j.get('career_path', '')
+                    cp_str = f" 成长:{cp}" if cp else ""
+                    resume_block += f"  {i}. {title}（{industry}）{score_str}{salary_str}{ms_str}\n"
+                    if reason:
+                        resume_block += f"     理由: {reason}\n"
 
-            resume_section += "\n\n请基于以上简历信息展开对话，不要重复询问简历中已有的信息。"
+            # 简历原文
+            if ctx.resume_text:
+                resume_block += f"\n【简历原文】\n{ctx.resume_text[:2000]}\n"
 
-        system += resume_section
+            # 强制规则（放在 resume 数据之后、角色 prompt 之前）
+            force_rules = """
+⚠️ 强制规则（必须100%遵守）：
+用户已经上传了完整的简历，上面就是全部简历数据。
+1. 禁止询问任何简历中已有的信息，包括：姓名、学历、专业、学校、技能、工作经验、项目经历、城市等
+2. 直接基于简历数据回答用户的问题
+3. 回答时要引用具体的简历内容（如"我看到你有XX技能"、"根据你的XX经历"）
+4. 如果用户问的是简历中没有的细节（如具体某段经历的补充信息），可以请用户补充
+5. 绝对不要以"请先告诉我以下信息"开头
+
+"""
+            system = resume_block + force_rules + system
+
 
         # 如果是面试模拟模式，添加面试状态信息
         if request.mode == "interview_sim":
@@ -595,6 +664,7 @@ async def upload_resume(file: UploadFile = File(...)) -> dict[str, Any]:
             "filename": filename,
             "parse_status": "success",
             "parsed_data": parsed,
+            "raw_text": raw_text[:3000],  # 返回简历原文（前3000字），供 Agent 聊天使用
             "message": "Resume parsed and structured successfully.",
         }
     except HTTPException:

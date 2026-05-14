@@ -3037,6 +3037,11 @@
       resume_id: activeResumeId,
       candidate_summary: d.candidate_summary || "",
       inferred_mbti: d.inferred_mbti || "",
+      mbti_description: d.mbti_description || "",
+      city: d.city || "",
+      resume_diagnosis: d.resume_diagnosis || null,
+      extracted_skills: d.extracted_skills || [],
+      resume_text: active.rawText || "",
       job_recommendations: d.job_recommendations || []
     };
   }
@@ -3122,6 +3127,8 @@
       const oldProgress = document.getElementById('interviewProgress');
       if (oldProgress) oldProgress.remove();
     }
+    // 卡片点击后自动发送消息
+    setTimeout(() => sendAgentChat(), 100);
   }
 
   /**
@@ -3724,9 +3731,10 @@
         uploadTime: Date.now(),
         fileSize: sidebarSelectedFile.size,
         fileType: sidebarSelectedFile.name.endsWith('.pdf') ? 'pdf' : 'docx',
-        parseResult: data
+        parseResult: data,
+        rawText: data.raw_text || ""
       };
-      
+
       const resumes = StorageManager.load(StorageManager.KEYS.RESUMES) || [];
       resumes.unshift(resume);
       StorageManager.save(StorageManager.KEYS.RESUMES, resumes);
