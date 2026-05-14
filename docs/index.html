@@ -1564,6 +1564,729 @@
     }
 
     /* ========== 结束：用户侧边栏样式 ========== */
+    
+    /* ========== 简历解析器模态框样式 ========== */
+    
+    /* 智能解析按钮 */
+    .btn-smart-parser {
+      width: 100%;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+    
+    .btn-smart-parser:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.45);
+    }
+    
+    .btn-smart-parser:active {
+      transform: translateY(0);
+    }
+    
+    .btn-smart-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .btn-smart-text {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .btn-smart-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    
+    .btn-smart-desc {
+      font-size: 11px;
+      opacity: 0.85;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    
+    .btn-smart-arrow {
+      font-size: 16px;
+      opacity: 0.7;
+      transition: transform 0.3s;
+    }
+    
+    .btn-smart-parser:hover .btn-smart-arrow {
+      transform: translateX(3px);
+      opacity: 1;
+    }
+    
+    .smart-parser-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0 14px;
+    }
+    
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--sakura-light), transparent);
+    }
+    
+    .divider-text {
+      font-size: 11px;
+      color: var(--gray-500);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    /* 模态框遮罩 */
+    .parser-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .parser-modal-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* 模态框容器 */
+    .parser-modal {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 550px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    /* 模态框头部 */
+    .parser-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 2px solid var(--sakura-lighter);
+    }
+    
+    .parser-modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--sakura-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .parser-modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--gray-500);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .parser-modal-close:hover {
+      background: var(--sakura-lighter);
+      color: var(--sakura-primary);
+    }
+    
+    /* 模态框内容 */
+    .parser-modal-content {
+      padding: 24px;
+    }
+    
+    /* 标签页 */
+    .parser-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--sakura-lighter);
+    }
+    
+    .parser-tab {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--gray-600);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .parser-tab:hover {
+      color: var(--sakura-primary);
+    }
+    
+    .parser-tab.active {
+      color: var(--sakura-primary);
+      border-bottom-color: var(--sakura-primary);
+    }
+    
+    .parser-tab-content {
+      display: none;
+    }
+    
+    .parser-tab-content.active {
+      display: block;
+    }
+    
+    /* 上传区域 */
+    .parser-upload-section {
+      margin-bottom: 20px;
+      padding: 30px 20px;
+      border: 2px dashed var(--sakura-primary);
+      border-radius: var(--radius);
+      text-align: center;
+      background: var(--sakura-lighter);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .parser-upload-section:hover {
+      border-color: var(--sakura-dark);
+      background: var(--sakura-light);
+    }
+    
+    .parser-upload-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    
+    .parser-upload-text {
+      color: var(--gray-700);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .parser-upload-hint {
+      color: var(--gray-500);
+      font-size: 12px;
+    }
+    
+    /* 文件信息 */
+    .parser-file-info {
+      display: none;
+      margin-top: 10px;
+      padding: 12px;
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: #0c5460;
+    }
+    
+    .parser-file-info.active {
+      display: block;
+    }
+    
+    .parser-file-name {
+      font-weight: 700;
+      color: #2196F3;
+    }
+    
+    /* 加载状态 */
+    .parser-loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .parser-loading.active {
+      display: block;
+    }
+    
+    .parser-spinner {
+      border: 3px solid var(--sakura-lighter);
+      border-top: 3px solid var(--sakura-primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    /* 按钮组 */
+    .parser-button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .parser-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .parser-btn-primary {
+      background: var(--sakura-primary);
+      color: var(--white);
+    }
+    
+    .parser-btn-primary:hover:not(:disabled) {
+      background: var(--sakura-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 183, 197, 0.3);
+    }
+    
+    .parser-btn-secondary {
+      background: var(--sakura-light);
+      color: var(--sakura-dark);
+    }
+    
+    .parser-btn-secondary:hover:not(:disabled) {
+      background: var(--sakura-primary);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    .parser-btn:disabled {
+      background: var(--gray-300);
+      color: var(--gray-500);
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* 状态消息 */
+    .parser-status {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: var(--radius);
+      text-align: center;
+      font-size: 13px;
+      display: none;
+    }
+    
+    .parser-status.success {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    
+    .parser-status.error {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+    
+    .parser-status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      display: block;
+    }
+    
+    /* 预览区域 */
+    .parser-preview {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+    }
+    
+    .parser-preview.active {
+      display: block;
+    }
+    
+    .parser-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--sakura-lighter);
+    }
+    
+    .parser-preview-header strong {
+      color: var(--sakura-primary);
+      font-size: 14px;
+    }
+    
+    .parser-btn-link {
+      background: none;
+      border: none;
+      color: var(--sakura-primary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 5px 10px;
+      text-decoration: underline;
+    }
+    
+    .parser-btn-link:hover {
+      color: var(--sakura-dark);
+    }
+    
+    .parser-preview-content {
+      font-size: 13px;
+    }
+    
+    .parser-preview-item {
+      display: flex;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    
+    .parser-preview-label {
+      font-weight: 700;
+      color: var(--gray-600);
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+    
+    .parser-preview-value {
+      color: var(--gray-800);
+      word-break: break-word;
+    }
+    
+    .parser-preview-value.empty {
+      color: var(--gray-400);
+      font-style: italic;
+    }
+    
+    /* 表单样式 */
+    .parser-form-group {
+      margin-bottom: 15px;
+    }
+    
+    .parser-form-group label {
+      display: block;
+      color: var(--gray-700);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .parser-form-group input,
+    .parser-form-group textarea,
+    .parser-form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--sakura-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    .parser-form-group input:focus,
+    .parser-form-group textarea:focus,
+    .parser-form-group select:focus {
+      outline: none;
+      border-color: var(--sakura-primary);
+    }
+    
+    .parser-form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    
+    /* 提示信息 */
+    .parser-tip {
+      margin-top: 15px;
+      padding: 12px;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: #856404;
+      line-height: 1.6;
+    }
+    
+    /* 设置按钮 */
+    .parser-settings-btn {
+      background: none;
+      border: none;
+      color: var(--sakura-primary);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 5px 10px;
+      transition: all 0.3s;
+      border-radius: var(--radius-sm);
+    }
+    
+    .parser-settings-btn:hover {
+      background: var(--sakura-lighter);
+      transform: scale(1.1);
+    }
+
+    /* 上传区域（新版） */
+    .parser-upload-area {
+      margin-bottom: 16px;
+      padding: 30px 20px;
+      border: 2px dashed var(--sakura-primary);
+      border-radius: var(--radius);
+      text-align: center;
+      background: var(--sakura-lighter);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .parser-upload-area:hover,
+    .parser-upload-area.dragover {
+      border-color: var(--sakura-dark);
+      background: var(--sakura-light);
+    }
+    .parser-file-info {
+      padding: 10px 14px;
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: #0c5460;
+      margin-bottom: 12px;
+    }
+    .parser-file-info span { margin-right: 12px; }
+    
+    /* 状态消息（新版） */
+    .parser-status-msg {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .parser-status-msg.success { background: #d4edda; color: #155724; }
+    .parser-status-msg.error { background: #f8d7da; color: #721c24; }
+    .parser-status-msg.info { background: #d1ecf1; color: #0c5460; }
+    .parser-status-msg.warning { background: #fff3cd; color: #856404; }
+    
+    /* 加载动画（新版） */
+    .parser-loading {
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .parser-loading .parser-spinner {
+      border: 3px solid var(--sakura-lighter);
+      border-top: 3px solid var(--sakura-primary);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    .parser-loading span { color: var(--gray-600); font-size: 14px; }
+    
+    /* 按钮组（新版） */
+    .parser-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      align-items: center;
+    }
+    .parser-btn-primary {
+      padding: 10px 20px;
+      background: var(--sakura-primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .parser-btn-primary:hover:not(:disabled) {
+      background: var(--sakura-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(255,183,197,0.3);
+    }
+    .parser-btn-primary:disabled {
+      background: var(--gray-300);
+      color: var(--gray-500);
+      cursor: not-allowed;
+    }
+    .parser-btn-secondary {
+      padding: 10px 20px;
+      background: var(--sakura-light);
+      color: var(--sakura-dark);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .parser-btn-secondary:hover:not(:disabled) {
+      background: var(--sakura-primary);
+      color: var(--white);
+    }
+    .parser-btn-icon {
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.3s;
+      margin-left: auto;
+    }
+    .parser-btn-icon:hover {
+      background: var(--sakura-lighter);
+      transform: scale(1.1);
+    }
+    
+    /* 预览区域（新版） */
+    .parser-preview {
+      margin-bottom: 12px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      max-height: 350px;
+      overflow-y: auto;
+    }
+    .parser-preview .preview-item {
+      display: flex;
+      margin-bottom: 8px;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+    .parser-preview .preview-label {
+      font-weight: 700;
+      color: var(--gray-600);
+      min-width: 75px;
+      flex-shrink: 0;
+    }
+    .parser-preview .preview-value {
+      color: var(--gray-800);
+      word-break: break-word;
+    }
+    .parser-preview .preview-value.empty {
+      color: var(--gray-400);
+      font-style: italic;
+    }
+    .parser-preview .preview-card {
+      margin: 6px 0;
+      padding: 10px;
+      background: #fff;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--sakura-primary);
+    }
+    .parser-preview .preview-card-title {
+      font-weight: 700;
+      color: var(--sakura-primary);
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+    .parser-preview .preview-card-detail {
+      font-size: 12px;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+    .parser-preview .preview-skill-category {
+      margin: 6px 0;
+      padding: 8px 10px;
+      background: #f0f8ff;
+      border-radius: var(--radius-sm);
+    }
+    .parser-preview .preview-skill-category strong {
+      color: #2196F3;
+      font-size: 12px;
+    }
+    .parser-preview .preview-skill-category span {
+      font-size: 12px;
+      color: var(--gray-700);
+    }
+    
+    /* 表单行 */
+    .parser-form-row {
+      display: flex;
+      gap: 12px;
+    }
+    .parser-form-row .parser-form-group { flex: 1; }
+    .parser-form .required { color: #e74c3c; }
+    .parser-input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--sakura-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    .parser-input:focus {
+      outline: none;
+      border-color: var(--sakura-primary);
+    }
+    .parser-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--gray-500);
+      line-height: 1.6;
+    }
+    
+    /* Toast 通知 */
+    .parser-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100%);
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 100001;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .parser-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .parser-toast.success { background: #d4edda; color: #155724; }
+    .parser-toast.error { background: #f8d7da; color: #721c24; }
+    .parser-toast.info { background: #d1ecf1; color: #0c5460; }
+
+    /* ========== 结束：简历解析器模态框样式 ========== */
   </style>
 </head>
 <body>
@@ -1607,8 +2330,143 @@
       <div class="progress-bar-sidebar"></div>
       <span class="progress-text-sidebar">0%</span>
     </div>
+
+    <!-- 智能简历解析按钮 - 放在上传区域内 -->
+    <div class="smart-parser-divider">
+      <span class="divider-line"></span>
+      <span class="divider-text">✨ 智能工具</span>
+      <span class="divider-line"></span>
+    </div>
+    <button class="btn-smart-parser" id="btnSmartParser">
+      <span class="btn-smart-icon">🤖</span>
+      <span class="btn-smart-text">
+        <span class="btn-smart-title">智能简历解析</span>
+        <span class="btn-smart-desc">AI 提取简历信息，分字段存储</span>
+      </span>
+      <span class="btn-smart-arrow">→</span>
+    </button>
   </section>
 </aside>
+
+<!-- ========== 智能简历解析模态框 ========== -->
+<div id="parserModalOverlay" class="parser-modal-overlay">
+  <div class="parser-modal">
+    <div class="parser-modal-header">
+      <h2 class="parser-modal-title">📄 智能简历解析</h2>
+      <button class="parser-modal-close" id="parserCloseBtn">&times;</button>
+    </div>
+    <div class="parser-tabs">
+      <button class="parser-tab active" data-parser-tab="upload">上传简历</button>
+      <button class="parser-tab" data-parser-tab="manual">手动填写</button>
+    </div>
+    <div class="parser-modal-content">
+      <!-- 上传简历 Tab -->
+      <div id="parserUploadTab" class="parser-tab-content active">
+        <div class="parser-upload-area" id="parserUploadArea">
+          <input type="file" id="parserFileInput" accept=".pdf,.docx,.txt" hidden>
+          <div class="parser-upload-icon">📄</div>
+          <div class="parser-upload-text">点击或拖拽上传简历</div>
+          <div class="parser-upload-hint">支持 PDF、DOCX、TXT 格式</div>
+        </div>
+        <div id="parserFileInfo" class="parser-file-info" style="display:none;">
+          <span id="parserFileName"></span>
+          <span id="parserFileSize"></span>
+        </div>
+        <div id="parserStatus" class="parser-status-msg" style="display:none;"></div>
+        <div id="parserLoading" class="parser-loading" style="display:none;">
+          <div class="parser-spinner"></div>
+          <span>正在解析简历...</span>
+        </div>
+        <div id="parserPreview" class="parser-preview" style="display:none;"></div>
+        <div class="parser-actions">
+          <button id="parserParseBtn" class="parser-btn-primary" disabled>开始解析</button>
+          <button id="parserEditBtn" class="parser-btn-secondary" style="display:none;">编辑</button>
+          <button id="parserSettingsBtn" class="parser-btn-icon" title="API 设置">⚙️</button>
+        </div>
+      </div>
+      <!-- 手动填写 Tab -->
+      <div id="parserManualTab" class="parser-tab-content">
+        <form id="parserManualForm" class="parser-form">
+          <div class="parser-form-group">
+            <label>姓名 <span class="required">*</span></label>
+            <input type="text" name="name" id="parserName" required>
+          </div>
+          <div class="parser-form-group">
+            <label>邮箱 <span class="required">*</span></label>
+            <input type="email" name="email" id="parserEmail" required>
+          </div>
+          <div class="parser-form-group">
+            <label>电话 <span class="required">*</span></label>
+            <input type="tel" name="phone" id="parserPhone" required>
+          </div>
+          <div class="parser-form-row">
+            <div class="parser-form-group">
+              <label>学校</label>
+              <input type="text" name="education" id="parserEducation">
+            </div>
+            <div class="parser-form-group">
+              <label>专业</label>
+              <input type="text" name="major" id="parserMajor">
+            </div>
+          </div>
+          <div class="parser-form-row">
+            <div class="parser-form-group">
+              <label>学历</label>
+              <select name="degree" id="parserDegree">
+                <option value="">请选择</option>
+                <option value="高中">高中</option>
+                <option value="大专">大专</option>
+                <option value="本科">本科</option>
+                <option value="硕士">硕士</option>
+                <option value="博士">博士</option>
+              </select>
+            </div>
+            <div class="parser-form-group">
+              <label>毕业时间</label>
+              <input type="text" name="graduationDate" id="parserGradDate" placeholder="例如：2027.6">
+            </div>
+          </div>
+          <div class="parser-form-group">
+            <label>工作经历</label>
+            <textarea name="workExperience" id="parserWorkExp" rows="4" placeholder="公司名称、职位、时间、工作内容..."></textarea>
+          </div>
+          <div class="parser-form-group">
+            <label>技能</label>
+            <textarea name="skills" id="parserSkills" rows="3" placeholder="语言: 英语CET-6&#10;编程: Python, JavaScript"></textarea>
+          </div>
+          <div class="parser-form-group">
+            <label>自我介绍</label>
+            <textarea name="introduction" id="parserIntro" rows="3"></textarea>
+          </div>
+          <div id="parserFormStatus" class="parser-status-msg" style="display:none;"></div>
+          <button type="submit" class="parser-btn-primary" style="width:100%;">保存简历</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== API 设置模态框 ========== -->
+<div id="settingsModalOverlay" class="parser-modal-overlay">
+  <div class="parser-modal" style="max-width:420px;">
+    <div class="parser-modal-header">
+      <h2 class="parser-modal-title">⚙️ API 设置</h2>
+      <button class="parser-modal-close" id="settingsCloseBtn">&times;</button>
+    </div>
+    <div class="parser-modal-content">
+      <div class="parser-form-group">
+        <label>DeepSeek API Key</label>
+        <input type="password" id="settingsApiKey" placeholder="sk-..." class="parser-input">
+        <div class="parser-hint">💡 配置 API Key 可获得更准确的解析结果<br>获取地址: <a href="https://platform.deepseek.com" target="_blank" style="color:var(--sakura-primary);">platform.deepseek.com</a></div>
+      </div>
+      <div id="settingsStatus" class="parser-status-msg" style="display:none;"></div>
+      <div class="parser-actions" style="justify-content:flex-end;">
+        <button id="settingsTestBtn" class="parser-btn-secondary">测试连接</button>
+        <button id="settingsSaveBtn" class="parser-btn-primary">保存设置</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <header>
   <div class="logo">小小求职拿下 <span class="sparkle">✦</span></div>
@@ -3203,5 +4061,6 @@
 
   // ========== 结束：侧边栏功能 ==========
 </script>
+<script src="./parser.js"></script>
 </body>
 </html>
