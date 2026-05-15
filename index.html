@@ -1629,6 +1629,24 @@
       transition: all 0.2s;
     }
     .tracking-card-actions button:hover { border-color: var(--sakura-primary); color: var(--sakura-primary); }
+
+    /* 智能提醒 */
+    .tracking-insights { padding: 12px 16px; border-bottom: 1px solid var(--gray-200); }
+    .insight-card {
+      padding: 10px 12px; margin-bottom: 8px; border-radius: 10px;
+      font-size: 12px; line-height: 1.6;
+    }
+    .insight-card:last-child { margin-bottom: 0; }
+    .insight-card-warn { background: #fff8e1; border-left: 3px solid #ffc107; }
+    .insight-card-info { background: #e3f2fd; border-left: 3px solid #2196f3; }
+    .insight-card-success { background: #e8f5e9; border-left: 3px solid #4caf50; }
+    .insight-card-danger { background: #fbe9e7; border-left: 3px solid #ff5722; }
+    .insight-title { font-weight: 700; color: var(--gray-800); margin-bottom: 2px; }
+    .insight-desc { color: var(--gray-600); }
+    .insight-funnel { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11px; }
+    .funnel-step { padding: 3px 8px; border-radius: 10px; background: var(--sakura-lighter); color: var(--gray-700); font-weight: 600; }
+    .funnel-arrow { color: var(--gray-400); }
+    .funnel-rate { margin-left: auto; font-weight: 700; color: var(--sakura-dark); }
     /* ========== 结束：投递追踪样式 ========== */
 
     /* ========== 智能简历解析器样式 ========== */
@@ -2177,6 +2195,7 @@
         <span class="stat-label">待回复</span>
       </div>
     </div>
+    <div class="tracking-insights" id="trackingInsights" style="display:none;"></div>
     <div class="tracking-list" id="trackingList">
       <div class="tracking-empty">
         <div class="tracking-empty-icon">📭</div>

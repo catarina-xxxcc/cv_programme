@@ -89,6 +89,9 @@
     // 待回复（已投递状态）
     var pending = records.filter(function(r) { return r.status === '已投递'; }).length;
     document.getElementById('trackingPending').textContent = pending;
+
+    // 智能提醒
+    renderInsights(records);
   }
 
   // 渲染投递列表
@@ -149,5 +152,100 @@
       loadTrackingData();
     });
   };
+
+  // 智能提醒分析
+  function renderInsights(records) {
+    var container = document.getElementById('trackingInsights');
+    if (!records || records.length === 0) {
+      container.style.display = 'none';
+      return;
+    }
+
+    var insights = [];
+    var now = new Date();
+
+    // 1. 超时提醒：投递超过 7 天未回复
+    var overdue = records.filter(function(r) {
+      if (r.status !== '已投递') return false;
+      var daysDiff = (now - new Date(r.date)) / (1000 * 60 * 60 * 24);
+      return daysDiff >= 7;
+    });
+    if (overdue.length > 0) {
+      insights.push({
+        type: 'warn',
+        title: '⏰ ' + overdue.length + ' 家投递超过 7 天未回复',
+        desc: '建议主动跟进，发邮件或电话询问进度'
+      });
+    }
+
+    // 2. 转化漏斗
+    var total = records.length;
+    var interviewed = records.filter(function(r) { return r.status === '待面试' || r.status === '已面试' || r.status === '已录用'; }).length;
+    var offered = records.filter(function(r) { return r.status === '已录用'; }).length;
+    var rejected = records.filter(function(r) { return r.status === '已拒绝'; }).length;
+
+    if (total >= 3) {
+      var rate = Math.round((interviewed / total) * 100);
+      insights.push({
+        type: 'info',
+        title: '📊 投递转化漏斗',
+        funnel: { total: total, interviewed: interviewed, offered: offered, rate: rate }
+      });
+    }
+
+    // 3. 简历优化建议：连续 10+ 家未获面试
+    var pendingOnly = records.filter(function(r) { return r.status === '已投递' || r.status === '已拒绝'; });
+    if (pendingOnly.length >= 10 && interviewed === 0) {
+      insights.push({
+        type: 'danger',
+        title: '⚠️ 已投递 ' + pendingOnly.length + ' 家，尚未获得面试',
+        desc: '建议优化简历内容后再继续投递，或尝试不同类型的岗位'
+      });
+    } else if (total >= 5 && rate < 20) {
+      insights.push({
+        type: 'warn',
+        title: '💡 面试转化率偏低（' + rate + '%）',
+        desc: '行业平均约 20-30%，可以考虑针对性修改简历'
+      });
+    }
+
+    // 4. 正面反馈
+    if (offered > 0) {
+      insights.push({
+        type: 'success',
+        title: '🎉 恭喜！已获得 ' + offered + ' 个 offer',
+        desc: '继续加油，对比选择最适合你的机会'
+      });
+    }
+
+    // 渲染
+    if (insights.length === 0) {
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'block';
+    var html = insights.map(function(item) {
+      var cardClass = 'insight-card insight-card-' + item.type;
+      var content = '<div class="insight-title">' + item.title + '</div>';
+
+      if (item.funnel) {
+        content += '<div class="insight-funnel">' +
+          '<span class="funnel-step">投递 ' + item.funnel.total + '</span>' +
+          '<span class="funnel-arrow">→</span>' +
+          '<span class="funnel-step">面试 ' + item.funnel.interviewed + '</span>' +
+          '<span class="funnel-arrow">→</span>' +
+          '<span class="funnel-step">offer ' + item.funnel.offered + '</span>' +
+          '<span class="funnel-rate">' + item.funnel.rate + '%</span>' +
+        '</div>';
+      } else if (item.desc) {
+        content += '<div class="insight-desc">' + item.desc + '</div>';
+      }
+
+      return '<div class="' + cardClass + '">' + content + '</div>';
+    }).join('');
+
+    container.innerHTML = html;
+  }
 
 })();
