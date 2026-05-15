@@ -408,25 +408,196 @@ var FloatingUI = (function() {
   }
 
   /**
-   * 执行自动填充流程
+   * 执行自动填充流程（AI 智能匹配 + 传统匹配 fallback）
    */
   function performAutofill() {
-    chrome.storage.local.get(['resume'], function(result) {
+    chrome.storage.local.get(['resume', 'deepseekApiKey'], function(result) {
       var resume = result.resume;
       if (!resume) {
         showNotification('请先在扩展中上传并解析简历', 'info');
         return;
       }
 
-      var fillResult = AutofillEngine.fill(resume);
+      showNotification('🔍 AI 正在分析页面表单...', 'info');
 
-      if (fillResult.filled.length === 0) {
-        showNotification('未找到可填充的表单字段', 'info');
+      // 提取页面表单元素的上下文
+      var formContext = extractFormContext();
+
+      if (formContext.length === 0) {
+        showNotification('未找到表单字段', 'info');
         return;
       }
 
-      showConfirmation(fillResult);
+      var apiKey = result.deepseekApiKey;
+      if (apiKey) {
+        // AI 智能匹配模式
+        chrome.runtime.sendMessage({
+          action: 'aiFieldMatch',
+          formContext: formContext,
+          resumeFields: Object.keys(resume).filter(function(k) { return resume[k] && typeof resume[k] === 'string' && resume[k].length > 0; }),
+          apiKey: apiKey
+        }, function(response) {
+          if (chrome.runtime.lastError || !response || !response.success) {
+            // AI 失败，回退到传统匹配
+            console.log('AI 匹配失败，使用传统匹配');
+            doTraditionalFill(resume);
+            return;
+          }
+          // AI 返回了映射，按映射填充
+          doAIFill(resume, response.mapping, formContext);
+        });
+      } else {
+        // 没有 API Key，直接用传统匹配
+        doTraditionalFill(resume);
+      }
     });
+  }
+
+  /**
+   * 提取页面所有表单元素的上下文信息
+   */
+  function extractFormContext() {
+    var elements = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="password"]), textarea, select, [contenteditable="true"], [role="textbox"]');
+    var context = [];
+
+    for (var i = 0; i < elements.length; i++) {
+      var el = elements[i];
+      // 跳过不可见元素
+      var rect = el.getBoundingClientRect();
+      if (rect.width === 0 && rect.height === 0) continue;
+
+      // 收集上下文
+      var info = {
+        index: i,
+        tag: el.tagName.toLowerCase(),
+        type: el.type || '',
+        id: el.id || '',
+        name: el.getAttribute('name') || '',
+        placeholder: el.getAttribute('placeholder') || '',
+        ariaLabel: el.getAttribute('aria-label') || '',
+        label: getElementLabel(el),
+        nearbyText: getNearbyText(el)
+      };
+
+      // 只保留有意义的上下文
+      if (info.label || info.placeholder || info.name || info.ariaLabel || info.nearbyText) {
+        context.push(info);
+      }
+    }
+
+    return context;
+  }
+
+  /**
+   * 获取元素关联的 label 文本
+   */
+  function getElementLabel(el) {
+    if (el.id) {
+      var label = document.querySelector('label[for="' + el.id + '"]');
+      if (label) return label.textContent.trim().substring(0, 50);
+    }
+    var parent = el.closest('label');
+    if (parent) return parent.textContent.trim().substring(0, 50);
+    // 查找父容器中的 label
+    var wrapper = el.closest('[class*="form"], [class*="field"], [class*="item"], [class*="group"]');
+    if (wrapper) {
+      var lbl = wrapper.querySelector('label, [class*="label"], [class*="title"]');
+      if (lbl && lbl !== el) return lbl.textContent.trim().substring(0, 50);
+    }
+    return '';
+  }
+
+  /**
+   * 获取元素附近的文本（前一个兄弟元素）
+   */
+  function getNearbyText(el) {
+    var prev = el.previousElementSibling;
+    if (prev) {
+      var text = prev.textContent.trim();
+      if (text.length > 0 && text.length < 50) return text;
+    }
+    return '';
+  }
+
+  /**
+   * AI 匹配后填充
+   */
+  function doAIFill(resume, mapping, formContext) {
+    var elements = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="password"]), textarea, select, [contenteditable="true"], [role="textbox"]');
+    var filled = 0;
+    var total = Object.keys(mapping).length;
+
+    Object.keys(mapping).forEach(function(indexStr) {
+      var fieldName = mapping[indexStr];
+      var idx = parseInt(indexStr);
+      if (isNaN(idx) || idx >= elements.length) return;
+
+      var el = elements[idx];
+      var value = getResumeFieldValue(resume, fieldName);
+      if (!value) return;
+
+      try {
+        fillElement(el, value);
+        filled++;
+      } catch (e) {
+        console.error('填充失败:', e);
+      }
+    });
+
+    if (filled > 0) {
+      showNotification('✅ AI 智能填充完成！成功 ' + filled + '/' + total + ' 个字段', 'success');
+      showRecordButton();
+    } else {
+      showNotification('未能填充任何字段', 'info');
+    }
+  }
+
+  /**
+   * 传统匹配填充（fallback）
+   */
+  function doTraditionalFill(resume) {
+    var fillResult = AutofillEngine.fill(resume);
+    if (fillResult.filled.length > 0) {
+      showConfirmation(fillResult);
+    } else {
+      showNotification('未找到可填充的表单字段', 'info');
+    }
+  }
+
+  /**
+   * 获取简历字段值
+   */
+  function getResumeFieldValue(resume, fieldName) {
+    if (fieldName === 'workExperience' && resume.workExperiences && resume.workExperiences.length > 0) {
+      return resume.workExperiences.map(function(exp) {
+        return (exp.company || '') + ' ' + (exp.position || '') + ' ' + (exp.period || '') + '\n' + (exp.description || '');
+      }).join('\n\n');
+    }
+    return resume[fieldName] || '';
+  }
+
+  /**
+   * 填充单个元素
+   */
+  function fillElement(el, value) {
+    if (el.tagName === 'SELECT') {
+      var options = Array.from(el.options);
+      var match = options.find(function(o) { return o.text.indexOf(value) !== -1 || value.indexOf(o.text) !== -1; });
+      if (match) el.value = match.value;
+    } else if (el.getAttribute('contenteditable') === 'true') {
+      el.textContent = value;
+    } else {
+      var maxLen = el.getAttribute('maxlength');
+      if (maxLen) value = value.substring(0, parseInt(maxLen));
+      // React 兼容
+      var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+      if (el.tagName === 'TEXTAREA') setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value');
+      if (setter && setter.set) setter.set.call(el, value);
+      else el.value = value;
+    }
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    el.dispatchEvent(new Event('blur', { bubbles: true }));
   }
 
   return {

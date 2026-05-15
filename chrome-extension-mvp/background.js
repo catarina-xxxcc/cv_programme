@@ -37,6 +37,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(err => sendResponse({ success: false, message: err.message }));
     return true;
   }
+
+  // AI 智能字段匹配
+  if (request.action === 'aiFieldMatch') {
+    aiFieldMatch(request.formContext, request.resumeFields, request.apiKey)
+      .then(mapping => sendResponse({ success: true, mapping: mapping }))
+      .catch(err => sendResponse({ success: false, message: err.message }));
+    return true;
+  }
 });
 
 // 监听来自网站的外部消息（externally_connectable）
@@ -153,4 +161,64 @@ async function parseScreenshotWithAI(imageBase64, apiKey) {
   }
 
   throw new Error('AI 响应格式错误');
+}
+
+/**
+ * AI 智能字段匹配 - 用 DeepSeek 分析页面表单结构，返回字段映射
+ */
+async function aiFieldMatch(formContext, resumeFields, apiKey) {
+  // 构建表单描述
+  const formDescription = formContext.map((item, idx) => {
+    let desc = `[${idx}] `;
+    if (item.label) desc += `label="${item.label}" `;
+    if (item.placeholder) desc += `placeholder="${item.placeholder}" `;
+    if (item.ariaLabel) desc += `aria-label="${item.ariaLabel}" `;
+    if (item.name) desc += `name="${item.name}" `;
+    if (item.nearbyText) desc += `nearby="${item.nearbyText}" `;
+    desc += `(${item.tag}${item.type ? '[' + item.type + ']' : ''})`;
+    return desc;
+  }).join('\n');
+
+  const prompt = `你是一个表单字段匹配助手。下面是一个网页表单中所有输入框的信息，请判断每个输入框应该填入简历的哪个字段。
+
+表单字段列表：
+${formDescription}
+
+可用的简历字段：${resumeFields.join(', ')}
+
+请返回一个 JSON 对象，key 是表单字段的序号（如 "0", "1"），value 是对应的简历字段名。
+只匹配你有把握的字段，不确定的不要包含。
+只返回 JSON，不要其他文字。
+
+示例返回：{"0":"name","1":"phone","3":"email","5":"education"}`;
+
+  const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: '你是表单字段匹配助手，只返回JSON。' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.1,
+      max_tokens: 500
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API 错误 ${response.status}`);
+  }
+
+  const data = await response.json();
+  const content = data.choices[0].message.content;
+
+  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('AI 响应格式错误');
+
+  return JSON.parse(jsonMatch[0]);
 }
