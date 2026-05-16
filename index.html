@@ -818,6 +818,17 @@
 
     /* --- Welcome message has been moved to header subtitle --- */
 
+    /* --- 引导文字 --- */
+    .agent-guide-text {
+      padding: 12px 24px 4px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #000000;
+      text-align: center;
+      letter-spacing: 0.5px;
+      font-family: 'Noto Serif SC', serif;
+    }
+
     /* --- Function cards --- */
     .agent-cards {
       padding: 16px 24px;
@@ -2404,7 +2415,6 @@
         <span class="agent-icon">🤖</span>
         <div class="agent-header-text">
           <h3 id="agentTitle">求职小助手</h3>
-          <p id="agentSubtitle" style="font-size:13px;color:var(--gray-600);font-weight:500;">同学你好👋，我是你的智能求职小助手。无论是想精准跨行、复刻金牌简历，还是需要职业规划、全真模拟面试，你需要的职场助力，我这里都有。准备好了吗？让我们开始复盘，直通心仪 Offer！</p>
         </div>
       </div>
       <button class="btn-clear-chat" onclick="clearAgentChat()" title="新建对话">
@@ -2443,6 +2453,9 @@
         </div>
       </div>
     </div>
+
+    <!-- 引导文字 -->
+    <div class="agent-guide-text">有什么我可以帮你的吗？</div>
 
     <!-- Chat messages area -->
     <div class="agent-messages" id="agentMessages">
@@ -3130,12 +3143,11 @@
       const oldProgress = document.getElementById('interviewProgress');
       if (oldProgress) oldProgress.remove();
     }
-    // 卡片点击后自动发送消息
-    setTimeout(() => sendAgentChat(), 100);
+    // 卡片点击后只填充输入框，不自动发送
   }
 
   /**
-   * 发送预设问题（点击即自动发送）
+   * 发送预设问题（点击后填充输入框，不自动发送）
    */
   function sendPresetQuestion(el) {
     const text = el.querySelector("span").textContent.trim();
