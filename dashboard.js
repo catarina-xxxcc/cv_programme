@@ -109,10 +109,7 @@
         '</div>' +
         '<div class="dash-card-arrow">\u67E5\u770B\u8BE6\u60C5 \u2192</div>' +
       '</div>' +
-      // 中间图片
-      '<div class="dash-center-img">' +
-        '<img src="./mainpage.png" alt="\u5C0F\u5C0F\u6C42\u804C\u62FF\u4E0B" />' +
-      '</div>' +
+      // 中间图片（已删除）
       // 左下：面试辅导
       '<div class="dash-card dash-card-3" data-panel="chat" data-index="2">' +
         '<div class="dash-card-icon">\uD83D\uDCAC</div>' +
