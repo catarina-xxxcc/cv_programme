@@ -5,64 +5,86 @@
 (function() {
   'use strict';
 
-  // 题目数据
+  // 题目数据（细化场景和答案）
   var QUESTIONS = [
     {
       id: 'q1', dimension: 'EI',
-      text: '周末你更想怎么度过？',
-      emoji: '🌈',
+      text: '期末考试周结束了，你最想做的第一件事是？',
+      emoji: '🎊',
       options: [
-        { id: 'a', text: '🎉 约朋友出去浪', weights: { E: 2 } },
-        { id: 'b', text: '🏠 在家追剧/打游戏', weights: { I: 2 } },
-        { id: 'c', text: '☕ 去咖啡厅安静待着', weights: { I: 1 } }
+        { id: 'a', text: '🍻 叫上一群朋友去聚餐庆祝', weights: { E: 2 } },
+        { id: 'b', text: '🛋️ 终于可以一个人窝在床上刷手机了', weights: { I: 2 } },
+        { id: 'c', text: '👯 约一两个好朋友安静吃顿饭', weights: { I: 1, E: 1 } }
       ]
     },
     {
       id: 'q2', dimension: 'SN',
-      text: '做课程作业时，你更倾向于？',
-      emoji: '📚',
+      text: '老师布置了一个开放性课题，你的第一反应是？',
+      emoji: '🧩',
       options: [
-        { id: 'a', text: '📋 按模板一步步来，稳妥', weights: { S: 2 } },
-        { id: 'b', text: '💡 自己想个创新方式', weights: { N: 2 } },
-        { id: 'c', text: '🔍 先研究别人怎么做的', weights: { S: 1, N: 1 } }
+        { id: 'a', text: '📖 先找参考文献和成功案例，照着来', weights: { S: 2 } },
+        { id: 'b', text: '✨ 太好了！终于可以搞点不一样的', weights: { N: 2 } },
+        { id: 'c', text: '🤔 先想想这个题目背后想考什么', weights: { N: 1, S: 1 } }
       ]
     },
     {
       id: 'q3', dimension: 'TF',
-      text: '朋友跟你吐槽工作不顺，你会？',
-      emoji: '💬',
+      text: '室友因为分手很难过，半夜找你聊天，你会？',
+      emoji: '🌙',
       options: [
-        { id: 'a', text: '🧠 帮 ta 分析问题、给建议', weights: { T: 2 } },
-        { id: 'b', text: '🤗 先安慰 ta、表示理解', weights: { F: 2 } }
+        { id: 'a', text: '💪 帮 ta 理性分析这段关系的问题', weights: { T: 2 } },
+        { id: 'b', text: '🫂 什么都不说，先陪着 ta 哭一会', weights: { F: 2 } },
+        { id: 'c', text: '🍫 买杯奶茶，边喝边听 ta 说', weights: { F: 1, T: 1 } }
       ]
     },
     {
       id: 'q4', dimension: 'JP',
-      text: '旅行时你更喜欢？',
-      emoji: '✈️',
+      text: '下周有个重要的小组展示，你会？',
+      emoji: '📊',
       options: [
-        { id: 'a', text: '📝 提前做好详细攻略', weights: { J: 2 } },
-        { id: 'b', text: '🎲 到了再说，随心走', weights: { P: 2 } },
-        { id: 'c', text: '📌 大方向定好，细节随意', weights: { J: 1, P: 1 } }
+        { id: 'a', text: '📅 提前一周就开始准备，列好时间表', weights: { J: 2 } },
+        { id: 'b', text: '⚡ 前一天晚上灵感爆发，一气呵成', weights: { P: 2 } },
+        { id: 'c', text: '📝 大纲先列好，细节到时候再说', weights: { J: 1, P: 1 } }
       ]
     },
     {
       id: 'q5', dimension: 'EI',
-      text: '小组讨论时，你通常？',
-      emoji: '🗣️',
+      text: '参加一个不太熟的人的生日聚会，你会？',
+      emoji: '🎂',
       options: [
-        { id: 'a', text: '🎤 主动发言、带节奏', weights: { E: 2 } },
-        { id: 'b', text: '👂 先听别人说，想好了再开口', weights: { I: 2 } }
+        { id: 'a', text: '🦋 主动认识新朋友，聊得很开心', weights: { E: 2 } },
+        { id: 'b', text: '📱 找个角落待着，时不时看看手机', weights: { I: 2 } },
+        { id: 'c', text: '🙋 跟着认识的朋友一起社交', weights: { E: 1, I: 1 } }
       ]
     },
     {
       id: 'q6', dimension: 'TF',
-      text: '选实习岗位时，你更看重？',
-      emoji: '💼',
+      text: '如果有两份实习 offer，你更倾向选？',
+      emoji: '⚖️',
       options: [
-        { id: 'a', text: '📈 薪资待遇和发展前景', weights: { T: 2 } },
-        { id: 'b', text: '🌱 团队氛围和工作意义', weights: { F: 2 } },
-        { id: 'c', text: '🎯 能学到新技能', weights: { T: 1, N: 1 } }
+        { id: 'a', text: '💰 薪资高、大厂背书、简历好看', weights: { T: 2 } },
+        { id: 'b', text: '💛 团队nice、做的事有意义、开心', weights: { F: 2 } },
+        { id: 'c', text: '🚀 能学到最多东西的那个', weights: { T: 1, N: 1 } }
+      ]
+    },
+    {
+      id: 'q7', dimension: 'SN',
+      text: '看到一个全新的 App 创业想法，你的反应是？',
+      emoji: '💡',
+      options: [
+        { id: 'a', text: '📊 先做市场调研，看看有没有竞品', weights: { S: 2 } },
+        { id: 'b', text: '🚀 好兴奋！马上想到了十个延伸方向', weights: { N: 2 } },
+        { id: 'c', text: '🧐 想想这个想法的可行性和风险', weights: { S: 1, T: 1 } }
+      ]
+    },
+    {
+      id: 'q8', dimension: 'JP',
+      text: '你的手机备忘录/日历通常是？',
+      emoji: '📱',
+      options: [
+        { id: 'a', text: '✅ 井井有条，每天的 to-do 都列好了', weights: { J: 2 } },
+        { id: 'b', text: '🌊 基本空的，想到什么做什么', weights: { P: 2 } },
+        { id: 'c', text: '📌 只记重要 deadline，其他随缘', weights: { P: 1, J: 1 } }
       ]
     }
   ];
@@ -224,8 +246,37 @@
     continueBtn.addEventListener('click', function() {
       if (!nickname) return;
       saveProfile();
-      showQuestion(0);
+      // 显示过渡页，再进入问题
+      showTransition();
     });
+  }
+
+  function showTransition() {
+    var card = overlay.querySelector('.ob-card');
+    card.classList.add('ob-card-exit');
+    setTimeout(function() {
+      overlay.innerHTML = '<div class="ob-card ob-card-enter">' +
+        '<div class="ob-welcome-emoji">🎯</div>' +
+        '<h2 class="ob-title">接下来，了解真实的你</h2>' +
+        '<p class="ob-subtitle" style="margin-bottom:16px;">回答 8 道轻松的场景题<br>帮你发现最适合的职业方向</p>' +
+        '<div style="background:var(--sakura-lighter);border-radius:12px;padding:14px 18px;margin-bottom:24px;text-align:left;font-size:13px;color:var(--gray-600);line-height:1.7;">' +
+          '<div style="font-weight:700;color:var(--gray-800);margin-bottom:6px;">💡 小提示</div>' +
+          '<div>• 没有对错之分，选最真实的自己</div>' +
+          '<div>• 不要想"应该选什么"，想"我会怎么做"</div>' +
+          '<div>• 大约 1 分钟就能完成</div>' +
+        '</div>' +
+        '<button class="ob-btn" id="obStartQuiz">开始测试 →</button>' +
+        '<div class="ob-progress-dots">' +
+          '<span class="ob-dot"></span>' +
+          '<span class="ob-dot ob-dot-active"></span>' +
+          '<span class="ob-dot"></span>' +
+        '</div>' +
+      '</div>';
+
+      document.getElementById('obStartQuiz').addEventListener('click', function() {
+        showQuestion(0);
+      });
+    }, 300);
   }
 
   function bindQuestionEvents() {
