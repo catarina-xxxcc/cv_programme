@@ -1717,6 +1717,29 @@
       .dash-pos-right { transform: translateX(50%) translateZ(-100px) rotateY(-25deg) scale(0.8); }
       .dash-pos-left { transform: translateX(-50%) translateZ(-100px) rotateY(25deg) scale(0.8); }
     }
+    /* 顶部简介 */
+    .dash-header-intro { text-align: center; margin-bottom: 32px; z-index: 10; }
+    .dash-intro-title { font-size: 24px; font-weight: 800; color: #1a1a1a; font-family: 'Noto Serif SC', serif; margin-bottom: 8px; }
+    .dash-intro-desc { font-size: 14px; color: #888; line-height: 1.6; }
+
+    /* 轮播容器（包含箭头） */
+    .dash-carousel-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; max-width: 600px; }
+
+    /* 左右箭头 */
+    .dash-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.8); backdrop-filter: blur(8px);
+      border: 1px solid rgba(0,0,0,0.06);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 22px; color: #555;
+      z-index: 20; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .dash-arrow:hover { background: white; box-shadow: 0 6px 24px rgba(0,0,0,0.1); color: #6C63FF; transform: translateY(-50%) scale(1.08); }
+    .dash-arrow-left { left: -60px; }
+    .dash-arrow-right { right: -60px; }
+
     /* ========== 结束：仪表盘样式 ========== */
 
     /* ========== 投递追踪面板样式 ========== */

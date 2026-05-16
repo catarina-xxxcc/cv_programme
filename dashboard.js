@@ -54,7 +54,13 @@
     var mbti = localStorage.getItem('personalityMBTI') || '\u2014';
     var mbtiName = (window.MBTI_NAMES && window.MBTI_NAMES[mbti]) || '\u672A\u6D4B\u8BD5';
 
-    return '<div class="dash-carousel">' +
+    return '<div class="dash-header-intro">' +
+      '<h2 class="dash-intro-title">Hi\uFF0C\u6B22\u8FCE\u56DE\u6765 \u{1F44B}</h2>' +
+      '<p class="dash-intro-desc">\u9009\u62E9\u4E00\u4E2A\u529F\u80FD\u5F00\u59CB\u4F60\u7684\u6C42\u804C\u4E4B\u65C5\uFF1A\u7B80\u5386\u8BCA\u65AD\u3001\u6027\u683C\u5339\u914D\u3001\u6A21\u62DF\u9762\u8BD5\u3001\u6295\u9012\u8FFD\u8E2A</p>' +
+    '</div>' +
+    '<div class="dash-carousel-wrap">' +
+      '<button class="dash-arrow dash-arrow-left" id="dashArrowLeft">\u2039</button>' +
+      '<div class="dash-carousel">' +
       '<div class="dash-card dash-card-1" data-panel="diagnosis" data-index="0">' +
         '<div class="dash-card-icon">\uD83D\uDCCB</div>' +
         '<div class="dash-card-content">' +
@@ -91,6 +97,8 @@
         '</div>' +
         '<div class="dash-card-arrow">\u67E5\u770B\u6295\u9012 \u2192</div>' +
       '</div>' +
+    '</div>' +
+      '<button class="dash-arrow dash-arrow-right" id="dashArrowRight">\u203A</button>' +
     '</div>' +
     '<div class="dash-dots">' +
       '<span class="dash-dot" data-i="0"></span>' +
@@ -141,6 +149,11 @@
     dots.forEach(function(d) {
       d.addEventListener('click', function() { goTo(parseInt(d.getAttribute('data-i'))); });
     });
+
+    var arrowLeft = document.getElementById('dashArrowLeft');
+    var arrowRight = document.getElementById('dashArrowRight');
+    if (arrowLeft) arrowLeft.addEventListener('click', function() { goTo(currentIndex - 1); });
+    if (arrowRight) arrowRight.addEventListener('click', function() { goTo(currentIndex + 1); });
 
     document.addEventListener('keydown', function(e) {
       if (mainArea.getAttribute('data-view') !== 'dashboard') return;
