@@ -68,7 +68,24 @@
   ];
 
   // 检查是否需要显示引导
-  if (localStorage.getItem('onboardingDone') === 'true') return;
+  if (localStorage.getItem('onboardingDone') === 'true') {
+    // 已完成引导，但仍需加载保存的头像和昵称到侧边栏
+    try {
+      var savedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+      if (savedProfile.nickname) {
+        var nameEl = document.querySelector('.user-name');
+        if (nameEl) nameEl.textContent = savedProfile.nickname;
+      }
+      if (savedProfile.avatar) {
+        var avatarEl = document.querySelector('.user-avatar-placeholder');
+        if (avatarEl) {
+          avatarEl.textContent = savedProfile.avatar;
+          avatarEl.style.fontSize = '32px';
+        }
+      }
+    } catch(e) {}
+    return;
+  }
 
   var answers = [];
   var currentQ = 0;
@@ -94,10 +111,10 @@
 
   function buildProfileHTML() {
     var avatars = [
-      '👩‍💻', '👨‍💻', '👩‍🎨', '👨‍🎨',
-      '🧑‍🎓', '👩‍🔬', '👨‍🚀', '👩‍🎤',
-      '🧑‍💼', '👩‍🏫', '👨‍🔧', '🧑‍🎨',
-      '👩‍⚕️', '👨‍🍳', '🧑‍🚒', '🦸‍♀️'
+      '👩‍💻', '👩‍🎨', '👩‍🔬', '👩‍💼',
+      '👩‍🎓', '👩‍🎤', '👩‍🚀', '👩‍⚕️',
+      '👩‍🏫', '👩‍🍳', '👩‍🔧', '👩‍✈️',
+      '👩‍🌾', '👩‍🚒', '🧕', '💁‍♀️'
     ];
     var avatarGrid = avatars.map(function(emoji) {
       return '<button class="ob-avatar-option" data-avatar="' + emoji + '">' + emoji + '</button>';
@@ -277,9 +294,14 @@
     overlay.classList.add('ob-hiding');
     setTimeout(function() {
       overlay.remove();
-      // 更新侧边栏用户名
+      // 更新侧边栏用户名和头像
       var nameEl = document.querySelector('.user-name');
       if (nameEl) nameEl.textContent = nickname;
+      var avatarEl = document.querySelector('.user-avatar-placeholder');
+      if (avatarEl && avatarData) {
+        avatarEl.textContent = avatarData;
+        avatarEl.style.fontSize = '32px';
+      }
     }, 500);
   }
 
