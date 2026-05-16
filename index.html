@@ -1651,175 +1651,84 @@
 
     /* ========== 仪表盘 3D 卡片展示样式 ========== */
     .dashboard-view {
-      padding: 0;
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0; position: relative; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      background: linear-gradient(160deg, #f0e6f6 0%, #e8dff0 20%, #f5f0fa 40%, #eef0f8 60%, #f0f5f2 80%, #f8f0f4 100%);
+      background: linear-gradient(160deg, #f0e6f6 0%, #e8dff0 25%, #f5f0fa 50%, #eef0f8 75%, #f8f0f4 100%);
+      perspective: 1800px;
     }
-
-    /* 光斑装饰 */
     .dashboard-view::before {
-      content: '';
-      position: absolute;
-      top: 10%;
-      left: 15%;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(255, 183, 197, 0.2) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: floatGlow 8s ease-in-out infinite;
+      content: ''; position: absolute; top: 10%; left: 15%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,183,197,0.15) 0%, transparent 70%);
+      border-radius: 50%; pointer-events: none;
     }
     .dashboard-view::after {
-      content: '';
-      position: absolute;
-      bottom: 15%;
-      right: 10%;
-      width: 250px;
-      height: 250px;
-      background: radial-gradient(circle, rgba(108, 99, 255, 0.12) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: floatGlow 10s ease-in-out infinite reverse;
+      content: ''; position: absolute; bottom: 15%; right: 10%;
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, rgba(108,99,255,0.1) 0%, transparent 70%);
+      border-radius: 50%; pointer-events: none;
     }
-    @keyframes floatGlow {
-      0%, 100% { transform: translate(0, 0); opacity: 0.6; }
-      50% { transform: translate(20px, -20px); opacity: 1; }
-    }
-
-    /* 中间图片 + 发光圆环 */
     .dash-center-img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 0;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%); z-index: 0;
     }
     .dash-center-img img {
-      width: 240px;
-      height: 240px;
-      object-fit: contain;
-      border-radius: 50%;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.3);
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 
-        0 0 60px rgba(200, 180, 255, 0.3),
-        0 0 120px rgba(255, 183, 197, 0.15),
-        inset 0 0 30px rgba(255, 255, 255, 0.2);
+      width: 220px; height: 220px; object-fit: contain;
+      border-radius: 50%; padding: 12px;
+      background: rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.5);
+      box-shadow: 0 0 60px rgba(200,180,255,0.25);
     }
-
     .dash-grid {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 36px 120px;
-      width: 100%;
-      max-width: 880px;
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 40px 140px; width: 100%; max-width: 900px;
       padding: 48px 24px;
       animation: dashFadeIn 0.8s ease;
+      transform-style: preserve-3d;
     }
-    @keyframes dashFadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* 毛玻璃卡片 - 左对齐 */
+    @keyframes dashFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .dash-card {
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 28px 24px;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
-      gap: 12px;
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px; padding: 28px 24px;
+      border: 1px solid rgba(255,255,255,0.7);
+      cursor: pointer; display: flex; flex-direction: column;
+      align-items: flex-start; text-align: left; gap: 12px;
       position: relative;
-      transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      transform-style: preserve-3d;
     }
+    .dash-card-1 { transform: rotateY(8deg) rotateX(-4deg) translateZ(10px); }
+    .dash-card-2 { transform: rotateY(-8deg) rotateX(-4deg) translateZ(10px); }
+    .dash-card-3 { transform: rotateY(8deg) rotateX(4deg) translateZ(10px); }
+    .dash-card-4 { transform: rotateY(-8deg) rotateX(4deg) translateZ(10px); }
     .dash-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
-      background: rgba(255, 255, 255, 0.6);
+      transform: rotateY(0deg) rotateX(0deg) translateZ(30px) scale(1.03) !important;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.82);
     }
-
-    .dash-card-icon {
-      font-size: 28px;
-      width: 48px; height: 48px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
+    .dash-card-icon { font-size: 28px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); border-radius: 12px; border: 1px solid rgba(255,255,255,0.8); }
     .dash-card-content { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
-    .dash-card-title {
-      font-size: 18px; font-weight: 800; color: #1a1a1a;
-      margin-bottom: 6px;
-      font-family: 'Noto Serif SC', serif;
-    }
-    .dash-card-desc {
-      font-size: 13px; color: #666;
-      margin-bottom: 12px;
-      line-height: 1.6;
-    }
+    .dash-card-title { font-size: 18px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; font-family: 'Noto Serif SC', serif; }
+    .dash-card-desc { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.6; }
     .dash-card-preview { display: flex; flex-wrap: wrap; gap: 6px; }
-    .dash-tag {
-      padding: 4px 10px; border-radius: 8px;
-      background: rgba(255, 255, 255, 0.6); color: #555;
-      font-size: 11px; font-weight: 600;
-      border: 1px solid rgba(0, 0, 0, 0.04);
-    }
-    .dash-badge {
-      padding: 4px 12px; border-radius: 8px;
-      background: rgba(108, 99, 255, 0.08); color: var(--accent);
-      font-size: 12px; font-weight: 700;
-      border: 1px solid rgba(108, 99, 255, 0.15);
-    }
-
-    /* 彩色箭头 */
-    .dash-card-arrow {
-      font-size: 13px;
-      margin-top: auto; padding-top: 12px;
-      transition: all 0.3s; font-weight: 700;
-    }
+    .dash-tag { padding: 4px 10px; border-radius: 8px; background: rgba(255,255,255,0.6); color: #555; font-size: 11px; font-weight: 600; border: 1px solid rgba(0,0,0,0.04); }
+    .dash-badge { padding: 4px 12px; border-radius: 8px; background: rgba(108,99,255,0.08); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid rgba(108,99,255,0.15); }
+    .dash-card-arrow { font-size: 13px; margin-top: auto; padding-top: 12px; transition: all 0.3s; font-weight: 700; }
     .dash-card-1 .dash-card-arrow { color: #FF6B6B; }
     .dash-card-2 .dash-card-arrow { color: #6C63FF; }
     .dash-card-3 .dash-card-arrow { color: #FF6B6B; }
     .dash-card-4 .dash-card-arrow { color: #4ECDC4; }
     .dash-card:hover .dash-card-arrow { transform: translateX(4px); }
-
-    /* 返回按钮 */
-    .detail-back-btn {
-      position: sticky; top: 16px; z-index: 10;
-      padding: 8px 18px; border: 2px solid var(--gray-200);
-      border-radius: var(--radius-full); background: var(--white);
-      font-size: 13px; font-weight: 600; color: var(--gray-600);
-      cursor: pointer; transition: all 0.2s;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-    .detail-back-btn:hover {
-      border-color: var(--accent); color: var(--accent);
-      box-shadow: var(--shadow);
-    }
-
+    .detail-back-btn { position: sticky; top: 16px; z-index: 10; padding: 8px 18px; border: 2px solid var(--gray-200); border-radius: var(--radius-full); background: var(--white); font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer; transition: all 0.2s; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+    .detail-back-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--shadow); }
     @media (max-width: 768px) {
-      .dash-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        padding: 32px 16px;
-      }
+      .dash-grid { grid-template-columns: 1fr; gap: 24px; padding: 32px 16px; }
+      .dash-card { transform: none !important; }
+      .dash-card:hover { transform: translateY(-4px) scale(1.01) !important; }
       .dash-center-img img { width: 160px; height: 160px; }
     }
     /* ========== 结束：仪表盘样式 ========== */
