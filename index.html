@@ -1649,10 +1649,10 @@
     .funnel-rate { margin-left: auto; font-weight: 700; color: var(--sakura-dark); }
     /* ========== 结束：投递追踪样式 ========== */
 
-    /* ========== 仪表盘 3D 旋转轮播样式 ========== */
+    /* ========== 仪表盘 3D 旋转木马样式 ========== */
     .dashboard-view {
       padding: 0; position: relative; min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       overflow: hidden;
       background: linear-gradient(160deg, #f0e6f6 0%, #e8dff0 25%, #f5f0fa 50%, #eef0f8 75%, #f8f0f4 100%);
     }
@@ -1668,62 +1668,54 @@
       background: radial-gradient(circle, rgba(108,99,255,0.1) 0%, transparent 70%);
       border-radius: 50%; pointer-events: none;
     }
-    .dash-grid {
-      display: flex; align-items: center; justify-content: center;
-      gap: 28px; width: 100%; max-width: 1100px;
-      padding: 48px 24px;
-      perspective: 1200px;
+    .dash-carousel {
+      position: relative; width: 320px; height: 400px;
+      perspective: 1000px;
       animation: dashFadeIn 0.8s ease;
     }
-    @keyframes dashFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
+    @keyframes dashFadeIn { from { opacity: 0; } to { opacity: 1; } }
     .dash-card {
-      flex: 0 0 240px; min-height: 300px;
-      background: rgba(255,255,255,0.7);
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255,255,255,0.8);
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border-radius: 20px; padding: 28px 22px;
+      border-radius: 24px; padding: 32px 26px;
       border: 1px solid rgba(255,255,255,0.7);
       cursor: pointer; display: flex; flex-direction: column;
-      align-items: flex-start; text-align: left; gap: 12px;
-      position: relative;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.03);
+      align-items: flex-start; text-align: left; gap: 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
       transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
       transform-style: preserve-3d;
     }
-    /* 3D 旋转角度 - 从左到右递进 */
-    .dash-card-1 { transform: rotateY(25deg) translateZ(-40px) scale(0.9); opacity: 0.85; }
-    .dash-card-2 { transform: rotateY(10deg) translateZ(0px) scale(0.95); }
-    .dash-card-3 { transform: rotateY(-10deg) translateZ(0px) scale(0.95); }
-    .dash-card-4 { transform: rotateY(-25deg) translateZ(-40px) scale(0.9); opacity: 0.85; }
-
-    .dash-card:hover {
-      transform: rotateY(0deg) translateZ(40px) scale(1.05) !important;
-      opacity: 1 !important;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
-      background: rgba(255,255,255,0.9);
-      z-index: 10;
-    }
-
-    .dash-card-icon { font-size: 28px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); border-radius: 12px; border: 1px solid rgba(255,255,255,0.8); }
+    .dash-pos-center { transform: translateX(0) translateZ(0) rotateY(0deg) scale(1); opacity: 1; z-index: 10; }
+    .dash-pos-right { transform: translateX(70%) translateZ(-150px) rotateY(-30deg) scale(0.85); opacity: 0.6; z-index: 5; }
+    .dash-pos-left { transform: translateX(-70%) translateZ(-150px) rotateY(30deg) scale(0.85); opacity: 0.6; z-index: 5; }
+    .dash-pos-back { transform: translateX(0) translateZ(-300px) rotateY(0deg) scale(0.7); opacity: 0; z-index: 1; pointer-events: none; }
+    .dash-pos-center:hover { transform: translateZ(20px) scale(1.02); box-shadow: 0 30px 80px rgba(0,0,0,0.12); }
+    .dash-card-icon { font-size: 32px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); border-radius: 14px; border: 1px solid rgba(255,255,255,0.8); }
     .dash-card-content { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
-    .dash-card-title { font-size: 18px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; font-family: 'Noto Serif SC', serif; }
-    .dash-card-desc { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.6; }
+    .dash-card-title { font-size: 20px; font-weight: 800; color: #1a1a1a; margin-bottom: 8px; font-family: 'Noto Serif SC', serif; }
+    .dash-card-desc { font-size: 14px; color: #555; margin-bottom: 14px; line-height: 1.7; }
     .dash-card-preview { display: flex; flex-wrap: wrap; gap: 6px; }
-    .dash-tag { padding: 4px 10px; border-radius: 8px; background: rgba(255,255,255,0.6); color: #555; font-size: 11px; font-weight: 600; border: 1px solid rgba(0,0,0,0.04); }
-    .dash-badge { padding: 4px 12px; border-radius: 8px; background: rgba(108,99,255,0.08); color: var(--accent); font-size: 12px; font-weight: 700; border: 1px solid rgba(108,99,255,0.15); }
-    .dash-card-arrow { font-size: 13px; margin-top: auto; padding-top: 12px; transition: all 0.3s; font-weight: 700; }
+    .dash-tag { padding: 5px 12px; border-radius: 8px; background: rgba(255,255,255,0.6); color: #555; font-size: 12px; font-weight: 600; border: 1px solid rgba(0,0,0,0.04); }
+    .dash-badge { padding: 5px 14px; border-radius: 8px; background: rgba(108,99,255,0.08); color: var(--accent); font-size: 13px; font-weight: 700; border: 1px solid rgba(108,99,255,0.15); }
+    .dash-card-arrow { font-size: 14px; margin-top: auto; padding-top: 14px; transition: all 0.3s; font-weight: 700; }
     .dash-card-1 .dash-card-arrow { color: #FF6B6B; }
     .dash-card-2 .dash-card-arrow { color: #6C63FF; }
     .dash-card-3 .dash-card-arrow { color: #FF6B6B; }
     .dash-card-4 .dash-card-arrow { color: #4ECDC4; }
-    .dash-card:hover .dash-card-arrow { transform: translateX(4px); }
+    .dash-pos-center:hover .dash-card-arrow { transform: translateX(4px); }
+    .dash-dots { display: flex; gap: 10px; margin-top: 32px; z-index: 20; }
+    .dash-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(0,0,0,0.15); cursor: pointer; transition: all 0.3s; }
+    .dash-dot.active { background: #6C63FF; transform: scale(1.3); box-shadow: 0 2px 8px rgba(108,99,255,0.4); }
+    .dash-dot:hover:not(.active) { background: rgba(0,0,0,0.3); }
     .dash-center-img { display: none; }
     .detail-back-btn { position: sticky; top: 16px; z-index: 10; padding: 8px 18px; border: 2px solid var(--gray-200); border-radius: var(--radius-full); background: var(--white); font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer; transition: all 0.2s; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
     .detail-back-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--shadow); }
     @media (max-width: 768px) {
-      .dash-grid { flex-direction: column; gap: 20px; perspective: none; }
-      .dash-card { flex: none; width: 100%; max-width: 320px; transform: none !important; opacity: 1 !important; }
-      .dash-card:hover { transform: translateY(-4px) scale(1.01) !important; }
+      .dash-carousel { width: 280px; height: 360px; }
+      .dash-pos-right { transform: translateX(50%) translateZ(-100px) rotateY(-25deg) scale(0.8); }
+      .dash-pos-left { transform: translateX(-50%) translateZ(-100px) rotateY(25deg) scale(0.8); }
     }
     /* ========== 结束：仪表盘样式 ========== */
 
