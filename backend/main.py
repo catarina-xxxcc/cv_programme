@@ -36,11 +36,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── 智谱 AI（简历解析用） ──
 zhipu_api_key = os.getenv("ZHIPU_API_KEY", "").strip()
 if not zhipu_api_key:
     raise RuntimeError("Missing ZHIPU_API_KEY. Add it to your environment or .env file.")
-client = OpenAI(api_key=zhipu_api_key, base_url="https://open.bigmodel.cn/api/paas/v4/")
+zhipu_client = OpenAI(api_key=zhipu_api_key, base_url="https://open.bigmodel.cn/api/paas/v4/")
 ZHIPU_MODEL = os.getenv("ZHIPU_MODEL", "glm-4-flash")
+
+# ── DeepSeek（Agent 对话用） ──
+deepseek_api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+if not deepseek_api_key:
+    raise RuntimeError("Missing DEEPSEEK_API_KEY. Add it to your environment or .env file.")
+deepseek_client = OpenAI(api_key=deepseek_api_key, base_url="https://api.deepseek.com")
+DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash")
 
 
 def _file_extension(filename: str) -> str:
@@ -205,7 +213,7 @@ J vs P：
 简历文本如下：
 {raw_text}
 """
-    response = client.chat.completions.create(
+    response = zhipu_client.chat.completions.create(
         model=ZHIPU_MODEL,
         messages=[{"role": "user", "content": prompt}],
     )
@@ -569,8 +577,8 @@ async def chat(request: ChatRequest) -> dict[str, Any]:
         for msg in request.messages:
             messages.append({"role": msg.role, "content": msg.content})
 
-        response = client.chat.completions.create(
-            model=ZHIPU_MODEL,
+        response = deepseek_client.chat.completions.create(
+            model=DEEPSEEK_MODEL,
             messages=messages,
         )
         reply = response.choices[0].message.content

@@ -7,10 +7,16 @@ services:
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     rootDir: backend
     envVars:
+      # 智谱 AI（简历解析用）
       - key: ZHIPU_API_KEY
         sync: false
       - key: ZHIPU_MODEL
         value: glm-4-flash
+      # DeepSeek（Agent 对话用）
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: DEEPSEEK_MODEL
+        value: deepseek-v4-flash
       - key: MAX_FILE_SIZE_MB
         value: 5
       - key: ALLOWED_ORIGINS

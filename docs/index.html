@@ -820,7 +820,7 @@
 
     /* --- 引导文字 --- */
     .agent-guide-text {
-      padding: 12px 24px 4px;
+      padding: 0 0 8px 0;
       font-size: 18px;
       font-weight: 700;
       color: #000000;
@@ -2644,11 +2644,10 @@
       </div>
     </div>
 
-    <!-- 引导文字 -->
-    <div class="agent-guide-text">有什么我可以帮你的吗？</div>
-
     <!-- Chat messages area -->
     <div class="agent-messages" id="agentMessages">
+      <!-- 引导文字 -->
+      <div class="agent-guide-text">有什么我可以帮你的吗？</div>
       <!-- Preset questions (shown initially) -->
       <div class="preset-questions" id="presetQuestions">
         <div class="preset-question" onclick="sendPresetQuestion(this)">
@@ -3277,8 +3276,9 @@
       pq.appendChild(el);
     });
 
-    // 插入到消息区域最前面
-    agentMessages.insertBefore(pq, agentMessages.firstChild);
+    // 插入到引导文字后面
+    const guideEl = agentMessages.querySelector('.agent-guide-text');
+    agentMessages.insertBefore(pq, guideEl ? guideEl.nextSibling : agentMessages.firstChild);
   }
 
   /**
