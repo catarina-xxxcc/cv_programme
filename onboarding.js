@@ -96,8 +96,8 @@
   }
 
   function updateSidebar(data) {
-    var avatarEl = document.querySelector('.sidebar-avatar');
-    var nameEl = document.querySelector('.sidebar-username');
+    var avatarEl = document.querySelector('.user-avatar-placeholder');
+    var nameEl = document.querySelector('.user-name');
     if (avatarEl && data.avatar) avatarEl.textContent = data.avatar;
     if (nameEl && data.nickname) nameEl.textContent = data.nickname;
   }
