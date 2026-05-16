@@ -100,11 +100,34 @@
     var cards = dashDiv.querySelectorAll('.dash-card');
     cards.forEach(function(card) {
       card.addEventListener('click', function() {
-        // 切换到详情视图
+        var panel = card.getAttribute('data-panel');
+
+        // 隐藏仪表盘
         dashDiv.style.display = 'none';
         detailDiv.style.display = 'block';
         detailDiv.classList.add('detail-enter');
         mainArea.setAttribute('data-view', 'detail');
+
+        // 隐藏所有板块，只显示对应的
+        var layout = detailDiv.querySelector('.layout');
+        var leftCol = detailDiv.querySelector('.left-col');
+        var resultPanel = detailDiv.querySelector('.result-panel');
+        var chatSection = detailDiv.querySelector('.chat-section') || detailDiv.querySelector('.agent-section');
+
+        if (layout) layout.style.display = 'none';
+        if (chatSection) chatSection.style.display = 'none';
+
+        if (panel === 'diagnosis') {
+          if (layout) { layout.style.display = 'block'; layout.style.gridTemplateColumns = '1fr'; }
+          if (leftCol) leftCol.style.display = 'block';
+          if (resultPanel) resultPanel.style.display = 'none';
+        } else if (panel === 'mbti') {
+          if (layout) { layout.style.display = 'block'; layout.style.gridTemplateColumns = '1fr'; }
+          if (leftCol) leftCol.style.display = 'none';
+          if (resultPanel) resultPanel.style.display = 'block';
+        } else if (panel === 'chat') {
+          if (chatSection) chatSection.style.display = 'block';
+        }
 
         // 添加返回按钮
         if (!detailDiv.querySelector('.detail-back-btn')) {
@@ -112,6 +135,12 @@
           backBtn.className = 'detail-back-btn';
           backBtn.innerHTML = '← 返回概览';
           backBtn.addEventListener('click', function() {
+            // 恢复所有板块的显示状态
+            if (layout) { layout.style.display = ''; layout.style.gridTemplateColumns = ''; }
+            if (leftCol) leftCol.style.display = '';
+            if (resultPanel) resultPanel.style.display = '';
+            if (chatSection) chatSection.style.display = '';
+
             detailDiv.style.display = 'none';
             detailDiv.classList.remove('detail-enter');
             dashDiv.style.display = 'block';
@@ -119,16 +148,6 @@
           });
           detailDiv.insertBefore(backBtn, detailDiv.firstChild);
         }
-
-        // 滚动到对应板块
-        var panel = card.getAttribute('data-panel');
-        setTimeout(function() {
-          var target = null;
-          if (panel === 'diagnosis') target = document.getElementById('diagnosisPanel');
-          else if (panel === 'mbti') target = document.querySelector('.result-panel');
-          else if (panel === 'chat') target = document.querySelector('.chat-section') || document.querySelector('.agent-section');
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
       });
     });
   }
