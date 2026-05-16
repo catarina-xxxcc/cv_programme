@@ -2276,6 +2276,257 @@
     .parser-toast.error { background: #f8d7da; color: #721c24; }
     .parser-toast.info { background: #d1ecf1; color: #0c5460; }
     /* ========== 结束：智能简历解析器样式 ========== */
+
+    /* ========== 冷启动引导样式 ========== */
+    .ob-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #f0e6f6 0%, #e8dff0 25%, #f5f0fa 50%, #eef0f8 75%, #f8f0f4 100%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      overflow-y: auto;
+    }
+    .ob-overlay.ob-visible { opacity: 1; }
+    .ob-overlay.ob-hiding { opacity: 0; pointer-events: none; }
+
+    /* 欢迎页 */
+    .ob-welcome {
+      max-width: 800px;
+      width: 90%;
+      padding: 60px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+    .ob-welcome-header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .ob-girl-img {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 16px;
+      animation: obBounce 3s ease-in-out infinite;
+    }
+    @keyframes obBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .ob-welcome-title {
+      font-size: 36px;
+      font-weight: 900;
+      color: #1a1a1a;
+      font-family: 'Noto Serif SC', serif;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #6C63FF 0%, #FF6B6B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ob-welcome-subtitle {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.8;
+    }
+
+    /* 功能介绍 */
+    .ob-features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      width: 100%;
+    }
+    .ob-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    .ob-feature-icon { font-size: 24px; flex-shrink: 0; }
+    .ob-feature div { display: flex; flex-direction: column; gap: 2px; }
+    .ob-feature strong { font-size: 13px; color: #333; }
+    .ob-feature span { font-size: 11px; color: #888; }
+
+    /* 产品预览 */
+    .ob-preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      width: 100%;
+    }
+    .ob-preview-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 20px 16px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+    .ob-preview-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 12px;
+    }
+    .ob-preview-score {
+      font-size: 36px;
+      font-weight: 900;
+      color: #6C63FF;
+      font-family: 'Inter', sans-serif;
+    }
+    .ob-preview-radar { font-size: 32px; }
+    .ob-preview-chat { font-size: 32px; }
+    .ob-preview-chart {
+      font-size: 36px;
+      font-weight: 900;
+      color: #4ECDC4;
+      font-family: 'Inter', sans-serif;
+    }
+    .ob-preview-label {
+      font-size: 11px;
+      color: #999;
+      margin-top: 8px;
+    }
+
+    /* 开始按钮 */
+    .ob-start-btn {
+      padding: 16px 48px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #6C63FF 0%, #8B85FF 100%);
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
+    }
+    .ob-start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px rgba(108, 99, 255, 0.4);
+    }
+
+    /* 个人信息设置页 */
+    .ob-profile {
+      max-width: 440px;
+      width: 90%;
+      background: white;
+      border-radius: 24px;
+      padding: 40px 36px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .ob-profile-header { text-align: center; }
+    .ob-avatar-preview {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: #f5f0fa;
+      border: 3px solid #e8dff0;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 36px;
+      transition: all 0.3s;
+    }
+    .ob-profile-title {
+      font-size: 20px; font-weight: 800; color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .ob-profile-subtitle {
+      font-size: 13px; color: #888;
+    }
+    .ob-avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+    .ob-avatar-option {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      border: 2px solid #eee;
+      background: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto;
+    }
+    .ob-avatar-option:hover {
+      border-color: #6C63FF;
+      background: #f5f0fa;
+      transform: scale(1.1);
+    }
+    .ob-avatar-active {
+      border-color: #6C63FF !important;
+      background: #ede9fe !important;
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.3);
+      transform: scale(1.1);
+    }
+    .ob-nickname-wrap { width: 100%; }
+    .ob-nickname-input {
+      width: 100%;
+      padding: 14px 20px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 16px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .ob-nickname-input:focus { border-color: #6C63FF; }
+    .ob-nickname-input::placeholder { color: #ccc; }
+    .ob-finish-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6C63FF 0%, #8B85FF 100%);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 16px rgba(108, 99, 255, 0.25);
+    }
+    .ob-finish-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(108, 99, 255, 0.35);
+    }
+    .ob-btn-disabled {
+      background: #ddd !important;
+      color: #999 !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .ob-features { grid-template-columns: repeat(2, 1fr); }
+      .ob-preview { grid-template-columns: repeat(2, 1fr); }
+      .ob-welcome-title { font-size: 28px; }
+    }
+    @media (max-width: 480px) {
+      .ob-features { grid-template-columns: 1fr; }
+      .ob-preview { grid-template-columns: 1fr 1fr; }
+      .ob-avatar-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    /* ========== 结束：冷启动引导样式 ========== */
   </style>
 </head>
 <body>
@@ -4108,6 +4359,7 @@
   // ========== 结束：侧边栏功能 ==========
 </script>
 <script src="./parser.js"></script>
+<script src="./onboarding.js"></script>
 <script src="./tracking.js"></script>
 <script src="./dashboard.js?v=8"></script>
 </body>
