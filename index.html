@@ -2223,22 +2223,33 @@
     }
     .ob-cta-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 40px rgba(108, 99, 255, 0.5); }
     .ob-profile {
-      max-width: 440px; width: 90%; background: white; border-radius: 24px;
-      padding: 40px 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-      display: flex; flex-direction: column; align-items: center; gap: 24px;
+      max-width: 520px; width: 92%; background: white; border-radius: 28px;
+      padding: 48px 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      max-height: 90vh; overflow-y: auto;
     }
-    .ob-avatar-preview { width: 80px; height: 80px; border-radius: 50%; background: #f5f0fa; border: 3px solid #e8dff0; display: flex; align-items: center; justify-content: center; font-size: 36px; }
-    .ob-profile-title { font-size: 20px; font-weight: 800; color: #1a1a1a; }
-    .ob-profile-subtitle { font-size: 13px; color: #888; margin-top: -16px; }
+    .ob-avatar-preview { width: 90px; height: 90px; border-radius: 50%; background: #f5f0fa; border: 3px solid #e8dff0; display: flex; align-items: center; justify-content: center; font-size: 42px; }
+    .ob-profile-title { font-size: 22px; font-weight: 800; color: #1a1a1a; }
+    .ob-profile-subtitle { font-size: 14px; color: #888; margin-top: -12px; }
+    .ob-section-label { font-size: 13px; font-weight: 700; color: #555; align-self: flex-start; margin-top: 4px; }
+    .ob-gender-row { display: flex; gap: 12px; width: 100%; }
+    .ob-gender-option { flex: 1; padding: 14px; border: 2px solid #eee; border-radius: 14px; text-align: center; cursor: pointer; font-size: 15px; font-weight: 600; color: #555; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .ob-gender-option span { font-size: 22px; }
+    .ob-gender-option:hover { border-color: #6C63FF; background: #f8f5ff; }
+    .ob-gender-active { border-color: #6C63FF !important; background: #ede9fe !important; color: #6C63FF !important; box-shadow: 0 2px 8px rgba(108,99,255,0.2); }
     .ob-avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; }
-    .ob-avatar-option { width: 48px; height: 48px; border-radius: 12px; border: 2px solid #eee; background: white; font-size: 24px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+    .ob-avatar-option { width: 52px; height: 52px; border-radius: 14px; border: 2px solid #eee; background: white; font-size: 28px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
     .ob-avatar-option:hover { border-color: #6C63FF; background: #f5f0fa; transform: scale(1.1); }
     .ob-avatar-active { border-color: #6C63FF !important; background: #ede9fe !important; box-shadow: 0 2px 8px rgba(108,99,255,0.3); transform: scale(1.1); }
-    .ob-nickname-input { width: 100%; padding: 14px 20px; border: 2px solid #eee; border-radius: 12px; font-size: 16px; text-align: center; outline: none; transition: border-color 0.3s; }
+    .ob-nickname-input { width: 100%; padding: 16px 20px; border: 2px solid #eee; border-radius: 14px; font-size: 17px; text-align: center; outline: none; transition: border-color 0.3s; }
     .ob-nickname-input:focus { border-color: #6C63FF; }
     .ob-nickname-input::placeholder { color: #ccc; }
-    .ob-finish-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #6C63FF, #8B85FF); color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(108,99,255,0.25); }
+    .ob-identity-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .ob-identity-option { padding: 14px 18px; border: 2px solid #eee; border-radius: 14px; cursor: pointer; font-size: 15px; font-weight: 600; color: #555; transition: all 0.2s; text-align: center; }
+    .ob-identity-option:hover { border-color: #6C63FF; background: #f8f5ff; }
+    .ob-identity-active { border-color: #6C63FF !important; background: #ede9fe !important; color: #6C63FF !important; box-shadow: 0 2px 8px rgba(108,99,255,0.2); }
+    .ob-finish-btn { width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg, #6C63FF, #8B85FF); color: white; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(108,99,255,0.25); margin-top: 8px; }
     .ob-finish-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(108,99,255,0.35); }
     .ob-btn-disabled { background: #ddd !important; color: #999 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; }
     /* ========== 结束：冷启动引导样式 ========== */
