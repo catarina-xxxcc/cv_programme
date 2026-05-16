@@ -56,7 +56,7 @@
 
     return '<div class="dash-header-intro">' +
       '<h2 class="dash-intro-title">Hi\uFF0C\u6B22\u8FCE\u56DE\u6765 \u{1F44B}</h2>' +
-      '<p class="dash-intro-desc">\u9009\u62E9\u4E00\u4E2A\u529F\u80FD\u5F00\u59CB\u4F60\u7684\u6C42\u804C\u4E4B\u65C5\uFF1A\u7B80\u5386\u8BCA\u65AD\u3001\u6027\u683C\u5339\u914D\u3001\u6A21\u62DF\u9762\u8BD5\u3001\u6295\u9012\u8FFD\u8E2A</p>' +
+      '<p class="dash-intro-desc">\u9009\u62E9\u4E00\u4E2A\u529F\u80FD\u5F00\u59CB\u4F60\u7684\u6C42\u804C\u4E4B\u65C5\uFF1A\u7B80\u5386\u8BCA\u65AD\u3001\u5C97\u4F4D\u63A8\u8350\u3001\u6A21\u62DF\u9762\u8BD5\u3001\u6295\u9012\u8FFD\u8E2A</p>' +
     '</div>' +
     '<div class="dash-carousel-wrap">' +
       '<button class="dash-arrow dash-arrow-left" id="dashArrowLeft">\u2039</button>' +
@@ -73,7 +73,7 @@
       '<div class="dash-card dash-card-2" data-panel="mbti" data-index="1">' +
         '<div class="dash-card-icon">\uD83E\uDDE0</div>' +
         '<div class="dash-card-content">' +
-          '<h3 class="dash-card-title">\u6027\u683C & \u5C97\u4F4D\u5339\u914D</h3>' +
+          '<h3 class="dash-card-title">\u5C97\u4F4D\u63A8\u8350</h3>' +
           '<p class="dash-card-desc">\u57FA\u4E8E MBTI \u6027\u683C\u7C7B\u578B\uFF0C\u667A\u80FD\u63A8\u8350\u6700\u9002\u5408\u7684\u804C\u4E1A\u65B9\u5411</p>' +
           '<div class="dash-card-preview"><span class="dash-badge">' + mbti + ' ' + mbtiName + '</span></div>' +
         '</div>' +
