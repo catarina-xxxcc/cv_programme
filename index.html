@@ -127,21 +127,9 @@
       66% { transform: translate(-20px, 20px) rotate(240deg); }
     }
 
-    /* 顶部导航栏 */
+    /* 顶部导航栏 - 隐藏 */
     header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 183, 197, 0.1);
-      padding: 0 var(--space-2xl);
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 80;
-      box-shadow: 0 4px 20px rgba(255, 183, 197, 0.08);
+      display: none;
     }
 
     header .logo {
@@ -1665,7 +1653,7 @@
     .dashboard-view {
       padding: 0;
       position: relative;
-      min-height: calc(100vh - 72px);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
