@@ -1661,6 +1661,111 @@
     .funnel-rate { margin-left: auto; font-weight: 700; color: var(--sakura-dark); }
     /* ========== 结束：投递追踪样式 ========== */
 
+    /* ========== 仪表盘卡片样式 ========== */
+    .dashboard-view { padding: 40px 0; }
+    .dash-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      animation: dashFadeIn 0.6s ease;
+    }
+    @keyframes dashFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dash-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      border: 2px solid var(--gray-200);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dash-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      transition: height 0.3s;
+    }
+    .dash-card-1::before { background: linear-gradient(90deg, var(--sakura-primary), var(--sakura-dark)); }
+    .dash-card-2::before { background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+    .dash-card-3::before { background: linear-gradient(90deg, var(--cta), #FF8E8E); }
+    .dash-card:hover {
+      border-color: var(--sakura-primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .dash-card:hover::before { height: 6px; }
+    .dash-card:nth-child(1) { animation-delay: 0s; }
+    .dash-card:nth-child(2) { animation-delay: 0.1s; }
+    .dash-card:nth-child(3) { animation-delay: 0.2s; }
+    .dash-card-icon {
+      font-size: 36px;
+      flex-shrink: 0;
+      width: 56px; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--sakura-lighter);
+      border-radius: 14px;
+    }
+    .dash-card-content { flex: 1; }
+    .dash-card-title {
+      font-size: 17px; font-weight: 700; color: var(--gray-800);
+      margin-bottom: 6px;
+    }
+    .dash-card-desc {
+      font-size: 13px; color: var(--gray-500); margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .dash-card-preview { display: flex; flex-wrap: wrap; gap: 6px; }
+    .dash-tag {
+      padding: 3px 10px; border-radius: 20px;
+      background: var(--sakura-lighter); color: var(--gray-600);
+      font-size: 11px; font-weight: 500;
+    }
+    .dash-badge {
+      padding: 4px 12px; border-radius: 20px;
+      background: var(--accent-bg); color: var(--accent);
+      font-size: 12px; font-weight: 700;
+    }
+    .dash-card-arrow {
+      font-size: 18px; color: var(--gray-400);
+      align-self: center; transition: transform 0.3s;
+    }
+    .dash-card:hover .dash-card-arrow { transform: translateX(4px); color: var(--accent); }
+
+    /* 详情视图 */
+    .detail-view { position: relative; }
+    .detail-enter { animation: detailSlideIn 0.4s ease; }
+    @keyframes detailSlideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .detail-back-btn {
+      position: sticky; top: 16px; z-index: 10;
+      padding: 8px 18px; border: 2px solid var(--gray-200);
+      border-radius: var(--radius-full); background: var(--white);
+      font-size: 13px; font-weight: 600; color: var(--gray-600);
+      cursor: pointer; transition: all 0.2s;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .detail-back-btn:hover {
+      border-color: var(--accent); color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 900px) {
+      .dash-cards { grid-template-columns: 1fr; }
+    }
+    /* ========== 结束：仪表盘样式 ========== */
+
     /* ========== 智能简历解析器样式 ========== */
     .smart-parser-divider {
       display: flex;
@@ -3916,5 +4021,6 @@
 <script src="./parser.js"></script>
 <script src="./onboarding.js"></script>
 <script src="./tracking.js"></script>
+<script src="./dashboard.js"></script>
 </body>
 </html>
