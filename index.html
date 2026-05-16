@@ -1662,11 +1662,17 @@
     /* ========== 结束：投递追踪样式 ========== */
 
     /* ========== 仪表盘卡片样式 ========== */
-    .dashboard-view { padding: 40px 0; }
+    .dashboard-view {
+      padding: 0;
+      display: flex;
+      align-items: center;
+      min-height: calc(100vh - 120px);
+    }
     .dash-cards {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
+      width: 100%;
       animation: dashFadeIn 0.6s ease;
     }
     @keyframes dashFadeIn {
@@ -1675,23 +1681,25 @@
     }
     .dash-card {
       background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 28px 24px;
+      border-radius: var(--radius-xl);
+      padding: 36px 28px;
       border: 2px solid var(--gray-200);
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
       gap: 16px;
       position: relative;
       overflow: hidden;
+      min-height: 320px;
     }
     .dash-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 4px;
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      height: 5px;
       transition: height 0.3s;
     }
     .dash-card-1::before { background: linear-gradient(90deg, var(--sakura-primary), var(--sakura-dark)); }
@@ -1699,44 +1707,42 @@
     .dash-card-3::before { background: linear-gradient(90deg, var(--cta), #FF8E8E); }
     .dash-card:hover {
       border-color: var(--sakura-primary);
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.08);
     }
-    .dash-card:hover::before { height: 6px; }
-    .dash-card:nth-child(1) { animation-delay: 0s; }
-    .dash-card:nth-child(2) { animation-delay: 0.1s; }
-    .dash-card:nth-child(3) { animation-delay: 0.2s; }
+    .dash-card:hover::before { height: 7px; }
     .dash-card-icon {
-      font-size: 36px;
-      flex-shrink: 0;
-      width: 56px; height: 56px;
+      font-size: 40px;
+      width: 72px; height: 72px;
       display: flex; align-items: center; justify-content: center;
       background: var(--sakura-lighter);
-      border-radius: 14px;
+      border-radius: 18px;
+      margin-bottom: 4px;
     }
-    .dash-card-content { flex: 1; }
+    .dash-card-content { flex: 1; display: flex; flex-direction: column; align-items: center; }
     .dash-card-title {
-      font-size: 17px; font-weight: 700; color: var(--gray-800);
-      margin-bottom: 6px;
+      font-size: 18px; font-weight: 700; color: var(--gray-800);
+      margin-bottom: 10px;
     }
     .dash-card-desc {
-      font-size: 13px; color: var(--gray-500); margin-bottom: 12px;
-      line-height: 1.5;
+      font-size: 14px; color: var(--gray-500); margin-bottom: 20px;
+      line-height: 1.6; max-width: 220px;
     }
-    .dash-card-preview { display: flex; flex-wrap: wrap; gap: 6px; }
+    .dash-card-preview { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
     .dash-tag {
-      padding: 3px 10px; border-radius: 20px;
+      padding: 5px 14px; border-radius: 20px;
       background: var(--sakura-lighter); color: var(--gray-600);
-      font-size: 11px; font-weight: 500;
+      font-size: 12px; font-weight: 500;
     }
     .dash-badge {
-      padding: 4px 12px; border-radius: 20px;
+      padding: 6px 16px; border-radius: 20px;
       background: var(--accent-bg); color: var(--accent);
-      font-size: 12px; font-weight: 700;
+      font-size: 13px; font-weight: 700;
     }
     .dash-card-arrow {
-      font-size: 18px; color: var(--gray-400);
-      align-self: center; transition: transform 0.3s;
+      font-size: 20px; color: var(--gray-400);
+      margin-top: auto; padding-top: 16px;
+      transition: all 0.3s;
     }
     .dash-card:hover .dash-card-arrow { transform: translateX(4px); color: var(--accent); }
 

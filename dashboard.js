@@ -58,40 +58,40 @@
           '<div class="dash-card-icon">📋</div>' +
           '<div class="dash-card-content">' +
             '<h3 class="dash-card-title">简历诊断</h3>' +
-            '<p class="dash-card-desc">AI 分析你的简历，找出错别字、语法问题和优化建议</p>' +
+            '<p class="dash-card-desc">上传简历，AI 帮你找出错别字、语法问题，给出优化建议和评分</p>' +
             '<div class="dash-card-preview">' +
               '<span class="dash-tag">错别字检测</span>' +
               '<span class="dash-tag">语法优化</span>' +
-              '<span class="dash-tag">评分</span>' +
+              '<span class="dash-tag">综合评分</span>' +
             '</div>' +
           '</div>' +
-          '<div class="dash-card-arrow">→</div>' +
+          '<div class="dash-card-arrow">查看详情 →</div>' +
         '</div>' +
         // 卡片 2：性格 & 岗位
         '<div class="dash-card dash-card-2" data-panel="mbti">' +
           '<div class="dash-card-icon">🧠</div>' +
           '<div class="dash-card-content">' +
             '<h3 class="dash-card-title">性格 & 岗位匹配</h3>' +
-            '<p class="dash-card-desc">基于 MBTI 性格分析，推荐最适合你的职业方向</p>' +
+            '<p class="dash-card-desc">基于你的 MBTI 性格类型，智能推荐最适合的职业方向和岗位</p>' +
             '<div class="dash-card-preview">' +
               '<span class="dash-badge">' + mbti + ' ' + mbtiName + '</span>' +
             '</div>' +
           '</div>' +
-          '<div class="dash-card-arrow">→</div>' +
+          '<div class="dash-card-arrow">查看详情 →</div>' +
         '</div>' +
         // 卡片 3：面试辅导
         '<div class="dash-card dash-card-3" data-panel="chat">' +
           '<div class="dash-card-icon">💬</div>' +
           '<div class="dash-card-content">' +
             '<h3 class="dash-card-title">面试辅导</h3>' +
-            '<p class="dash-card-desc">AI 模拟面试官，帮你练习回答、提升表达能力</p>' +
+            '<p class="dash-card-desc">AI 模拟面试官和你对话，帮你练习回答技巧、提升表达能力</p>' +
             '<div class="dash-card-preview">' +
               '<span class="dash-tag">模拟面试</span>' +
               '<span class="dash-tag">简历生成</span>' +
               '<span class="dash-tag">话术练习</span>' +
             '</div>' +
           '</div>' +
-          '<div class="dash-card-arrow">→</div>' +
+          '<div class="dash-card-arrow">开始练习 →</div>' +
         '</div>' +
       '</div>';
   }
