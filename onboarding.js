@@ -88,49 +88,9 @@
         '<div class="ob-feat"><div class="ob-feat-icon ob-feat-green">📊</div><div class="ob-feat-info"><strong>投递追踪</strong><span>可视化进度管理</span></div></div>' +
       '</div>' +
 
-      // 产品预览 - 仪表盘模拟
+      // 产品预览 - 直接用图片 + 3D 透视
       '<div class="ob-dashboard-preview">' +
-        // 左：简历诊断
-        '<div class="ob-prev-card ob-prev-diagnosis">' +
-          '<div class="ob-prev-header">📋 简历诊断报告</div>' +
-          '<div class="ob-prev-score-ring"><span>86</span></div>' +
-          '<div class="ob-prev-label">综合评分</div>' +
-          '<div class="ob-prev-bars">' +
-            '<div class="ob-bar-item"><span>内容完整性</span><div class="ob-bar"><div class="ob-bar-fill" style="width:90%"></div></div><span>90</span></div>' +
-            '<div class="ob-bar-item"><span>关键词匹配</span><div class="ob-bar"><div class="ob-bar-fill" style="width:82%"></div></div><span>82</span></div>' +
-            '<div class="ob-bar-item"><span>表达流畅度</span><div class="ob-bar"><div class="ob-bar-fill" style="width:85%"></div></div><span>85</span></div>' +
-          '</div>' +
-        '</div>' +
-        // 中：主面板
-        '<div class="ob-prev-card ob-prev-main">' +
-          '<div class="ob-prev-greeting">Hi, 小小同学 👋</div>' +
-          '<div class="ob-prev-desc">今天也要元气满满地去拿下 offer 呀！</div>' +
-          '<div class="ob-prev-stats">' +
-            '<div class="ob-stat"><span class="ob-stat-num">32</span><span class="ob-stat-label">投递总数</span></div>' +
-            '<div class="ob-stat"><span class="ob-stat-num">8</span><span class="ob-stat-label">面试中</span></div>' +
-            '<div class="ob-stat"><span class="ob-stat-num">2</span><span class="ob-stat-label">已拿到Offer</span></div>' +
-            '<div class="ob-stat"><span class="ob-stat-num">5</span><span class="ob-stat-label">待跟进</span></div>' +
-          '</div>' +
-          '<div class="ob-prev-progress">' +
-            '<div class="ob-progress-track">' +
-              '<div class="ob-progress-dot ob-dot-done" style="left:0%">32</div>' +
-              '<div class="ob-progress-dot ob-dot-done" style="left:25%">12</div>' +
-              '<div class="ob-progress-dot ob-dot-done" style="left:50%">8</div>' +
-              '<div class="ob-progress-dot ob-dot-active" style="left:75%">2</div>' +
-              '<div class="ob-progress-dot" style="left:100%">10</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
-        // 右：投递追踪
-        '<div class="ob-prev-card ob-prev-tracking">' +
-          '<div class="ob-prev-header">📊 投递追踪</div>' +
-          '<div class="ob-prev-donut"><span>32</span></div>' +
-          '<div class="ob-prev-legend">' +
-            '<div><span class="ob-legend-dot" style="background:#6C63FF"></span>面试中 8</div>' +
-            '<div><span class="ob-legend-dot" style="background:#4ECDC4"></span>已拿到Offer 2</div>' +
-            '<div><span class="ob-legend-dot" style="background:#FFB7C5"></span>已拒绝 10</div>' +
-          '</div>' +
-        '</div>' +
+        '<img src="./startpage.png" class="ob-preview-img" alt="产品预览" />' +
       '</div>' +
 
       // 底部导航图标

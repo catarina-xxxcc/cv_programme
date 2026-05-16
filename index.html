@@ -2311,93 +2311,25 @@
     .ob-feat-info strong { font-size: 13px; color: #333; }
     .ob-feat-info span { font-size: 11px; color: #999; }
 
-    /* Dashboard preview - 3D 立体面板 */
+    /* Dashboard preview - 图片 + 3D 透视 */
     .ob-dashboard-preview { 
-      position: relative;
-      width: 100%; 
-      height: 360px;
-      perspective: 1500px;
+      width: 100%;
       display: flex;
-      align-items: center;
       justify-content: center;
+      perspective: 1200px;
     }
-    .ob-prev-card { 
-      position: absolute;
-      background: rgba(255,255,255,0.92); 
-      backdrop-filter: blur(12px); 
-      border-radius: 16px; 
-      padding: 20px; 
-      border: 1px solid rgba(255,255,255,0.9); 
-      box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.05);
+    .ob-preview-img {
+      width: 100%;
+      max-width: 860px;
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+      transform: rotateX(4deg);
       transition: transform 0.4s ease, box-shadow 0.4s ease;
     }
-    .ob-prev-card:hover {
-      box-shadow: 0 30px 80px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.08);
+    .ob-preview-img:hover {
+      transform: rotateX(0deg) scale(1.01);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.15), 0 12px 32px rgba(0,0,0,0.08);
     }
-
-    /* 左侧 - 简历诊断 (向右倾斜) */
-    .ob-prev-diagnosis {
-      width: 180px;
-      left: 5%;
-      top: 10%;
-      transform: rotateY(15deg) rotateX(-3deg) translateZ(-20px);
-      z-index: 2;
-    }
-    .ob-prev-diagnosis:hover { transform: rotateY(8deg) rotateX(-1deg) translateZ(0px) scale(1.03); }
-
-    /* 中间 - 主面板 (正面偏大) */
-    .ob-prev-main {
-      width: 320px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) rotateX(2deg) translateZ(30px);
-      z-index: 5;
-    }
-    .ob-prev-main:hover { transform: translate(-50%, -50%) rotateX(0deg) translateZ(50px) scale(1.02); }
-
-    /* 右侧 - 投递追踪 (向左倾斜) */
-    .ob-prev-tracking {
-      width: 180px;
-      right: 5%;
-      top: 10%;
-      transform: rotateY(-15deg) rotateX(-3deg) translateZ(-20px);
-      z-index: 2;
-    }
-    .ob-prev-tracking:hover { transform: rotateY(-8deg) rotateX(-1deg) translateZ(0px) scale(1.03); }
-    .ob-prev-header { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 12px; }
-
-    /* Diagnosis card */
-    .ob-prev-score-ring { width: 72px; height: 72px; border-radius: 50%; border: 5px solid #FFB7C5; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
-    .ob-prev-score-ring span { font-size: 24px; font-weight: 900; color: #333; }
-    .ob-prev-label { font-size: 11px; color: #999; text-align: center; margin-bottom: 12px; }
-    .ob-prev-bars { display: flex; flex-direction: column; gap: 8px; }
-    .ob-bar-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #666; }
-    .ob-bar-item span:first-child { width: 60px; flex-shrink: 0; }
-    .ob-bar-item span:last-child { width: 20px; text-align: right; font-weight: 700; }
-    .ob-bar { flex: 1; height: 4px; background: #f0f0f0; border-radius: 2px; overflow: hidden; }
-    .ob-bar-fill { height: 100%; background: linear-gradient(90deg, #FFB7C5, #6C63FF); border-radius: 2px; }
-
-    /* Main panel */
-    .ob-prev-main { display: flex; flex-direction: column; gap: 12px; }
-    .ob-prev-greeting { font-size: 16px; font-weight: 800; color: #333; }
-    .ob-prev-desc { font-size: 12px; color: #888; }
-    .ob-prev-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .ob-stat { background: #f8f6ff; border-radius: 10px; padding: 12px 8px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
-    .ob-stat-num { font-size: 22px; font-weight: 900; color: #6C63FF; font-family: 'Inter', sans-serif; }
-    .ob-stat-label { font-size: 10px; color: #999; }
-    .ob-prev-progress { margin-top: 8px; }
-    .ob-progress-track { position: relative; height: 4px; background: linear-gradient(90deg, #6C63FF 0%, #FFB7C5 50%, #4ECDC4 75%, #eee 100%); border-radius: 2px; margin: 16px 0; }
-    .ob-progress-dot { position: absolute; top: -8px; width: 20px; height: 20px; border-radius: 50%; background: white; border: 2px solid #ddd; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #666; transform: translateX(-50%); }
-    .ob-progress-dot.ob-dot-done { border-color: #6C63FF; color: #6C63FF; }
-    .ob-progress-dot.ob-dot-active { border-color: #FF6B6B; color: #FF6B6B; background: #FFF0F0; }
-
-    /* Tracking card */
-    .ob-prev-donut { width: 72px; height: 72px; border-radius: 50%; border: 5px solid #4ECDC4; border-top-color: #6C63FF; border-right-color: #FFB7C5; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
-    .ob-prev-donut span { font-size: 22px; font-weight: 900; color: #333; }
-    .ob-prev-legend { display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: #666; }
-    .ob-prev-legend div { display: flex; align-items: center; gap: 6px; }
-    .ob-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
     /* Nav icons */
     .ob-nav-icons { display: flex; gap: 16px; padding: 12px 24px; background: rgba(50,50,60,0.8); border-radius: 50px; }
     .ob-nav-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; }
@@ -2423,13 +2355,10 @@
     .ob-btn-disabled { background: #ddd !important; color: #999 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; }
 
     @media (max-width: 768px) {
-      .ob-dashboard-preview { height: 280px; perspective: 800px; }
-      .ob-prev-diagnosis { width: 140px; left: 2%; }
-      .ob-prev-main { width: 240px; }
-      .ob-prev-tracking { width: 140px; right: 2%; }
       .ob-title { font-size: 32px; }
       .ob-hero { flex-direction: column; }
       .ob-features { gap: 12px; flex-direction: column; align-items: center; }
+      .ob-preview-img { border-radius: 12px; }
     }
     /* ========== 结束：冷启动引导样式 ========== */
   </style>
