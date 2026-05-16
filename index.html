@@ -2311,9 +2311,59 @@
     .ob-feat-info strong { font-size: 13px; color: #333; }
     .ob-feat-info span { font-size: 11px; color: #999; }
 
-    /* Dashboard preview */
-    .ob-dashboard-preview { display: grid; grid-template-columns: 200px 1fr 200px; gap: 16px; width: 100%; }
-    .ob-prev-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+    /* Dashboard preview - 3D 立体面板 */
+    .ob-dashboard-preview { 
+      position: relative;
+      width: 100%; 
+      height: 360px;
+      perspective: 1500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ob-prev-card { 
+      position: absolute;
+      background: rgba(255,255,255,0.92); 
+      backdrop-filter: blur(12px); 
+      border-radius: 16px; 
+      padding: 20px; 
+      border: 1px solid rgba(255,255,255,0.9); 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.05);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .ob-prev-card:hover {
+      box-shadow: 0 30px 80px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    /* 左侧 - 简历诊断 (向右倾斜) */
+    .ob-prev-diagnosis {
+      width: 180px;
+      left: 5%;
+      top: 10%;
+      transform: rotateY(15deg) rotateX(-3deg) translateZ(-20px);
+      z-index: 2;
+    }
+    .ob-prev-diagnosis:hover { transform: rotateY(8deg) rotateX(-1deg) translateZ(0px) scale(1.03); }
+
+    /* 中间 - 主面板 (正面偏大) */
+    .ob-prev-main {
+      width: 320px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) rotateX(2deg) translateZ(30px);
+      z-index: 5;
+    }
+    .ob-prev-main:hover { transform: translate(-50%, -50%) rotateX(0deg) translateZ(50px) scale(1.02); }
+
+    /* 右侧 - 投递追踪 (向左倾斜) */
+    .ob-prev-tracking {
+      width: 180px;
+      right: 5%;
+      top: 10%;
+      transform: rotateY(-15deg) rotateX(-3deg) translateZ(-20px);
+      z-index: 2;
+    }
+    .ob-prev-tracking:hover { transform: rotateY(-8deg) rotateX(-1deg) translateZ(0px) scale(1.03); }
     .ob-prev-header { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 12px; }
 
     /* Diagnosis card */
@@ -2373,10 +2423,13 @@
     .ob-btn-disabled { background: #ddd !important; color: #999 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; }
 
     @media (max-width: 768px) {
-      .ob-dashboard-preview { grid-template-columns: 1fr; }
+      .ob-dashboard-preview { height: 280px; perspective: 800px; }
+      .ob-prev-diagnosis { width: 140px; left: 2%; }
+      .ob-prev-main { width: 240px; }
+      .ob-prev-tracking { width: 140px; right: 2%; }
       .ob-title { font-size: 32px; }
       .ob-hero { flex-direction: column; }
-      .ob-features { gap: 12px; }
+      .ob-features { gap: 12px; flex-direction: column; align-items: center; }
     }
     /* ========== 结束：冷启动引导样式 ========== */
   </style>
