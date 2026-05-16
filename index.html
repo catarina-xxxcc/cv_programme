@@ -2280,67 +2280,37 @@
     /* ========== 冷启动引导样式 ========== */
     .ob-overlay {
       position: fixed; inset: 0; z-index: 99999;
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(160deg, #f0e6f6 0%, #e8dff0 25%, #f5f0fa 50%, #eef0f8 75%, #f8f0f4 100%);
       opacity: 0; transition: opacity 0.5s ease;
-      overflow-y: auto;
     }
     .ob-overlay.ob-visible { opacity: 1; }
     .ob-overlay.ob-hiding { opacity: 0; pointer-events: none; }
-
-    .ob-welcome { max-width: 960px; width: 92%; padding: 48px 0 60px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
-
-    /* Hero */
-    .ob-hero { display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .ob-hero-text { text-align: center; }
-    .ob-hero-img { width: 80px; height: 80px; object-fit: contain; animation: obBounce 3s ease-in-out infinite; }
-    @keyframes obBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-    .ob-title { font-size: 42px; font-weight: 900; color: #2D3436; font-family: 'Noto Serif SC', serif; line-height: 1.2; }
-    .ob-title-accent { background: linear-gradient(135deg, #6C63FF, #FF6B6B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .ob-subtitle { font-size: 15px; color: #666; line-height: 1.8; margin-top: 10px; }
-
-    /* Features row */
-    .ob-features { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
-    .ob-feat { display: flex; align-items: center; gap: 10px; padding: 12px 20px; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.9); }
-    .ob-feat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .ob-feat-pink { background: #FFE4E9; }
-    .ob-feat-purple { background: #EDE9FE; }
-    .ob-feat-blue { background: #E0F2FE; }
-    .ob-feat-green { background: #DCFCE7; }
-    .ob-feat-info { display: flex; flex-direction: column; }
-    .ob-feat-info strong { font-size: 13px; color: #333; }
-    .ob-feat-info span { font-size: 11px; color: #999; }
-
-    /* Dashboard preview - 图片 + 3D 透视 */
-    .ob-dashboard-preview { 
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      perspective: 1200px;
+    .ob-fullscreen {
+      width: 100%; height: 100vh;
+      position: relative;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 5vh;
     }
-    .ob-preview-img {
-      width: 100%;
-      max-width: 860px;
-      border-radius: 20px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
-      transform: rotateX(4deg);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    .ob-bg-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top center;
     }
-    .ob-preview-img:hover {
-      transform: rotateX(0deg) scale(1.01);
-      box-shadow: 0 40px 100px rgba(0,0,0,0.15), 0 12px 32px rgba(0,0,0,0.08);
+    .ob-cta-btn {
+      position: relative; z-index: 2;
+      padding: 16px 40px; border: none; border-radius: 50px;
+      background: linear-gradient(135deg, #6C63FF 0%, #8B85FF 100%);
+      color: white; font-size: 17px; font-weight: 700;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 8px 32px rgba(108, 99, 255, 0.4);
     }
-    /* Nav icons */
-    .ob-nav-icons { display: flex; gap: 16px; padding: 12px 24px; background: rgba(50,50,60,0.8); border-radius: 50px; }
-    .ob-nav-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-
-    /* Start button */
-    .ob-start-btn { padding: 16px 48px; border: none; border-radius: 50px; background: linear-gradient(135deg, #6C63FF, #8B85FF); color: white; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 8px 24px rgba(108,99,255,0.3); }
-    .ob-start-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(108,99,255,0.4); }
-
-    /* Profile setup */
-    .ob-profile { max-width: 440px; width: 90%; background: white; border-radius: 24px; padding: 40px 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; gap: 24px; }
-    .ob-avatar-preview { width: 80px; height: 80px; border-radius: 50%; background: #f5f0fa; border: 3px solid #e8dff0; display: flex; align-items: center; justify-content: center; font-size: 36px; transition: all 0.3s; }
+    .ob-cta-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 40px rgba(108, 99, 255, 0.5); }
+    .ob-profile {
+      max-width: 440px; width: 90%; background: white; border-radius: 24px;
+      padding: 40px 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    }
+    .ob-avatar-preview { width: 80px; height: 80px; border-radius: 50%; background: #f5f0fa; border: 3px solid #e8dff0; display: flex; align-items: center; justify-content: center; font-size: 36px; }
     .ob-profile-title { font-size: 20px; font-weight: 800; color: #1a1a1a; }
     .ob-profile-subtitle { font-size: 13px; color: #888; margin-top: -16px; }
     .ob-avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; }
@@ -2353,13 +2323,6 @@
     .ob-finish-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #6C63FF, #8B85FF); color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(108,99,255,0.25); }
     .ob-finish-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(108,99,255,0.35); }
     .ob-btn-disabled { background: #ddd !important; color: #999 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; }
-
-    @media (max-width: 768px) {
-      .ob-title { font-size: 32px; }
-      .ob-hero { flex-direction: column; }
-      .ob-features { gap: 12px; flex-direction: column; align-items: center; }
-      .ob-preview-img { border-radius: 12px; }
-    }
     /* ========== 结束：冷启动引导样式 ========== */
   </style>
 </head>
