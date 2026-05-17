@@ -224,6 +224,95 @@
       flex: 1;
     }
 
+    /* MBTI 选填 */
+    .mbti-optional {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: rgba(108, 99, 255, 0.04);
+      border: 1.5px solid rgba(108, 99, 255, 0.12);
+      border-radius: 14px;
+      margin-bottom: 24px;
+    }
+    .mbti-optional-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      white-space: nowrap;
+    }
+    .mbti-optional-input {
+      flex: 1;
+      max-width: 120px;
+      padding: 8px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .mbti-optional-input:focus {
+      border-color: var(--accent);
+    }
+
+    /* 岗位推荐 - 横向列表 */
+    .jobs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .job-row {
+      display: flex;
+      align-items: center;
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(108, 99, 255, 0.08);
+      border-radius: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .job-row:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateX(4px);
+      box-shadow: 0 4px 16px rgba(108, 99, 255, 0.08);
+    }
+    .job-row-left {
+      flex: 1;
+      min-width: 0;
+    }
+    .job-row-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+    .job-row-industry {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-500);
+    }
+    .job-row-center {
+      text-align: center;
+      padding: 0 24px;
+    }
+    .job-row-salary {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .job-row-city {
+      font-size: 11px;
+      color: var(--gray-500);
+    }
+    .job-row-right {
+      flex-shrink: 0;
+    }
+
     /* MBTI 人格区 */
     .mbti-section {
       display: grid;
@@ -2445,72 +2534,56 @@
   <div class="result-panel">
     <div id="resultContent" class="result-content">
 
-      <!-- MBTI 人格 -->
-      <div class="mbti-section">
-        <div id="mbtiAvatar" class="mbti-avatar-placeholder">🧠</div>
-        <div class="mbti-info">
-          <div class="mbti-info-left">
-            <div id="mbtiBadge" class="mbti-badge">
-              <span class="label">MBTI</span>
-              <span id="mbtiValue">—</span>
-            </div>
-            <div id="mbtiName" class="mbti-name">上传简历后显示</div>
-            <div id="mbtiTraits" class="mbti-traits"></div>
-          </div>
-          <div class="mbti-info-right">
-            <!-- 人格深度解读 -->
-            <div id="mbtiInsightBox" class="insight-box" style="display:none">
-              <div class="insight-title">✦ 人格解读</div>
-              <div id="mbtiInsight" class="insight-text"></div>
-            </div>
-          </div>
-        </div>
+      <!-- MBTI 选填 -->
+      <div class="mbti-optional">
+        <label class="mbti-optional-label">MBTI（选填，辅助分析）</label>
+        <input type="text" id="mbtiInput" class="mbti-optional-input" placeholder="如 INFP、ENTJ..." maxlength="4" />
       </div>
-
-      <!-- 候选人简介 - 隐藏 -->
-      <div class="summary-box" id="summaryText" style="display:none">上传简历后，这里将显示你的候选人简介...</div>
 
       <!-- 岗位推荐 -->
       <div class="section-title">
         推荐岗位
-        <span class="section-title-hint">💡 点击岗位名称查看详情</span>
+        <span class="section-title-hint">💡 上传简历后智能匹配</span>
       </div>
-      <div id="jobsGrid" class="jobs-grid">
-        <div class="job-card" style="opacity: 0.5; cursor: default;">
-          <div class="job-header">
-            <div class="job-title">岗位推荐 1</div>
-            <span class="match-badge match-high">高</span>
+      <div id="jobsGrid" class="jobs-list">
+        <div class="job-row" style="opacity: 0.5;">
+          <div class="job-row-left">
+            <div class="job-row-title">岗位推荐 1</div>
+            <div class="job-row-industry">行业</div>
           </div>
-          <div class="industry-tag">行业</div>
-          <div class="job-salary">
-            <span class="salary-amount">--K</span>
-            <span class="salary-city">城市</span>
+          <div class="job-row-center">
+            <div class="job-row-salary">--K</div>
+            <div class="job-row-city">城市</div>
           </div>
-          <div class="job-reason">上传简历后显示匹配原因</div>
+          <div class="job-row-right">
+            <span class="match-badge match-high">高匹配</span>
+          </div>
         </div>
-        <div class="job-card" style="opacity: 0.5; cursor: default;">
-          <div class="job-header">
-            <div class="job-title">岗位推荐 2</div>
-            <span class="match-badge match-high">高</span>
+        <div class="job-row" style="opacity: 0.5;">
+          <div class="job-row-left">
+            <div class="job-row-title">岗位推荐 2</div>
+            <div class="job-row-industry">行业</div>
           </div>
-          <div class="industry-tag">行业</div>
-          <div class="job-salary">
-            <span class="salary-amount">--K</span>
-            <span class="salary-city">城市</span>
+          <div class="job-row-center">
+            <div class="job-row-salary">--K</div>
+            <div class="job-row-city">城市</div>
           </div>
-          <div class="job-reason">上传简历后显示匹配原因</div>
+          <div class="job-row-right">
+            <span class="match-badge match-high">高匹配</span>
+          </div>
         </div>
-        <div class="job-card" style="opacity: 0.5; cursor: default;">
-          <div class="job-header">
-            <div class="job-title">岗位推荐 3</div>
-            <span class="match-badge match-mid">中</span>
+        <div class="job-row" style="opacity: 0.5;">
+          <div class="job-row-left">
+            <div class="job-row-title">岗位推荐 3</div>
+            <div class="job-row-industry">行业</div>
           </div>
-          <div class="industry-tag">行业</div>
-          <div class="job-salary">
-            <span class="salary-amount">--K</span>
-            <span class="salary-city">城市</span>
+          <div class="job-row-center">
+            <div class="job-row-salary">--K</div>
+            <div class="job-row-city">城市</div>
           </div>
-          <div class="job-reason">上传简历后显示匹配原因</div>
+          <div class="job-row-right">
+            <span class="match-badge match-mid">中匹配</span>
+          </div>
         </div>
       </div>
 
