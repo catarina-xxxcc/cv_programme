@@ -2285,39 +2285,60 @@
     /* ========== 结束：智能简历解析器样式 ========== */
 
     /* ========== 冷启动引导样式 ========== */
-    .ob-overlay {
-      position: fixed; inset: 0; z-index: 99999;
-      opacity: 0; transition: opacity 0.5s ease;
-    }
+    .ob-overlay { position: fixed; inset: 0; z-index: 99999; opacity: 0; transition: opacity 0.5s ease; overflow-y: auto; background: linear-gradient(160deg, #f0e6f6 0%, #e8dff0 30%, #f5f0fa 60%, #eef0f8 100%); }
     .ob-overlay.ob-visible { opacity: 1; }
     .ob-overlay.ob-hiding { opacity: 0; pointer-events: none; }
-    .ob-fullscreen {
-      width: 100%; height: 100vh;
-      position: relative;
-      display: flex; align-items: flex-end; justify-content: center;
-      padding-bottom: 5vh;
-    }
-    .ob-bg-img {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover; object-position: top center;
-    }
-    .ob-cta-btn {
-      position: relative; z-index: 2;
-      padding: 16px 40px; border: none; border-radius: 50px;
-      background: linear-gradient(135deg, #6C63FF 0%, #8B85FF 100%);
-      color: white; font-size: 17px; font-weight: 700;
-      cursor: pointer; transition: all 0.3s;
-      box-shadow: 0 8px 32px rgba(108, 99, 255, 0.4);
-    }
-    .ob-cta-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 40px rgba(108, 99, 255, 0.5); }
-    .ob-profile {
-      max-width: 520px; width: 92%; background: white; border-radius: 28px;
-      padding: 48px 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-      display: flex; flex-direction: column; align-items: center; gap: 20px;
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      max-height: 90vh; overflow-y: auto;
-    }
+
+    /* Landing page */
+    .ob-landing { max-width: 1000px; width: 92%; margin: 0 auto; padding: 48px 0 60px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
+    .ob-landing-header { text-align: center; }
+    .ob-landing-title { font-size: 40px; font-weight: 900; color: #1a1a1a; font-family: 'Noto Serif SC', serif; margin-bottom: 12px; }
+    .ob-accent { background: linear-gradient(135deg, #6C63FF, #9C27B0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .ob-landing-sub { font-size: 15px; color: #666; line-height: 1.8; margin-bottom: 20px; }
+    .ob-landing-btn { padding: 14px 36px; border: none; border-radius: 50px; background: linear-gradient(135deg, #6C63FF, #8B85FF); color: white; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(108,99,255,0.3); }
+    .ob-landing-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(108,99,255,0.4); }
+    .ob-landing-btn-bottom { margin-top: 8px; }
+
+    /* Preview grid */
+    .ob-preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%; }
+    .ob-pcard { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 18px; padding: 20px 16px; border: 1px solid rgba(200,180,255,0.2); box-shadow: 0 8px 32px rgba(108,99,255,0.06); display: flex; flex-direction: column; gap: 12px; }
+    .ob-pcard-header { font-size: 13px; font-weight: 700; color: #6C63FF; display: flex; align-items: center; gap: 6px; }
+    .ob-pcard-icon { font-size: 16px; }
+    .ob-pcard-body { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+    /* Ring chart */
+    .ob-ring { width: 80px; height: 80px; }
+
+    /* Bar chart */
+    .ob-bars { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+    .ob-bar-row { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #666; }
+    .ob-bar-row span:first-child { width: 56px; flex-shrink: 0; text-align: right; }
+    .ob-bar-row span:last-child { width: 18px; font-weight: 700; color: #333; }
+    .ob-bar-track { flex: 1; height: 4px; background: #f0eef5; border-radius: 2px; overflow: hidden; }
+    .ob-bar-fill { height: 100%; background: linear-gradient(90deg, #6C63FF, #FFB7C5); border-radius: 2px; }
+
+    /* Job list */
+    .ob-job-list { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .ob-job-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #555; padding: 6px 10px; background: #f8f6ff; border-radius: 8px; }
+    .ob-job-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .ob-job-meta { margin-left: auto; font-weight: 700; color: #6C63FF; font-size: 10px; }
+
+    /* Interview card */
+    .ob-pcard-interview { align-items: center; }
+    .ob-mic-icon { font-size: 40px; margin: 4px 0; }
+    .ob-interview-stats { display: flex; gap: 12px; }
+    .ob-istat { text-align: center; display: flex; flex-direction: column; gap: 2px; }
+    .ob-istat-num { font-size: 16px; font-weight: 900; color: #6C63FF; }
+    .ob-istat span:last-child { font-size: 9px; color: #999; }
+    .ob-radar-placeholder { font-size: 10px; color: #bbb; padding: 8px; border: 1px dashed #ddd; border-radius: 8px; width: 100%; text-align: center; }
+
+    /* Tracking legend */
+    .ob-track-legend { width: 100%; display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: #555; }
+    .ob-track-legend div { display: flex; align-items: center; gap: 6px; }
+    .ob-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Profile setup */
+    .ob-profile { max-width: 520px; width: 92%; background: white; border-radius: 28px; padding: 48px 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; gap: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-height: 90vh; overflow-y: auto; }
     .ob-avatar-preview { width: 90px; height: 90px; border-radius: 50%; background: #f5f0fa; border: 3px solid #e8dff0; display: flex; align-items: center; justify-content: center; font-size: 42px; }
     .ob-profile-title { font-size: 22px; font-weight: 800; color: #1a1a1a; }
     .ob-profile-subtitle { font-size: 14px; color: #888; margin-top: -12px; }
@@ -2326,21 +2347,30 @@
     .ob-gender-option { flex: 1; padding: 14px; border: 2px solid #eee; border-radius: 14px; text-align: center; cursor: pointer; font-size: 15px; font-weight: 600; color: #555; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .ob-gender-option span { font-size: 22px; }
     .ob-gender-option:hover { border-color: #6C63FF; background: #f8f5ff; }
-    .ob-gender-active { border-color: #6C63FF !important; background: #ede9fe !important; color: #6C63FF !important; box-shadow: 0 2px 8px rgba(108,99,255,0.2); }
+    .ob-gender-active { border-color: #6C63FF !important; background: #ede9fe !important; color: #6C63FF !important; }
     .ob-avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; }
     .ob-avatar-option { width: 52px; height: 52px; border-radius: 14px; border: 2px solid #eee; background: white; font-size: 28px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
     .ob-avatar-option:hover { border-color: #6C63FF; background: #f5f0fa; transform: scale(1.1); }
-    .ob-avatar-active { border-color: #6C63FF !important; background: #ede9fe !important; box-shadow: 0 2px 8px rgba(108,99,255,0.3); transform: scale(1.1); }
+    .ob-avatar-active { border-color: #6C63FF !important; background: #ede9fe !important; transform: scale(1.1); }
     .ob-nickname-input { width: 100%; padding: 16px 20px; border: 2px solid #eee; border-radius: 14px; font-size: 17px; text-align: center; outline: none; transition: border-color 0.3s; }
     .ob-nickname-input:focus { border-color: #6C63FF; }
     .ob-nickname-input::placeholder { color: #ccc; }
     .ob-identity-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .ob-identity-option { padding: 14px 18px; border: 2px solid #eee; border-radius: 14px; cursor: pointer; font-size: 15px; font-weight: 600; color: #555; transition: all 0.2s; text-align: center; }
     .ob-identity-option:hover { border-color: #6C63FF; background: #f8f5ff; }
-    .ob-identity-active { border-color: #6C63FF !important; background: #ede9fe !important; color: #6C63FF !important; box-shadow: 0 2px 8px rgba(108,99,255,0.2); }
+    .ob-identity-active { border-color: #6C63FF !important; background: #ede9fe !important; color: #6C63FF !important; }
     .ob-finish-btn { width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg, #6C63FF, #8B85FF); color: white; font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(108,99,255,0.25); margin-top: 8px; }
     .ob-finish-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(108,99,255,0.35); }
     .ob-btn-disabled { background: #ddd !important; color: #999 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; }
+
+    @media (max-width: 768px) {
+      .ob-preview-grid { grid-template-columns: repeat(2, 1fr); }
+      .ob-landing-title { font-size: 30px; }
+    }
+    @media (max-width: 480px) {
+      .ob-preview-grid { grid-template-columns: 1fr; }
+      .ob-avatar-grid { grid-template-columns: repeat(4, 1fr); }
+    }
     /* ========== 结束：冷启动引导样式 ========== */
   </style>
 </head>
