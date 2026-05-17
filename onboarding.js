@@ -13,13 +13,20 @@
     var overlay = document.createElement('div');
     overlay.id = 'onboardingOverlay';
     overlay.className = 'ob-overlay ob-visible';
-    overlay.innerHTML = buildWelcomeHTML();
+    overlay.innerHTML = '<iframe src="./landing.html" class="ob-iframe"></iframe>';
     document.body.appendChild(overlay);
     var mainArea = document.querySelector('.main-area');
     var sidebar = document.querySelector('.profile-sidebar');
     if (mainArea) mainArea.style.display = 'none';
     if (sidebar) sidebar.style.display = 'none';
-    document.getElementById('obStartBtn').addEventListener('click', function() { showProfileSetup(overlay); });
+
+    // Listen for start button click from iframe
+    window.addEventListener('message', function handler(e) {
+      if (e.data === 'ob-start') {
+        window.removeEventListener('message', handler);
+        showProfileSetup(overlay);
+      }
+    });
   }
 
   function buildWelcomeHTML() {
