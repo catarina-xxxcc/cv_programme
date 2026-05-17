@@ -7,8 +7,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
-<script src="https://unpkg.com/recharts@2.5.0/umd/Recharts.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
 tailwind.config = {
@@ -25,139 +23,138 @@ body { margin: 0; font-family: 'Inter', sans-serif; }
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, LineChart, Line, XAxis, YAxis, ResponsiveContainer } = Recharts;
+function Ring({value, max=100, label, size=90, color='#6C63FF'}) {
+  const r = 34, c = 2*Math.PI*r;
+  const offset = c - (value/max)*c;
+  return (
+    <svg width={size} height={size} viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r={r} fill="none" stroke="#f0eef5" strokeWidth="6"/>
+      <circle cx="40" cy="40" r={r} fill="none" stroke={color} strokeWidth="6" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round" transform="rotate(-90 40 40)"/>
+      <text x="40" y="42" textAnchor="middle" dominantBaseline="middle" fontSize="18" fontWeight="900" fill="#333">{value}{max===100?'':'%'}</text>
+      <text x="40" y="58" textAnchor="middle" fontSize="7" fill="#999">{label}</text>
+    </svg>
+  );
+}
+
+function MultiRing({data, size=90}) {
+  const r = 34, c = 2*Math.PI*r;
+  const total = data.reduce((s,d)=>s+d.v, 0);
+  let startAngle = -90;
+  return (
+    <svg width={size} height={size} viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r={r} fill="none" stroke="#f0eef5" strokeWidth="6"/>
+      {data.map((d,i)=>{
+        const len = (d.v/total)*c;
+        const el = <circle key={i} cx="40" cy="40" r={r} fill="none" stroke={d.color} strokeWidth="6" strokeDasharray={`${len} ${c-len}`} strokeLinecap="round" transform={`rotate(${startAngle} 40 40)`}/>;
+        startAngle += (d.v/total)*360;
+        return el;
+      })}
+      <text x="40" y="42" textAnchor="middle" dominantBaseline="middle" fontSize="18" fontWeight="900" fill="#333">{total}</text>
+      <text x="40" y="58" textAnchor="middle" fontSize="7" fill="#999">总投递</text>
+    </svg>
+  );
+}
+
+function RadarChart({data}) {
+  const cx=50, cy=50, r=38, n=data.length;
+  const points = data.map((d,i)=>{
+    const angle = (Math.PI*2*i/n) - Math.PI/2;
+    const val = d.v/100;
+    return [cx+r*val*Math.cos(angle), cy+r*val*Math.sin(angle)];
+  });
+  const gridLevels = [0.25,0.5,0.75,1];
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-20">
+      {gridLevels.map(l=>(
+        <polygon key={l} points={Array.from({length:n},(_,i)=>{const a=(Math.PI*2*i/n)-Math.PI/2;return `${cx+r*l*Math.cos(a)},${cy+r*l*Math.sin(a)}`;}).join(' ')} fill="none" stroke="#e8e0f0" strokeWidth="0.5"/>
+      ))}
+      <polygon points={points.map(p=>p.join(',')).join(' ')} fill="rgba(108,99,255,0.15)" stroke="#6C63FF" strokeWidth="1.5"/>
+      {data.map((d,i)=>{
+        const a=(Math.PI*2*i/n)-Math.PI/2;
+        return <text key={i} x={cx+(r+8)*Math.cos(a)} y={cy+(r+8)*Math.sin(a)} textAnchor="middle" dominantBaseline="middle" fontSize="5" fill="#888">{d.s}</text>;
+      })}
+    </svg>
+  );
+}
+
+function MiniLine({data}) {
+  const w=140, h=40, pad=5;
+  const maxV = Math.max(...data.map(d=>d.v));
+  const pts = data.map((d,i)=>[pad+i*(w-2*pad)/(data.length-1), h-pad-(d.v/maxV)*(h-2*pad)]);
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-10">
+      <polyline points={pts.map(p=>p.join(',')).join(' ')} fill="none" stroke="#6C63FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      {pts.map((p,i)=><circle key={i} cx={p[0]} cy={p[1]} r="2.5" fill="#6C63FF"/>)}
+      {data.map((d,i)=><text key={i} x={pts[i][0]} y={h-1} textAnchor="middle" fontSize="5" fill="#bbb">{d.d}</text>)}
+    </svg>
+  );
+}
 
 function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#4a3a8a] via-[#7c6bc4] to-[#f0e6f6] flex flex-col items-center px-4 py-12">
-      {/* Header */}
       <h1 className="text-5xl font-black text-white mb-3" style={{fontFamily:'Noto Serif SC'}}>
         小小求职<span className="text-yellow-300">拿下</span>！
       </h1>
       <p className="text-white/80 text-center text-base mb-6 leading-relaxed">
         AI 帮你优化简历、匹配岗位、模拟面试、追踪投递进度<br/>让求职更高效，更有方向
       </p>
-      <button id="startBtn" className="bg-gradient-to-r from-[#6C63FF] to-[#9C27B0] text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:-translate-y-1 transition-all mb-10">
+      <button id="startBtn" className="bg-gradient-to-r from-[#6C63FF] to-[#9C27B0] text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg shadow-purple-500/30 hover:shadow-xl hover:-translate-y-1 transition-all mb-10">
         🚀 开启高效求职之旅 →
       </button>
 
-      {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 w-full max-w-[1000px]">
-        {/* Card 1: 简历诊断 */}
+        {/* 简历诊断 */}
         <div className="float-card bg-white rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg">📋</span>
-            <span className="font-bold text-[#6C63FF] text-sm">简历诊断报告</span>
-          </div>
-          <div className="flex justify-center mb-3">
-            <ResponsiveContainer width={100} height={100}>
-              <PieChart>
-                <Pie data={[{v:86},{v:14}]} dataKey="v" cx="50%" cy="50%" innerRadius={32} outerRadius={42} startAngle={90} endAngle={-270}>
-                  <Cell fill="#6C63FF"/><Cell fill="#f0eef5"/>
-                </Pie>
-                <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" className="text-xl font-black fill-gray-800">86</text>
-                <text x="50%" y="68%" textAnchor="middle" className="text-[8px] fill-gray-400">综合评分</text>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <div className="flex items-center gap-2 mb-4"><span className="text-lg">📋</span><span className="font-bold text-[#6C63FF] text-sm">简历诊断报告</span></div>
+          <div className="flex justify-center mb-3"><Ring value={86} label="综合评分"/></div>
           <div className="space-y-2">
             {[['内容完整性',90],['关键词匹配',82],['表达流畅度',65],['结构规范性',88]].map(([n,v])=>(
               <div key={n} className="flex items-center gap-2 text-[11px] text-gray-600">
                 <span className="w-14 text-right shrink-0">{n}</span>
-                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-[#6C63FF] to-[#FFB7C5] rounded-full" style={{width:v+'%'}}/>
-                </div>
+                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-[#6C63FF] to-[#FFB7C5] rounded-full" style={{width:v+'%'}}/></div>
                 <span className="w-5 font-bold text-gray-800">{v}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Card 2: 岗位推荐 */}
+        {/* 岗位推荐 */}
         <div className="float-card bg-white rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg">🧠</span>
-            <span className="font-bold text-[#6C63FF] text-sm">岗位推荐</span>
-          </div>
-          <div className="flex justify-center mb-3">
-            <ResponsiveContainer width={100} height={100}>
-              <PieChart>
-                <Pie data={[{v:92},{v:8}]} dataKey="v" cx="50%" cy="50%" innerRadius={32} outerRadius={42} startAngle={90} endAngle={-270}>
-                  <Cell fill="#6C63FF"/><Cell fill="#f0eef5"/>
-                </Pie>
-                <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" className="text-lg font-black fill-gray-800">92%</text>
-                <text x="50%" y="68%" textAnchor="middle" className="text-[8px] fill-gray-400">匹配度</text>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <div className="flex items-center gap-2 mb-4"><span className="text-lg">🧠</span><span className="font-bold text-[#6C63FF] text-sm">岗位推荐</span></div>
+          <div className="flex justify-center mb-3"><Ring value={92} max={100} label="匹配度" color="#6C63FF"/></div>
           <div className="space-y-2">
             {[['产品经理','20-35K','#6C63FF'],['用户研究员','18-28K','#9C27B0'],['数据分析师','15-25K','#FFB7C5']].map(([t,s,c])=>(
               <div key={t} className="flex items-center gap-2 text-xs text-gray-600 bg-purple-50 rounded-lg px-3 py-2">
-                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{background:c}}/>
-                <span className="font-medium">{t}</span>
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{background:c}}/><span className="font-medium">{t}</span>
                 <span className="ml-auto font-bold text-[#6C63FF] italic text-[11px]">{s}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Card 3: 面试辅导 */}
+        {/* 面试辅导 */}
         <div className="float-card bg-white rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg">💬</span>
-            <span className="font-bold text-[#6C63FF] text-sm">面试辅导</span>
-          </div>
-          <div className="flex justify-center mb-3 text-5xl">🎤</div>
-          <div className="flex justify-center gap-4 mb-4">
+          <div className="flex items-center gap-2 mb-4"><span className="text-lg">💬</span><span className="font-bold text-[#6C63FF] text-sm">面试辅导</span></div>
+          <div className="flex justify-center mb-2 text-5xl">🎤</div>
+          <div className="flex justify-center gap-4 mb-3">
             {[['8','模拟面试'],['92%','表达流畅度'],['24','已完成(h)']].map(([n,l])=>(
-              <div key={l} className="text-center">
-                <div className="text-lg font-black text-[#6C63FF]">{n}</div>
-                <div className="text-[9px] text-gray-400">{l}</div>
-              </div>
+              <div key={l} className="text-center"><div className="text-lg font-black text-[#6C63FF]">{n}</div><div className="text-[9px] text-gray-400">{l}</div></div>
             ))}
           </div>
-          <div className="w-full">
-            <ResponsiveContainer width="100%" height={80}>
-              <RadarChart data={[{s:'专业',v:85},{s:'表达',v:90},{s:'逻辑',v:75},{s:'应变',v:80},{s:'自信',v:88}]}>
-                <PolarGrid stroke="#e8e0f0"/>
-                <PolarAngleAxis dataKey="s" tick={{fontSize:9,fill:'#888'}}/>
-                <Radar dataKey="v" stroke="#6C63FF" fill="#6C63FF" fillOpacity={0.2}/>
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
+          <RadarChart data={[{s:'专业',v:85},{s:'表达',v:90},{s:'逻辑',v:75},{s:'应变',v:80},{s:'自信',v:88}]}/>
         </div>
 
-        {/* Card 4: 投递追踪 */}
+        {/* 投递追踪 */}
         <div className="float-card bg-white rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg">📊</span>
-            <span className="font-bold text-[#6C63FF] text-sm">投递追踪</span>
-          </div>
-          <div className="flex justify-center mb-3">
-            <ResponsiveContainer width={100} height={100}>
-              <PieChart>
-                <Pie data={[{v:12,n:'面试中'},{v:2,n:'Offer'},{v:10,n:'已拒绝'},{v:8,n:'待回复'}]} dataKey="v" cx="50%" cy="50%" innerRadius={30} outerRadius={42}>
-                  <Cell fill="#6C63FF"/><Cell fill="#9C27B0"/><Cell fill="#FFB7C5"/><Cell fill="#e0d8f0"/>
-                </Pie>
-                <text x="50%" y="48%" textAnchor="middle" dominantBaseline="middle" className="text-xl font-black fill-gray-800">32</text>
-                <text x="50%" y="68%" textAnchor="middle" className="text-[8px] fill-gray-400">总投递</text>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <div className="flex items-center gap-2 mb-4"><span className="text-lg">📊</span><span className="font-bold text-[#6C63FF] text-sm">投递追踪</span></div>
+          <div className="flex justify-center mb-3"><MultiRing data={[{v:12,color:'#6C63FF'},{v:2,color:'#9C27B0'},{v:10,color:'#FFB7C5'},{v:8,color:'#e0d8f0'}]}/></div>
           <div className="space-y-1.5 mb-3">
             {[['面试中 12','#6C63FF'],['Offer 2','#9C27B0'],['已拒绝 10','#FFB7C5']].map(([t,c])=>(
-              <div key={t} className="flex items-center gap-2 text-xs text-gray-600">
-                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{background:c}}/>
-                <span>{t}</span>
-              </div>
+              <div key={t} className="flex items-center gap-2 text-xs text-gray-600"><span className="w-2.5 h-2.5 rounded-full shrink-0" style={{background:c}}/><span>{t}</span></div>
             ))}
           </div>
-          <ResponsiveContainer width="100%" height={50}>
-            <LineChart data={[{d:'05-20',v:5},{d:'05-27',v:8},{d:'06-03',v:12},{d:'06-10',v:8},{d:'06-17',v:2}]}>
-              <Line type="monotone" dataKey="v" stroke="#6C63FF" strokeWidth={2} dot={{r:3,fill:'#6C63FF'}}/>
-              <XAxis dataKey="d" tick={{fontSize:8,fill:'#bbb'}} axisLine={false} tickLine={false}/>
-            </LineChart>
-          </ResponsiveContainer>
+          <MiniLine data={[{d:'05-20',v:5},{d:'05-27',v:8},{d:'06-03',v:12},{d:'06-10',v:8},{d:'06-17',v:2}]}/>
         </div>
       </div>
     </div>
@@ -165,8 +162,6 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-
-// Handle start button click - communicate with parent
 document.addEventListener('click', function(e) {
   if (e.target.id === 'startBtn' || e.target.closest('#startBtn')) {
     window.parent.postMessage('ob-start', '*');
