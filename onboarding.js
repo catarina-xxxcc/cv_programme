@@ -13,7 +13,7 @@
     var overlay = document.createElement('div');
     overlay.id = 'onboardingOverlay';
     overlay.className = 'ob-overlay ob-visible';
-    overlay.innerHTML = '<iframe src="./landing.html?v=6" class="ob-iframe"></iframe>';
+    overlay.innerHTML = '<iframe src="./landing.html?v=7" class="ob-iframe"></iframe>';
     document.body.appendChild(overlay);
     var mainArea = document.querySelector('.main-area');
     var sidebar = document.querySelector('.profile-sidebar');

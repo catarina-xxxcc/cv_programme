@@ -70,20 +70,24 @@ function MiniLine({data}) {
 }
 
 function App() {
-  return <div className="min-h-screen relative px-4 py-10" style={{background:'linear-gradient(180deg, #2d1b69 0%, #4a3a8a 20%, #7c6bc4 45%, #c4b5e3 70%, #f0e6f6 100%)'}}>
-    {/* 3D 装饰物件 - 小巧精致紧贴卡片 */}
-    <img src="./3D/3dicons-copy-dynamic-gradient.png" className="float-obj absolute w-10 opacity-95" style={{top:'52%',left:'12%'}} alt=""/>
-    <img src="./3D/3dicons-target-dynamic-gradient.png" className="float-obj-2 absolute w-9 opacity-90" style={{top:'48%',right:'10%'}} alt=""/>
-    <img src="./3D/3dicons-tick-dynamic-gradient.png" className="float-obj-3 absolute w-8 opacity-90" style={{top:'82%',left:'18%'}} alt=""/>
-    <img src="./3D/3dicons-trophy-dynamic-gradient.png" className="float-obj-4 absolute w-9 opacity-95" style={{top:'35%',right:'18%'}} alt=""/>
+  return <div className="min-h-screen relative px-4 py-10" style={{background:'linear-gradient(to left, #e8dff5 0%, #f0e6f6 30%, #f8f4fa 60%, #fdf8fc 100%)'}}>
+    {/* 3D 装饰物件 - 重复多个+放大 */}
+    <img src="./3D/3dicons-copy-dynamic-gradient.png" className="float-obj absolute w-14" style={{top:'15%',left:'3%'}} alt=""/>
+    <img src="./3D/3dicons-copy-dynamic-gradient.png" className="float-obj-3 absolute w-10" style={{top:'70%',right:'5%'}} alt=""/>
+    <img src="./3D/3dicons-target-dynamic-gradient.png" className="float-obj-2 absolute w-14" style={{top:'55%',right:'2%'}} alt=""/>
+    <img src="./3D/3dicons-target-dynamic-gradient.png" className="float-obj absolute w-10" style={{top:'20%',right:'25%'}} alt=""/>
+    <img src="./3D/3dicons-tick-dynamic-gradient.png" className="float-obj-3 absolute w-12" style={{top:'80%',left:'5%'}} alt=""/>
+    <img src="./3D/3dicons-tick-dynamic-gradient.png" className="float-obj-4 absolute w-9" style={{top:'30%',left:'20%'}} alt=""/>
+    <img src="./3D/3dicons-trophy-dynamic-gradient.png" className="float-obj-4 absolute w-14" style={{top:'25%',right:'3%'}} alt=""/>
+    <img src="./3D/3dicons-trophy-dynamic-gradient.png" className="float-obj-2 absolute w-10" style={{top:'75%',left:'22%'}} alt=""/>
 
     {/* Header - 大标题 + 大女生 */}
     <div className="max-w-[1100px] mx-auto flex items-center justify-between mb-6">
       <div>
-        <h1 className="text-6xl font-black text-white mb-4 drop-shadow-lg" style={{fontFamily:'Noto Serif SC'}}>
-          小小求职<span className="text-yellow-300">拿下</span>！
+        <h1 className="text-6xl font-black text-[#2d1b69] mb-4" style={{fontFamily:'Noto Serif SC'}}>
+          小小求职<span className="text-[#6C63FF]">拿下</span>！
         </h1>
-        <p className="text-white/75 text-lg leading-relaxed">
+        <p className="text-gray-500 text-lg leading-relaxed">
           AI 帮你优化简历、匹配岗位、模拟面试、追踪投递进度<br/>让求职更高效，更有方向
         </p>
       </div>
