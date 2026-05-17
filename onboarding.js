@@ -84,8 +84,7 @@
           '</div>' +
         '</div>' +
       '</div>' +
-      // Bottom CTA
-      '<button class="ob-landing-btn ob-landing-btn-bottom" onclick="document.getElementById(\'obStartBtn\').click()">\uD83D\uDE80 \u5F00\u542F\u9AD8\u6548\u6C42\u804C\u4E4B\u65C5 \u2192</button>' +
+      // Bottom - removed duplicate button
     '</div>';
   }
 
