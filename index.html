@@ -1268,8 +1268,8 @@
       top: 0;
       bottom: 0;
       width: 20%;
-      min-width: 320px;
-      max-width: 400px;
+      min-width: 360px;
+      max-width: 440px;
       background: var(--white);
       border-right: 2px solid var(--gray-200);
       box-shadow: var(--shadow-md);
@@ -1664,8 +1664,8 @@
       margin-bottom: 0;
     }
     .sidebar-tab {
-      flex: 1; padding: 10px 8px; border: none; background: transparent;
-      font-size: 13px; font-weight: 600; color: var(--gray-500);
+      flex: 1; padding: 12px 8px; border: none; background: transparent;
+      font-size: 14px; font-weight: 600; color: var(--gray-500);
       cursor: pointer; border-bottom: 2px solid transparent;
       margin-bottom: -2px; transition: all 0.2s; border-radius: 0;
     }
@@ -1674,17 +1674,9 @@
     .sidebar-tab-content { display: none; flex: 1; overflow-y: auto; }
     .sidebar-tab-content.active { display: flex; flex-direction: column; }
 
-    /* 🤖 求职助手 tab 高亮 */
-    .sidebar-tab-agent {
-      background: linear-gradient(135deg, var(--sakura-light) 0%, #f0e6ff 100%);
-      border-radius: 8px 8px 0 0 !important;
-      color: var(--accent) !important;
-    }
-    .sidebar-tab-agent:hover { color: var(--accent-dark) !important; }
-    .sidebar-tab-agent.active {
-      color: var(--accent-dark) !important;
-      border-bottom-color: var(--accent) !important;
-    }
+    /* 🤖 求职助手 tab - 与简历 tab 统一，无彩色背景 */
+    .sidebar-tab-agent:hover { color: var(--sakura-primary); }
+    .sidebar-tab-agent.active { color: var(--sakura-primary); border-bottom-color: var(--sakura-primary); }
 
     /* 侧边栏 Agent 卡片 */
     .sidebar-agent-cards {
@@ -1707,6 +1699,18 @@
     .sidebar-agent-card .card-icon { font-size: 16px; }
     .sidebar-agent-card .card-title { font-size: 11px; white-space: nowrap; }
 
+    /* 侧边栏新建对话按钮（粉红底 + 号） */
+    .sidebar-newchat-btn {
+      position: relative;
+      width: 32px; height: 32px; flex-shrink: 0; align-self: center;
+      border: none; border-radius: 8px;
+      background: var(--sakura-primary); color: white;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; transition: all 0.2s;
+    }
+    .sidebar-newchat-btn:hover {
+      background: var(--sakura-dark);
+    }
     /* 侧边栏聊天消息区 */
     .sidebar-agent-messages {
       flex: 1; overflow-y: auto; padding: 10px 12px;
@@ -1777,11 +1781,23 @@
       color: var(--sakura-dark);
     }
 
+    /* 侧边栏问候语（白底黑字，置顶） */
+    .sidebar-agent-messages .greeting-msg {
+      padding: 18px 12px 10px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--gray-800);
+      background: var(--white);
+      text-align: center;
+      flex-shrink: 0;
+    }
+
     /* 侧边栏收起时隐藏 agent 聊天 */
     .profile-sidebar[data-state="collapsed"] .sidebar-agent-messages,
     .profile-sidebar[data-state="collapsed"] .sidebar-agent-input-area,
     .profile-sidebar[data-state="collapsed"] .sidebar-agent-cards,
-    .profile-sidebar[data-state="collapsed"] .sidebar-preset-section {
+    .profile-sidebar[data-state="collapsed"] .sidebar-preset-section,
+    .profile-sidebar[data-state="collapsed"] .sidebar-newchat-btn {
       display: none;
     }
 
@@ -2499,7 +2515,7 @@
           <span>有什么秘诀可以使得简历在众多求职者中脱颖而出？</span>
         </div>
         <div class="sidebar-preset-item" onclick="sendSidebarPreset(this)">
-          <span>有哪些常见的面试问题以及回答方式？</span>
+          <span>如何判断一个岗位是否适合自己？</span>
         </div>
       </div>
     </div>
@@ -2517,6 +2533,9 @@
       <button class="sidebar-agent-card" data-sidebar-mode="career_planning" onclick="handleSidebarCardClick(this)">
         <span class="card-icon">🗺️</span>
         <span class="card-title">职业规划</span>
+      </button>
+      <button class="sidebar-newchat-btn" onclick="clearSidebarChat()" title="新建对话">
+        <span class="newchat-icon">+</span>
       </button>
     </div>
 
@@ -3682,17 +3701,17 @@
    * 显示侧边栏问候语
    */
   function showSidebarGreeting() {
-    // 如果已有消息（不是第一次打开），不重复显示
-    if (sidebarMessages.querySelector('.msg')) return;
+    if (sidebarMessages.querySelector('.greeting-msg')) return;
 
-    const msg = document.createElement("div");
-    msg.className = "msg ai greeting-msg";
-    msg.innerHTML = `
-      <div class="msg-avatar">🤖</div>
-      <div class="msg-bubble" style="background:var(--accent-bg);color:var(--gray-800);font-size:13px;font-weight:500;">
-        有什么我能帮你的吗？
-      </div>`;
-    sidebarMessages.appendChild(msg);
+    const el = document.createElement("div");
+    el.className = "greeting-msg";
+    el.innerHTML = "Hi👋<br>接下来有什么可以帮助你的吗？";
+    // 插入到消息区最顶部
+    if (sidebarMessages.firstChild) {
+      sidebarMessages.insertBefore(el, sidebarMessages.firstChild);
+    } else {
+      sidebarMessages.appendChild(el);
+    }
   }
 
   /**
@@ -3726,9 +3745,11 @@
     sidebarMode = mode;
     sidebarInput.placeholder = sidebarPlaceholders[mode] || "";
 
-    // 自动发送预设消息
+    // 将预设问题填入对话框，用户可以修改后再发送
     sidebarInput.value = sidebarPrompts[mode] || "";
-    setTimeout(() => sendSidebarAgentChat(), 100);
+    sidebarInput.focus();
+    sidebarInput.style.height = "auto";
+    sidebarInput.style.height = Math.min(sidebarInput.scrollHeight, 80) + "px";
   }
 
   /**
@@ -3790,6 +3811,22 @@
   }
 
   /**
+   * 隐藏常见问题
+   */
+  function hideSidebarPresets() {
+    const el = document.getElementById("sidebarPresetSection");
+    if (el) el.style.display = 'none';
+  }
+
+  /**
+   * 显示常见问题
+   */
+  function showSidebarPresets() {
+    const el = document.getElementById("sidebarPresetSection");
+    if (el) el.style.display = '';
+  }
+
+  /**
    * 侧边栏发送消息
    */
   async function sendSidebarAgentChat() {
@@ -3802,6 +3839,7 @@
     sidebarSendBtn.disabled = true;
 
     removeSidebarGreeting();
+    hideSidebarPresets();
     appendSidebarMsg("user", text);
     sidebarChatHistory.push({ role: "user", content: text });
     appendSidebarTyping();
@@ -3836,6 +3874,19 @@
       sidebarIsLoading = false;
       sidebarSendBtn.disabled = false;
     }
+  }
+
+  /**
+   * 侧边栏新建对话
+   */
+  function clearSidebarChat() {
+    sidebarChatHistory = [];
+    sidebarMessages.innerHTML = "";
+    sidebarMode = 'default';
+    sidebarInput.placeholder = sidebarPlaceholders.default;
+    document.querySelectorAll(".sidebar-agent-card").forEach(c => c.classList.remove("active"));
+    showSidebarGreeting();
+    showSidebarPresets();
   }
 
   // 显示问候语
