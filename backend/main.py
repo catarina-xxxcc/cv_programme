@@ -3,8 +3,12 @@ import io
 import json
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Any
+
+# 确保 rag 模块可导入
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import fitz  # PyMuPDF
 from openai import OpenAI
@@ -565,6 +569,32 @@ async def chat(request: ChatRequest) -> dict[str, Any]:
                         latest_feedback = interview_state.feedbacks[-1]
                         system += f"上次反馈: {latest_feedback[:100]}...\n"
 
+        # ===== RAG 知识库检索（仅 interview_sim 模式）=====
+        rag_status = "disabled"
+        rag_sources = []
+        
+        if request.mode == "interview_sim":
+            try:
+                from rag.pipeline import execute_rag_with_fallback
+                # 获取用户最新消息作为查询
+                user_query = ""
+                for msg in reversed(request.messages):
+                    if msg.role == "user":
+                        user_query = msg.content
+                        break
+                
+                if user_query:
+                    rag_result = await execute_rag_with_fallback(user_query)
+                    rag_status = rag_result.status.value if hasattr(rag_result.status, 'value') else str(rag_result.status)
+                    rag_sources = rag_result.sources
+                    
+                    # 如果检索到相关内容，注入系统提示词
+                    if rag_result.context_text:
+                        system = rag_result.context_text + "\n\n" + system
+            except Exception as e:
+                print(f"⚠️ RAG 检索失败（降级为纯AI）: {e}")
+                rag_status = "fallback"
+
         messages = [{"role": "system", "content": system}]
         for msg in request.messages:
             messages.append({"role": msg.role, "content": msg.content})
@@ -622,6 +652,8 @@ async def chat(request: ChatRequest) -> dict[str, Any]:
             "mode": request.mode,
             "has_resume_template": has_resume_template,
             "interview_state": updated_interview_state,
+            "rag_status": rag_status,
+            "rag_sources": rag_sources,
         }
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Chat failed: {exc}") from exc
